@@ -115,15 +115,22 @@ There are **5 stages** outlined below for completing this project, make sure you
     task init
     ```
 
-2. Fill out `cluster.yaml` and `nodes.yaml` configuration files using the comments in those file as a guide.
+2. *(Optional)* Populate `cluster.yaml` and `nodes.yaml` automatically from
+   your Proxmox VMs:
 
-3. Template out the kubernetes and talos configuration files, if any issues come up be sure to read the error and adjust your config files accordingly.
+    ```sh
+    python scripts/generate-cluster.py
+    ```
+
+3. Fill out `cluster.yaml` and `nodes.yaml` configuration files using the comments in those file as a guide.
+
+4. Template out the kubernetes and talos configuration files, if any issues come up be sure to read the error and adjust your config files accordingly.
 
     ```sh
     task configure
     ```
 
-4. Push your changes to git:
+5. Push your changes to git:
 
    📍 _**Verify** all the `./kubernetes/**/*.sops.*` files are **encrypted** with SOPS_
 
