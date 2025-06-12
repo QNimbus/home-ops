@@ -19,13 +19,9 @@ available fields. The resulting YAML files are meant to be tweaked manually
 before use.
 """
 
-import argparse
 import ipaddress
 import os
-import re
 from typing import Dict, List, Optional
-
-from git import Repo
 
 import yaml
 from proxmoxer import ProxmoxAPI
@@ -35,21 +31,6 @@ ROLE_TAGS = {
     "k3s-worker": "worker",
     "k3s-storage": "storage",
 }
-
-
-def get_repo_name() -> Optional[str]:
-    """Return the GitHub repository name in the form 'owner/repo'."""
-    try:
-        repo = Repo(search_parent_directories=True)
-        remote = repo.remotes.origin
-        url = next(remote.urls)
-    except Exception:  # pragma: no cover - git may not be set up
-        return None
-
-    match = re.search(r"github\.com[:/](.+?)(?:\.git)?$", url)
-    if match:
-        return match.group(1)
-    return None
 
 
 def connect_proxmox() -> Optional[ProxmoxAPI]:
@@ -122,70 +103,55 @@ def compute_cidr(ip: str, prefix: int) -> str:
     return str(network)
 
 
-def generate(network_cidr: Optional[str] = None, cloudflare_domain: Optional[str] = None):
+def generate():
     proxmox = connect_proxmox()
+    if not proxmox:
+        return
+
+    vms = get_vms(proxmox)
+    if not vms:
+        print("No matching VMs found")
+        return
 
     nodes: List[Dict] = []
     cidr: Optional[str] = None
 
-    if proxmox:
-        vms = get_vms(proxmox)
-        if not vms:
-            print("No matching VMs found")
-        else:
-            for vm in vms:
-                node_name = vm["node"]
-                vmid = vm["vmid"]
-                name = vm["name"]
-                tags = {t.strip() for t in (vm.get("tags") or "").split(",") if t.strip()}
+    for vm in vms:
+        node_name = vm["node"]
+        vmid = vm["vmid"]
+        name = vm["name"]
+        tags = {t.strip() for t in (vm.get("tags") or "").split(",") if t.strip()}
 
-                ip, mac, prefix = vm_network_info(proxmox, node_name, vmid)
-                disk = vm_disk_info(proxmox, node_name, vmid)
+        ip, mac, prefix = vm_network_info(proxmox, node_name, vmid)
+        disk = vm_disk_info(proxmox, node_name, vmid)
 
-                if ip and prefix and not cidr:
-                    cidr = compute_cidr(ip, prefix)
+        if ip and prefix and not cidr:
+            cidr = compute_cidr(ip, prefix)
 
-                node_data = {
-                    "name": name,
-                    "address": ip or "",
-                    "controller": "k3s-server" in tags,
-                    "disk": disk or "",
-                    "mac_addr": mac or "",
-                    "schematic_id": "",
-                }
-                nodes.append(node_data)
+        node_data = {
+            "name": name,
+            "address": ip or "",
+            "controller": "k3s-server" in tags,
+            "disk": disk or "",
+            "mac_addr": mac or "",
+            "schematic_id": "",
+        }
+        nodes.append(node_data)
 
-    if nodes:
-        with open("nodes.yaml", "w") as f:
-            yaml.safe_dump({"nodes": nodes}, f, sort_keys=False)
-            print("nodes.yaml written")
+    with open("nodes.yaml", "w") as f:
+        yaml.safe_dump({"nodes": nodes}, f, sort_keys=False)
+        print("nodes.yaml written")
 
     cluster_config = {}
     if os.path.exists("cluster.sample.yaml"):
         with open("cluster.sample.yaml") as f:
             cluster_config = yaml.safe_load(f)
-
-    if network_cidr:
-        cluster_config["node_cidr"] = network_cidr
-    elif cidr:
+    if cidr:
         cluster_config["node_cidr"] = cidr
-
-    repo_name = get_repo_name()
-    if repo_name:
-        cluster_config["repository_name"] = repo_name
-
-    if cloudflare_domain:
-        cluster_config["cloudflare_domain"] = cloudflare_domain
-
     with open("cluster.yaml", "w") as f:
         yaml.safe_dump(cluster_config, f, sort_keys=False)
         print("cluster.yaml written")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate cluster.yaml and nodes.yaml")
-    parser.add_argument("--cidr", dest="network_cidr", help="Node network CIDR")
-    parser.add_argument("--cf-domain", dest="cloudflare_domain", help="Cloudflare domain")
-    args = parser.parse_args()
-
-    generate(network_cidr=args.network_cidr, cloudflare_domain=args.cloudflare_domain)
+    generate()
