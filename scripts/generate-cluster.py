@@ -19,9 +19,14 @@ available fields. The resulting YAML files are meant to be tweaked manually
 before use.
 """
 
+import argparse
 import ipaddress
 import os
+import re
 from typing import Dict, List, Optional
+
+from git import Repo
+from dotenv import load_dotenv
 
 import yaml
 from proxmoxer import ProxmoxAPI
@@ -31,6 +36,21 @@ ROLE_TAGS = {
     "k3s-worker": "worker",
     "k3s-storage": "storage",
 }
+
+
+def get_repo_name() -> Optional[str]:
+    """Return the GitHub repository name in the form 'owner/repo'."""
+    try:
+        repo = Repo(search_parent_directories=True)
+        remote = repo.remotes.origin
+        url = next(remote.urls)
+    except Exception:  # pragma: no cover - git may not be set up
+        return None
+
+    match = re.search(r"github\.com[:/](.+?)(?:\.git)?$", url)
+    if match:
+        return match.group(1)
+    return None
 
 
 def connect_proxmox() -> Optional[ProxmoxAPI]:
@@ -48,8 +68,18 @@ def connect_proxmox() -> Optional[ProxmoxAPI]:
 
     try:
         if token_id and token_secret:
-            return ProxmoxAPI(host, token_id=token_id, token_secret=token_secret, verify_ssl=verify)
-        return ProxmoxAPI(host, user=user, password=password, verify_ssl=verify)
+            return ProxmoxAPI(
+                host,
+                token_id=token_id,
+                token_secret=token_secret,
+                verify_ssl=verify,
+            )
+        return ProxmoxAPI(
+            host,
+            user=user,
+            password=password,
+            verify_ssl=verify,
+        )
     except Exception as err:  # pragma: no cover - best effort connection
         print(f"Failed to connect to Proxmox: {err}")
         return None
@@ -60,7 +90,11 @@ def get_vms(proxmox: ProxmoxAPI) -> List[Dict]:
     resources = proxmox.cluster.resources.get(type="vm")
     vms = []
     for vm in resources:
-        tags = {t.strip() for t in (vm.get("tags") or "").split(",") if t.strip()}
+        tags = {
+            t.strip()
+            for t in (vm.get("tags") or "").split(",")
+            if t.strip()
+        }
         if not tags.intersection(ROLE_TAGS.keys()):
             continue
         vms.append(vm)
@@ -74,15 +108,26 @@ def first_ipv4(interface: Dict) -> Optional[Dict]:
     return None
 
 
-def vm_network_info(proxmox: ProxmoxAPI, node: str, vmid: str) -> (Optional[str], Optional[str], Optional[int]):
+def vm_network_info(
+    proxmox: ProxmoxAPI, node: str, vmid: str
+) -> (Optional[str], Optional[str], Optional[int]):
     try:
-        result = proxmox.nodes(node).qemu(vmid).agent("network-get-interfaces").get()
+        result = (
+            proxmox.nodes(node)
+            .qemu(vmid)
+            .agent("network-get-interfaces")
+            .get()
+        )
     except Exception:  # pragma: no cover - guest agent may not be running
         return None, None, None
     for iface in result.get("result", []):
         ipv4 = first_ipv4(iface)
         if ipv4:
-            return ipv4.get("ip-address"), iface.get("hardware-address"), ipv4.get("prefix")
+            return (
+                ipv4.get("ip-address"),
+                iface.get("hardware-address"),
+                ipv4.get("prefix"),
+            )
     return None, None, None
 
 
@@ -103,55 +148,293 @@ def compute_cidr(ip: str, prefix: int) -> str:
     return str(network)
 
 
-def generate():
-    proxmox = connect_proxmox()
-    if not proxmox:
-        return
+def generate(
+    env_file: Optional[str] = None,
+    node_cidr: Optional[str] = None,
+    node_dns_servers: Optional[str] = None,
+    node_ntp_servers: Optional[str] = None,
+    node_default_gateway: Optional[str] = None,
+    node_vlan_tag: Optional[str] = None,
+    cluster_api_addr: Optional[str] = None,
+    cluster_api_tls_sans: Optional[str] = None,
+    cluster_pod_cidr: Optional[str] = None,
+    cluster_svc_cidr: Optional[str] = None,
+    cluster_dns_gateway_addr: Optional[str] = None,
+    cluster_gateway_addr: Optional[str] = None,
+    repository_name: Optional[str] = None,
+    repository_branch: Optional[str] = None,
+    repository_visibility: Optional[str] = None,
+    cloudflare_domain: Optional[str] = None,
+    cloudflare_token: Optional[str] = None,
+    cloudflare_gateway_addr: Optional[str] = None,
+    cilium_loadbalancer_mode: Optional[str] = None,
+    cilium_bgp_router_addr: Optional[str] = None,
+    cilium_bgp_router_asn: Optional[str] = None,
+    cilium_bgp_node_asn: Optional[str] = None,
+):
+    if env_file:
+        load_dotenv(env_file)
+    else:
+        load_dotenv()
 
-    vms = get_vms(proxmox)
-    if not vms:
-        print("No matching VMs found")
-        return
+    proxmox = connect_proxmox()
 
     nodes: List[Dict] = []
+    used_ips: set[str] = set()
     cidr: Optional[str] = None
 
-    for vm in vms:
-        node_name = vm["node"]
-        vmid = vm["vmid"]
-        name = vm["name"]
-        tags = {t.strip() for t in (vm.get("tags") or "").split(",") if t.strip()}
+    if proxmox:
+        vms = get_vms(proxmox)
+        if not vms:
+            print("No matching VMs found")
+        else:
+            for vm in vms:
+                node_name = vm["node"]
+                vmid = vm["vmid"]
+                name = vm["name"]
+                tags = {
+                    t.strip()
+                    for t in (vm.get("tags") or "").split(",")
+                    if t.strip()
+                }
 
-        ip, mac, prefix = vm_network_info(proxmox, node_name, vmid)
-        disk = vm_disk_info(proxmox, node_name, vmid)
+                ip, mac, prefix = vm_network_info(proxmox, node_name, vmid)
+                disk = vm_disk_info(proxmox, node_name, vmid)
 
-        if ip and prefix and not cidr:
-            cidr = compute_cidr(ip, prefix)
+                if ip:
+                    used_ips.add(ip)
+                if ip and prefix and not cidr:
+                    cidr = compute_cidr(ip, prefix)
 
-        node_data = {
-            "name": name,
-            "address": ip or "",
-            "controller": "k3s-server" in tags,
-            "disk": disk or "",
-            "mac_addr": mac or "",
-            "schematic_id": "",
-        }
-        nodes.append(node_data)
+                node_data = {
+                    "name": name,
+                    "address": ip or "",
+                    "controller": "k3s-server" in tags,
+                    "disk": disk or "",
+                    "mac_addr": mac or "",
+                    "schematic_id": "",
+                }
+                nodes.append(node_data)
 
-    with open("nodes.yaml", "w") as f:
-        yaml.safe_dump({"nodes": nodes}, f, sort_keys=False)
-        print("nodes.yaml written")
+    if nodes:
+        with open("nodes.yaml", "w") as f:
+            yaml.safe_dump({"nodes": nodes}, f, sort_keys=False)
+            print("nodes.yaml written")
 
-    cluster_config = {}
+    cluster_config: Dict[str, object] = {}
     if os.path.exists("cluster.sample.yaml"):
         with open("cluster.sample.yaml") as f:
-            cluster_config = yaml.safe_load(f)
-    if cidr:
-        cluster_config["node_cidr"] = cidr
+            cluster_config = yaml.safe_load(f) or {}
+
+    def parse_list(val: Optional[str]) -> Optional[List[str]]:
+        if not val:
+            return None
+        return [v.strip() for v in val.split(',') if v.strip()]
+
+    node_cidr = node_cidr or os.environ.get("NODE_CIDR") or cidr
+    if node_cidr:
+        cluster_config["node_cidr"] = node_cidr
+
+    network = ipaddress.ip_network(node_cidr) if node_cidr else None
+
+    dns = parse_list(node_dns_servers or os.environ.get("NODE_DNS_SERVERS"))
+    if dns is None:
+        dns = ["1.1.1.1", "1.0.0.1"]
+    cluster_config["node_dns_servers"] = dns
+
+    ntp = parse_list(node_ntp_servers or os.environ.get("NODE_NTP_SERVERS"))
+    if ntp is None:
+        ntp = ["162.159.200.1", "162.159.200.123"]
+    cluster_config["node_ntp_servers"] = ntp
+
+    node_default_gateway = (
+        node_default_gateway
+        or os.environ.get("NODE_DEFAULT_GATEWAY")
+        or (str(next(network.hosts())) if network else None)
+    )
+    if node_default_gateway:
+        used_ips.add(node_default_gateway)
+        cluster_config["node_default_gateway"] = node_default_gateway
+
+    node_vlan_tag = node_vlan_tag or os.environ.get("NODE_VLAN_TAG")
+    if node_vlan_tag:
+        cluster_config["node_vlan_tag"] = node_vlan_tag
+
+    def pick_unused_ip() -> Optional[str]:
+        if not network:
+            return None
+        for ip in network.hosts():
+            sip = str(ip)
+            if sip not in used_ips:
+                used_ips.add(sip)
+                return sip
+        return None
+
+    cluster_api_addr = (
+        cluster_api_addr
+        or os.environ.get("CLUSTER_API_ADDR")
+        or pick_unused_ip()
+    )
+    if cluster_api_addr:
+        cluster_config["cluster_api_addr"] = cluster_api_addr
+
+    cluster_api_tls_sans = parse_list(
+        cluster_api_tls_sans or os.environ.get("CLUSTER_API_TLS_SANS")
+    )
+    if cluster_api_tls_sans:
+        cluster_config["cluster_api_tls_sans"] = cluster_api_tls_sans
+
+    cluster_pod_cidr = (
+        cluster_pod_cidr
+        or os.environ.get("CLUSTER_POD_CIDR")
+        or "10.42.0.0/16"
+    )
+    cluster_config["cluster_pod_cidr"] = cluster_pod_cidr
+
+    cluster_svc_cidr = (
+        cluster_svc_cidr
+        or os.environ.get("CLUSTER_SVC_CIDR")
+        or "10.43.0.0/16"
+    )
+    cluster_config["cluster_svc_cidr"] = cluster_svc_cidr
+
+    cluster_dns_gateway_addr = (
+        cluster_dns_gateway_addr
+        or os.environ.get("CLUSTER_DNS_GATEWAY_ADDR")
+        or pick_unused_ip()
+    )
+    if cluster_dns_gateway_addr:
+        cluster_config["cluster_dns_gateway_addr"] = cluster_dns_gateway_addr
+
+    cluster_gateway_addr = (
+        cluster_gateway_addr
+        or os.environ.get("CLUSTER_GATEWAY_ADDR")
+        or pick_unused_ip()
+    )
+    if cluster_gateway_addr:
+        cluster_config["cluster_gateway_addr"] = cluster_gateway_addr
+
+    repo = (
+        repository_name
+        or os.environ.get("REPOSITORY_NAME")
+        or get_repo_name()
+    )
+    if repo:
+        cluster_config["repository_name"] = repo
+
+    branch = repository_branch or os.environ.get("REPOSITORY_BRANCH") or "main"
+    cluster_config["repository_branch"] = branch
+
+    visibility = (
+        repository_visibility
+        or os.environ.get("REPOSITORY_VISIBILITY")
+        or "public"
+    )
+    cluster_config["repository_visibility"] = visibility
+
+    cloudflare_domain = (
+        cloudflare_domain or os.environ.get("CLOUDFLARE_DOMAIN")
+    )
+    if cloudflare_domain:
+        cluster_config["cloudflare_domain"] = cloudflare_domain
+
+    cloudflare_token = (
+        cloudflare_token or os.environ.get("CLOUDFLARE_TOKEN")
+    )
+    if cloudflare_token:
+        cluster_config["cloudflare_token"] = cloudflare_token
+
+    cloudflare_gateway_addr = (
+        cloudflare_gateway_addr
+        or os.environ.get("CLOUDFLARE_GATEWAY_ADDR")
+        or pick_unused_ip()
+    )
+    if cloudflare_gateway_addr:
+        cluster_config["cloudflare_gateway_addr"] = cloudflare_gateway_addr
+
+    cilium_loadbalancer_mode = (
+        cilium_loadbalancer_mode
+        or os.environ.get("CILIUM_LOADBALANCER_MODE")
+        or "dsr"
+    )
+    cluster_config["cilium_loadbalancer_mode"] = cilium_loadbalancer_mode
+
+    cilium_bgp_router_addr = (
+        cilium_bgp_router_addr or os.environ.get("CILIUM_BGP_ROUTER_ADDR")
+    )
+    if cilium_bgp_router_addr:
+        cluster_config["cilium_bgp_router_addr"] = cilium_bgp_router_addr
+
+    cilium_bgp_router_asn = (
+        cilium_bgp_router_asn or os.environ.get("CILIUM_BGP_ROUTER_ASN")
+    )
+    if cilium_bgp_router_asn:
+        cluster_config["cilium_bgp_router_asn"] = cilium_bgp_router_asn
+
+    cilium_bgp_node_asn = (
+        cilium_bgp_node_asn or os.environ.get("CILIUM_BGP_NODE_ASN")
+    )
+    if cilium_bgp_node_asn:
+        cluster_config["cilium_bgp_node_asn"] = cilium_bgp_node_asn
+
     with open("cluster.yaml", "w") as f:
         yaml.safe_dump(cluster_config, f, sort_keys=False)
         print("cluster.yaml written")
 
 
 if __name__ == "__main__":
-    generate()
+    parser = argparse.ArgumentParser(
+        description="Generate cluster.yaml and nodes.yaml"
+    )
+    parser.add_argument(
+        "--env-file",
+        default=".env",
+        help="Optional dotenv file",
+    )
+    parser.add_argument("--node-cidr")
+    parser.add_argument("--node-dns-servers")
+    parser.add_argument("--node-ntp-servers")
+    parser.add_argument("--node-default-gateway")
+    parser.add_argument("--node-vlan-tag")
+    parser.add_argument("--cluster-api-addr")
+    parser.add_argument("--cluster-api-tls-sans")
+    parser.add_argument("--cluster-pod-cidr")
+    parser.add_argument("--cluster-svc-cidr")
+    parser.add_argument("--cluster-dns-gateway-addr")
+    parser.add_argument("--cluster-gateway-addr")
+    parser.add_argument("--repository-name")
+    parser.add_argument("--repository-branch")
+    parser.add_argument("--repository-visibility")
+    parser.add_argument("--cloudflare-domain")
+    parser.add_argument("--cloudflare-token")
+    parser.add_argument("--cloudflare-gateway-addr")
+    parser.add_argument("--cilium-loadbalancer-mode")
+    parser.add_argument("--cilium-bgp-router-addr")
+    parser.add_argument("--cilium-bgp-router-asn")
+    parser.add_argument("--cilium-bgp-node-asn")
+    args = parser.parse_args()
+
+    generate(
+        env_file=args.env_file,
+        node_cidr=args.node_cidr,
+        node_dns_servers=args.node_dns_servers,
+        node_ntp_servers=args.node_ntp_servers,
+        node_default_gateway=args.node_default_gateway,
+        node_vlan_tag=args.node_vlan_tag,
+        cluster_api_addr=args.cluster_api_addr,
+        cluster_api_tls_sans=args.cluster_api_tls_sans,
+        cluster_pod_cidr=args.cluster_pod_cidr,
+        cluster_svc_cidr=args.cluster_svc_cidr,
+        cluster_dns_gateway_addr=args.cluster_dns_gateway_addr,
+        cluster_gateway_addr=args.cluster_gateway_addr,
+        repository_name=args.repository_name,
+        repository_branch=args.repository_branch,
+        repository_visibility=args.repository_visibility,
+        cloudflare_domain=args.cloudflare_domain,
+        cloudflare_token=args.cloudflare_token,
+        cloudflare_gateway_addr=args.cloudflare_gateway_addr,
+        cilium_loadbalancer_mode=args.cilium_loadbalancer_mode,
+        cilium_bgp_router_addr=args.cilium_bgp_router_addr,
+        cilium_bgp_router_asn=args.cilium_bgp_router_asn,
+        cilium_bgp_node_asn=args.cilium_bgp_node_asn,
+    )
