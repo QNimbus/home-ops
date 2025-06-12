@@ -122,10 +122,20 @@ def vm_network_info(
     except Exception:  # pragma: no cover - guest agent may not be running
         return None, None, None
     for iface in result.get("result", []):
+        name = iface.get("name")
+        # Skip loopback interface which usually reports 127.0.0.1
+        if name == "lo":
+            continue
         ipv4 = first_ipv4(iface)
         if ipv4:
+            ip = ipv4.get("ip-address")
+            try:
+                if ipaddress.ip_address(ip).is_loopback:
+                    continue
+            except Exception:
+                pass
             return (
-                ipv4.get("ip-address"),
+                ip,
                 iface.get("hardware-address"),
                 ipv4.get("prefix"),
             )
