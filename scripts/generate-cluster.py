@@ -26,6 +26,7 @@ import re
 from typing import Dict, List, Optional
 
 from git import Repo
+from dotenv import load_dotenv
 
 import yaml
 from proxmoxer import ProxmoxAPI
@@ -122,10 +123,39 @@ def compute_cidr(ip: str, prefix: int) -> str:
     return str(network)
 
 
-def generate(network_cidr: Optional[str] = None, cloudflare_domain: Optional[str] = None):
+def generate(
+    env_file: Optional[str] = None,
+    node_cidr: Optional[str] = None,
+    node_dns_servers: Optional[str] = None,
+    node_ntp_servers: Optional[str] = None,
+    node_default_gateway: Optional[str] = None,
+    node_vlan_tag: Optional[str] = None,
+    cluster_api_addr: Optional[str] = None,
+    cluster_api_tls_sans: Optional[str] = None,
+    cluster_pod_cidr: Optional[str] = None,
+    cluster_svc_cidr: Optional[str] = None,
+    cluster_dns_gateway_addr: Optional[str] = None,
+    cluster_gateway_addr: Optional[str] = None,
+    repository_name: Optional[str] = None,
+    repository_branch: Optional[str] = None,
+    repository_visibility: Optional[str] = None,
+    cloudflare_domain: Optional[str] = None,
+    cloudflare_token: Optional[str] = None,
+    cloudflare_gateway_addr: Optional[str] = None,
+    cilium_loadbalancer_mode: Optional[str] = None,
+    cilium_bgp_router_addr: Optional[str] = None,
+    cilium_bgp_router_asn: Optional[str] = None,
+    cilium_bgp_node_asn: Optional[str] = None,
+):
+    if env_file:
+        load_dotenv(env_file)
+    else:
+        load_dotenv()
+
     proxmox = connect_proxmox()
 
     nodes: List[Dict] = []
+    used_ips: set[str] = set()
     cidr: Optional[str] = None
 
     if proxmox:
@@ -142,6 +172,8 @@ def generate(network_cidr: Optional[str] = None, cloudflare_domain: Optional[str
                 ip, mac, prefix = vm_network_info(proxmox, node_name, vmid)
                 disk = vm_disk_info(proxmox, node_name, vmid)
 
+                if ip:
+                    used_ips.add(ip)
                 if ip and prefix and not cidr:
                     cidr = compute_cidr(ip, prefix)
 
@@ -160,22 +192,159 @@ def generate(network_cidr: Optional[str] = None, cloudflare_domain: Optional[str
             yaml.safe_dump({"nodes": nodes}, f, sort_keys=False)
             print("nodes.yaml written")
 
-    cluster_config = {}
+    cluster_config: Dict[str, object] = {}
     if os.path.exists("cluster.sample.yaml"):
         with open("cluster.sample.yaml") as f:
-            cluster_config = yaml.safe_load(f)
+            cluster_config = yaml.safe_load(f) or {}
 
-    if network_cidr:
-        cluster_config["node_cidr"] = network_cidr
-    elif cidr:
-        cluster_config["node_cidr"] = cidr
+    def parse_list(val: Optional[str]) -> Optional[List[str]]:
+        if not val:
+            return None
+        return [v.strip() for v in val.split(',') if v.strip()]
 
-    repo_name = get_repo_name()
-    if repo_name:
-        cluster_config["repository_name"] = repo_name
+    node_cidr = node_cidr or os.environ.get("NODE_CIDR") or cidr
+    if node_cidr:
+        cluster_config["node_cidr"] = node_cidr
 
+    network = ipaddress.ip_network(node_cidr) if node_cidr else None
+
+    dns = parse_list(node_dns_servers or os.environ.get("NODE_DNS_SERVERS"))
+    if dns is None:
+        dns = ["1.1.1.1", "1.0.0.1"]
+    cluster_config["node_dns_servers"] = dns
+
+    ntp = parse_list(node_ntp_servers or os.environ.get("NODE_NTP_SERVERS"))
+    if ntp is None:
+        ntp = ["162.159.200.1", "162.159.200.123"]
+    cluster_config["node_ntp_servers"] = ntp
+
+    node_default_gateway = (
+        node_default_gateway
+        or os.environ.get("NODE_DEFAULT_GATEWAY")
+        or (str(next(network.hosts())) if network else None)
+    )
+    if node_default_gateway:
+        used_ips.add(node_default_gateway)
+        cluster_config["node_default_gateway"] = node_default_gateway
+
+    node_vlan_tag = node_vlan_tag or os.environ.get("NODE_VLAN_TAG")
+    if node_vlan_tag:
+        cluster_config["node_vlan_tag"] = node_vlan_tag
+
+    def pick_unused_ip() -> Optional[str]:
+        if not network:
+            return None
+        for ip in network.hosts():
+            sip = str(ip)
+            if sip not in used_ips:
+                used_ips.add(sip)
+                return sip
+        return None
+
+    cluster_api_addr = (
+        cluster_api_addr
+        or os.environ.get("CLUSTER_API_ADDR")
+        or pick_unused_ip()
+    )
+    if cluster_api_addr:
+        cluster_config["cluster_api_addr"] = cluster_api_addr
+
+    cluster_api_tls_sans = parse_list(
+        cluster_api_tls_sans or os.environ.get("CLUSTER_API_TLS_SANS")
+    )
+    if cluster_api_tls_sans:
+        cluster_config["cluster_api_tls_sans"] = cluster_api_tls_sans
+
+    cluster_pod_cidr = (
+        cluster_pod_cidr
+        or os.environ.get("CLUSTER_POD_CIDR")
+        or "10.42.0.0/16"
+    )
+    cluster_config["cluster_pod_cidr"] = cluster_pod_cidr
+
+    cluster_svc_cidr = (
+        cluster_svc_cidr
+        or os.environ.get("CLUSTER_SVC_CIDR")
+        or "10.43.0.0/16"
+    )
+    cluster_config["cluster_svc_cidr"] = cluster_svc_cidr
+
+    cluster_dns_gateway_addr = (
+        cluster_dns_gateway_addr
+        or os.environ.get("CLUSTER_DNS_GATEWAY_ADDR")
+        or pick_unused_ip()
+    )
+    if cluster_dns_gateway_addr:
+        cluster_config["cluster_dns_gateway_addr"] = cluster_dns_gateway_addr
+
+    cluster_gateway_addr = (
+        cluster_gateway_addr
+        or os.environ.get("CLUSTER_GATEWAY_ADDR")
+        or pick_unused_ip()
+    )
+    if cluster_gateway_addr:
+        cluster_config["cluster_gateway_addr"] = cluster_gateway_addr
+
+    repo = (
+        repository_name
+        or os.environ.get("REPOSITORY_NAME")
+        or get_repo_name()
+    )
+    if repo:
+        cluster_config["repository_name"] = repo
+
+    branch = repository_branch or os.environ.get("REPOSITORY_BRANCH") or "main"
+    cluster_config["repository_branch"] = branch
+
+    visibility = (
+        repository_visibility or os.environ.get("REPOSITORY_VISIBILITY") or "public"
+    )
+    cluster_config["repository_visibility"] = visibility
+
+    cloudflare_domain = (
+        cloudflare_domain or os.environ.get("CLOUDFLARE_DOMAIN")
+    )
     if cloudflare_domain:
         cluster_config["cloudflare_domain"] = cloudflare_domain
+
+    cloudflare_token = (
+        cloudflare_token or os.environ.get("CLOUDFLARE_TOKEN")
+    )
+    if cloudflare_token:
+        cluster_config["cloudflare_token"] = cloudflare_token
+
+    cloudflare_gateway_addr = (
+        cloudflare_gateway_addr
+        or os.environ.get("CLOUDFLARE_GATEWAY_ADDR")
+        or pick_unused_ip()
+    )
+    if cloudflare_gateway_addr:
+        cluster_config["cloudflare_gateway_addr"] = cloudflare_gateway_addr
+
+    cilium_loadbalancer_mode = (
+        cilium_loadbalancer_mode
+        or os.environ.get("CILIUM_LOADBALANCER_MODE")
+        or "dsr"
+    )
+    cluster_config["cilium_loadbalancer_mode"] = cilium_loadbalancer_mode
+
+    cilium_bgp_router_addr = (
+        cilium_bgp_router_addr or os.environ.get("CILIUM_BGP_ROUTER_ADDR")
+    )
+    if cilium_bgp_router_addr:
+        cluster_config["cilium_bgp_router_addr"] = cilium_bgp_router_addr
+
+    cilium_bgp_router_asn = (
+        cilium_bgp_router_asn or os.environ.get("CILIUM_BGP_ROUTER_ASN")
+    )
+    if cilium_bgp_router_asn:
+        cluster_config["cilium_bgp_router_asn"] = cilium_bgp_router_asn
+
+    cilium_bgp_node_asn = (
+        cilium_bgp_node_asn or os.environ.get("CILIUM_BGP_NODE_ASN")
+    )
+    if cilium_bgp_node_asn:
+        cluster_config["cilium_bgp_node_asn"] = cilium_bgp_node_asn
 
     with open("cluster.yaml", "w") as f:
         yaml.safe_dump(cluster_config, f, sort_keys=False)
@@ -184,8 +353,51 @@ def generate(network_cidr: Optional[str] = None, cloudflare_domain: Optional[str
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate cluster.yaml and nodes.yaml")
-    parser.add_argument("--cidr", dest="network_cidr", help="Node network CIDR")
-    parser.add_argument("--cf-domain", dest="cloudflare_domain", help="Cloudflare domain")
+    parser.add_argument("--env-file", default=".env", help="Optional dotenv file")
+    parser.add_argument("--node-cidr")
+    parser.add_argument("--node-dns-servers")
+    parser.add_argument("--node-ntp-servers")
+    parser.add_argument("--node-default-gateway")
+    parser.add_argument("--node-vlan-tag")
+    parser.add_argument("--cluster-api-addr")
+    parser.add_argument("--cluster-api-tls-sans")
+    parser.add_argument("--cluster-pod-cidr")
+    parser.add_argument("--cluster-svc-cidr")
+    parser.add_argument("--cluster-dns-gateway-addr")
+    parser.add_argument("--cluster-gateway-addr")
+    parser.add_argument("--repository-name")
+    parser.add_argument("--repository-branch")
+    parser.add_argument("--repository-visibility")
+    parser.add_argument("--cloudflare-domain")
+    parser.add_argument("--cloudflare-token")
+    parser.add_argument("--cloudflare-gateway-addr")
+    parser.add_argument("--cilium-loadbalancer-mode")
+    parser.add_argument("--cilium-bgp-router-addr")
+    parser.add_argument("--cilium-bgp-router-asn")
+    parser.add_argument("--cilium-bgp-node-asn")
     args = parser.parse_args()
 
-    generate(network_cidr=args.network_cidr, cloudflare_domain=args.cloudflare_domain)
+    generate(
+        env_file=args.env_file,
+        node_cidr=args.node_cidr,
+        node_dns_servers=args.node_dns_servers,
+        node_ntp_servers=args.node_ntp_servers,
+        node_default_gateway=args.node_default_gateway,
+        node_vlan_tag=args.node_vlan_tag,
+        cluster_api_addr=args.cluster_api_addr,
+        cluster_api_tls_sans=args.cluster_api_tls_sans,
+        cluster_pod_cidr=args.cluster_pod_cidr,
+        cluster_svc_cidr=args.cluster_svc_cidr,
+        cluster_dns_gateway_addr=args.cluster_dns_gateway_addr,
+        cluster_gateway_addr=args.cluster_gateway_addr,
+        repository_name=args.repository_name,
+        repository_branch=args.repository_branch,
+        repository_visibility=args.repository_visibility,
+        cloudflare_domain=args.cloudflare_domain,
+        cloudflare_token=args.cloudflare_token,
+        cloudflare_gateway_addr=args.cloudflare_gateway_addr,
+        cilium_loadbalancer_mode=args.cilium_loadbalancer_mode,
+        cilium_bgp_router_addr=args.cilium_bgp_router_addr,
+        cilium_bgp_router_asn=args.cilium_bgp_router_asn,
+        cilium_bgp_node_asn=args.cilium_bgp_node_asn,
+    )
