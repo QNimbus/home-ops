@@ -23,6 +23,7 @@ import argparse
 import ipaddress
 import os
 import re
+import sys
 from typing import Dict, List, Optional
 
 from git import Repo
@@ -238,23 +239,19 @@ def generate(
     network = ipaddress.ip_network(node_cidr) if node_cidr else None
 
     dns = parse_list(node_dns_servers or os.environ.get("NODE_DNS_SERVERS"))
-    if dns is None:
-        dns = ["1.1.1.1", "1.0.0.1"]
-    cluster_config["node_dns_servers"] = dns
+    if dns is not None:
+        cluster_config["node_dns_servers"] = dns
 
     ntp = parse_list(node_ntp_servers or os.environ.get("NODE_NTP_SERVERS"))
-    if ntp is None:
-        ntp = ["162.159.200.1", "162.159.200.123"]
-    cluster_config["node_ntp_servers"] = ntp
+    if ntp is not None:
+        cluster_config["node_ntp_servers"] = ntp
 
-    node_default_gateway = (
-        node_default_gateway
-        or os.environ.get("NODE_DEFAULT_GATEWAY")
-        or (str(next(network.hosts())) if network else None)
+    node_default_gateway_val = (
+        node_default_gateway or os.environ.get("NODE_DEFAULT_GATEWAY")
     )
-    if node_default_gateway:
-        used_ips.add(node_default_gateway)
-        cluster_config["node_default_gateway"] = node_default_gateway
+    if node_default_gateway_val:
+        used_ips.add(node_default_gateway_val)
+        cluster_config["node_default_gateway"] = node_default_gateway_val
 
     node_vlan_tag = node_vlan_tag or os.environ.get("NODE_VLAN_TAG")
     if node_vlan_tag:
@@ -284,19 +281,17 @@ def generate(
     if cluster_api_tls_sans:
         cluster_config["cluster_api_tls_sans"] = cluster_api_tls_sans
 
-    cluster_pod_cidr = (
-        cluster_pod_cidr
-        or os.environ.get("CLUSTER_POD_CIDR")
-        or "10.42.0.0/16"
+    cluster_pod_cidr_val = (
+        cluster_pod_cidr or os.environ.get("CLUSTER_POD_CIDR")
     )
-    cluster_config["cluster_pod_cidr"] = cluster_pod_cidr
+    if cluster_pod_cidr_val:
+        cluster_config["cluster_pod_cidr"] = cluster_pod_cidr_val
 
-    cluster_svc_cidr = (
-        cluster_svc_cidr
-        or os.environ.get("CLUSTER_SVC_CIDR")
-        or "10.43.0.0/16"
+    cluster_svc_cidr_val = (
+        cluster_svc_cidr or os.environ.get("CLUSTER_SVC_CIDR")
     )
-    cluster_config["cluster_svc_cidr"] = cluster_svc_cidr
+    if cluster_svc_cidr_val:
+        cluster_config["cluster_svc_cidr"] = cluster_svc_cidr_val
 
     cluster_dns_gateway_addr = (
         cluster_dns_gateway_addr
@@ -322,15 +317,15 @@ def generate(
     if repo:
         cluster_config["repository_name"] = repo
 
-    branch = repository_branch or os.environ.get("REPOSITORY_BRANCH") or "main"
-    cluster_config["repository_branch"] = branch
+    branch = repository_branch or os.environ.get("REPOSITORY_BRANCH")
+    if branch:
+        cluster_config["repository_branch"] = branch
 
     visibility = (
-        repository_visibility
-        or os.environ.get("REPOSITORY_VISIBILITY")
-        or "public"
+        repository_visibility or os.environ.get("REPOSITORY_VISIBILITY")
     )
-    cluster_config["repository_visibility"] = visibility
+    if visibility:
+        cluster_config["repository_visibility"] = visibility
 
     cloudflare_domain = (
         cloudflare_domain or os.environ.get("CLOUDFLARE_DOMAIN")
@@ -352,12 +347,11 @@ def generate(
     if cloudflare_gateway_addr:
         cluster_config["cloudflare_gateway_addr"] = cloudflare_gateway_addr
 
-    cilium_loadbalancer_mode = (
-        cilium_loadbalancer_mode
-        or os.environ.get("CILIUM_LOADBALANCER_MODE")
-        or "dsr"
+    cilium_loadbalancer_mode_val = (
+        cilium_loadbalancer_mode or os.environ.get("CILIUM_LOADBALANCER_MODE")
     )
-    cluster_config["cilium_loadbalancer_mode"] = cilium_loadbalancer_mode
+    if cilium_loadbalancer_mode_val:
+        cluster_config["cilium_loadbalancer_mode"] = cilium_loadbalancer_mode_val
 
     cilium_bgp_router_addr = (
         cilium_bgp_router_addr or os.environ.get("CILIUM_BGP_ROUTER_ADDR")
@@ -412,6 +406,10 @@ if __name__ == "__main__":
     parser.add_argument("--cilium-bgp-router-addr")
     parser.add_argument("--cilium-bgp-router-asn")
     parser.add_argument("--cilium-bgp-node-asn")
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
+
     args = parser.parse_args()
 
     generate(
