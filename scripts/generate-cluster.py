@@ -160,7 +160,7 @@ def compute_cidr(ip: str, prefix: int) -> str:
 
 
 def generate(
-    env_file: Optional[str] = None,
+    schematic_id: Optional[str] = None,
     node_cidr: Optional[str] = None,
     node_dns_servers: Optional[str] = None,
     node_ntp_servers: Optional[str] = None,
@@ -183,10 +183,7 @@ def generate(
     cilium_bgp_router_asn: Optional[str] = None,
     cilium_bgp_node_asn: Optional[str] = None,
 ):
-    if env_file:
-        load_dotenv(env_file)
-    else:
-        load_dotenv()
+    load_dotenv()
 
     proxmox = connect_proxmox()
 
@@ -223,7 +220,7 @@ def generate(
                     "controller": "k3s-server" in tags,
                     "disk": disk or "",
                     "mac_addr": mac or "",
-                    "schematic_id": "",
+                    "schematic_id": schematic_id or os.environ.get("SCHEMATIC_ID", ""),
                 }
                 nodes.append(node_data)
 
@@ -390,11 +387,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generate cluster.yaml and nodes.yaml"
     )
-    parser.add_argument(
-        "--env-file",
-        default=".env",
-        help="Optional dotenv file",
-    )
+    parser.add_argument("--schematic-id")
     parser.add_argument("--node-cidr")
     parser.add_argument("--node-dns-servers")
     parser.add_argument("--node-ntp-servers")
@@ -423,7 +416,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     generate(
-        env_file=args.env_file,
+        schematic_id=args.schematic_id,
         node_cidr=args.node_cidr,
         node_dns_servers=args.node_dns_servers,
         node_ntp_servers=args.node_ntp_servers,
