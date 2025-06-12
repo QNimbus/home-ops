@@ -125,7 +125,7 @@ There are **5 stages** outlined below for completing this project, make sure you
    your Proxmox VMs (requires packages from `scripts/requirements.txt`):
 
     ```sh
-    python scripts/generate-cluster.py
+    python scripts/generate-cluster.py --cidr <node CIDR> --cf-domain <domain>
     ```
 
 4. Fill out `cluster.yaml` and `nodes.yaml` configuration files using the comments in those file as a guide.
