@@ -1,0 +1,11 @@
+# kubernetes/apps/tools/it-tools/app/dnsendpoint.yaml
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: it-tools
+spec:
+  endpoints:
+    - dnsName: tools.vwn.app
+      recordType: CNAME
+      targets:
+        - external.vwn.app
