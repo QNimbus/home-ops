@@ -1,0 +1,248 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+---
+clusterName: kubernetes
+
+talosVersion: "${talosVersion}"
+kubernetesVersion: "${kubernetesVersion}"
+
+endpoint: https://10.60.0.2:6443
+additionalApiServerCertSans: &sans
+  - "127.0.0.1"
+  - "10.60.0.2"
+additionalMachineCertSans: *sans
+
+clusterPodNets: ["10.42.0.0/16"]
+clusterSvcNets: ["10.43.0.0/16"]
+
+# Disable built-in CNI to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: "k3s-server-001"
+    ipAddress: "10.60.0.140"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:a7:47:a8"
+        dhcp: false
+        addresses:
+          - "10.60.0.140/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+        vip:
+          ip: "10.60.0.2"
+  - hostname: "k3s-agent-001"
+    ipAddress: "10.60.0.222"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:57:8c:bc"
+        dhcp: false
+        addresses:
+          - "10.60.0.222/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-storage-001"
+    ipAddress: "10.60.0.184"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:f0:8e:b9"
+        dhcp: false
+        addresses:
+          - "10.60.0.184/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-server-002"
+    ipAddress: "10.60.0.118"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:68:af:2a"
+        dhcp: false
+        addresses:
+          - "10.60.0.118/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+        vip:
+          ip: "10.60.0.2"
+  - hostname: "k3s-agent-002"
+    ipAddress: "10.60.0.201"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:ca:c0:08"
+        dhcp: false
+        addresses:
+          - "10.60.0.201/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-storage-002"
+    ipAddress: "10.60.0.123"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:d7:4e:b7"
+        dhcp: false
+        addresses:
+          - "10.60.0.123/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-server-003"
+    ipAddress: "10.60.0.190"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:0e:6f:10"
+        dhcp: false
+        addresses:
+          - "10.60.0.190/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+        vip:
+          ip: "10.60.0.2"
+  - hostname: "k3s-agent-003"
+    ipAddress: "10.60.0.109"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:91:57:97"
+        dhcp: false
+        addresses:
+          - "10.60.0.109/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-storage-003"
+    ipAddress: "10.60.0.136"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:53:36:e4"
+        dhcp: false
+        addresses:
+          - "10.60.0.136/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-server-004"
+    ipAddress: "10.60.0.149"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:10:87:f1"
+        dhcp: false
+        addresses:
+          - "10.60.0.149/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+        vip:
+          ip: "10.60.0.2"
+  - hostname: "k3s-agent-004"
+    ipAddress: "10.60.0.116"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:f5:ef:bb"
+        dhcp: false
+        addresses:
+          - "10.60.0.116/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+  - hostname: "k3s-storage-004"
+    ipAddress: "10.60.0.235"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c71df77a60cb00e9434402a5cfdc379402a1fc7ebf8dc19b9721880b69cfdc7c
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:8c:54:87"
+        dhcp: false
+        addresses:
+          - "10.60.0.235/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+
+# Global patches
+patches:
+  - "@./patches/global/machine-files.yaml"
+  - "@./patches/global/machine-kubelet.yaml"
+  - "@./patches/global/machine-network.yaml"
+  - "@./patches/global/machine-sysctls.yaml"
+  - "@./patches/global/machine-time.yaml"
+
+# Controller patches
+controlPlane:
+  patches:
+    - "@./patches/controller/admission-controller-patch.yaml"
+    - "@./patches/controller/cluster.yaml"
+
