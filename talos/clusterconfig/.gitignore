@@ -11,3 +11,15 @@ kubernetes-k3s-server-004.yaml
 kubernetes-k3s-agent-004.yaml
 kubernetes-k3s-storage-004.yaml
 talosconfig
+homelab-k3s-server-001.yaml
+homelab-k3s-agent-001.yaml
+homelab-k3s-storage-001.yaml
+homelab-k3s-server-002.yaml
+homelab-k3s-agent-002.yaml
+homelab-k3s-storage-002.yaml
+homelab-k3s-server-003.yaml
+homelab-k3s-agent-003.yaml
+homelab-k3s-storage-003.yaml
+homelab-k3s-server-004.yaml
+homelab-k3s-agent-004.yaml
+homelab-k3s-storage-004.yaml
