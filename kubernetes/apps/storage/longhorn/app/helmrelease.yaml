@@ -17,7 +17,6 @@ spec:
   install:
     remediation:
       retries: -1
-    createNamespace: true
   upgrade:
     cleanupOnFail: true
     remediation:
