@@ -1,0 +1,134 @@
+---
+# Longhorn default settings
+persistence:
+  defaultClass: true
+  defaultFsType: ext4
+  defaultClassReplicaCount: 3
+  defaultDataLocality: disabled
+  reclaimPolicy: Retain
+  migratable: false
+  recurringJobSelector: true
+  backingImage:
+    enable: false
+  defaultReplicaDiskSelector: ""
+  defaultNodeSelector: ""
+  storageOverProvisioningPercentage: 100
+  storageMinimalAvailablePercentage: 25
+  upgradeChecker: true
+  defaultReplicaCount: 3
+  defaultDataPath: /var/lib/longhorn/
+  replicaSoftAntiAffinity: false
+  replicaAutoBalance: disabled
+  storageClass:
+    create: true
+    name: longhorn
+    isDefaultClass: true
+    reclaimPolicy: Retain
+    allowVolumeExpansion: true
+    volumeBindingMode: Immediate
+    parameters:
+      numberOfReplicas: "3"
+      staleReplicaTimeout: "2880"
+      fromBackup: ""
+      fsType: "ext4"
+      dataLocality: "disabled"
+
+defaultSettings:
+  backupstorePollInterval: 300
+  backupTarget: ""
+  backupTargetCredentialSecret: ""
+  allowRecurringJobWhileVolumeDetached: true
+  createDefaultDiskLabeledNodes: false
+  defaultDataPath: /var/lib/longhorn/
+  defaultDataLocality: disabled
+  replicaSoftAntiAffinity: false
+  replicaAutoBalance: disabled
+  storageOverProvisioningPercentage: 100
+  storageMinimalAvailablePercentage: 25
+  upgradeChecker: true
+  defaultReplicaCount: 3
+  defaultLonghornStaticStorageClass: longhorn-static
+  taintToleration: ""
+  systemManagedComponentsNodeSelector: ""
+  priorityClass: ""
+  autoSalvage: true
+  autoDeletePodWhenVolumeDetachedUnexpectedly: true
+  disableSchedulingOnCordonedNode: true
+  replicaZoneSoftAntiAffinity: true
+  nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+  allowNodeDrainWithLastHealthyReplica: false
+  mkfsExt4Parameters: ""
+  disableReplicaRebuild: false
+  replicaReplenishmentWaitInterval: 600
+  concurrentReplicaRebuildPerNodeLimit: 5
+  disableRevisionCounter: true
+  systemManagedPodsImagePullPolicy: if-not-present
+  allowVolumeCreationWithDegradedAvailability: true
+  autoCleanupSystemGeneratedSnapshot: true
+  concurrentAutomaticEngineUpgradePerNodeLimit: 0
+  concurrentVolumeBackupRestorePerNodeLimit: 2
+  backingImageCleanupWaitInterval: 60
+  backingImageRecoveryWaitInterval: 300
+  guaranteedEngineManagerCPU: 12
+  guaranteedReplicaManagerCPU: 12
+
+csi:
+  kubeletRootDir: /var/lib/kubelet
+  attacherReplicaCount: 1
+  provisionerReplicaCount: 1
+  resizerReplicaCount: 1
+  snapshotterReplicaCount: 1
+
+longhornManager:
+  log:
+    format: plain
+  priorityClass: system-cluster-critical
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+
+longhornDriver:
+  priorityClass: system-cluster-critical
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+
+longhornUI:
+  replicas: 1
+  priorityClass: ""
+  tolerations: []
+  nodeSelector: {}
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
+
+# Monitoring and metrics
+metrics:
+  serviceMonitor:
+    enabled: true
+
+ingress:
+  enabled: false
+
+service:
+  ui:
+    type: ClusterIP
+    nodePort: null
+  manager:
+    type: ClusterIP
+    nodePort: ""
