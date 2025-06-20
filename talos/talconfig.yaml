@@ -25,10 +25,10 @@ nodes:
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:94:37:5f"
+          hardwareAddr: "bc:24:11:38:f7:2e"
         dhcp: false
         addresses:
           - "10.60.0.201/24"
@@ -36,8 +36,6 @@ nodes:
           - network: "0.0.0.0/0"
             gateway: "10.60.0.1"
         mtu: 1500
-        vip:
-          ip: "10.60.0.2"
   - hostname: "talos-k8s-server-2"
     ipAddress: "10.60.0.202"
     installDisk: "/dev/sda"
@@ -63,7 +61,7 @@ nodes:
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
-    controlPlane: false
+    controlPlane: true
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:9b:78:e8"
@@ -74,6 +72,8 @@ nodes:
           - network: "0.0.0.0/0"
             gateway: "10.60.0.1"
         mtu: 1500
+        vip:
+          ip: "10.60.0.2"
   - hostname: "talos-k8s-server-4"
     ipAddress: "10.60.0.204"
     installDisk: "/dev/sda"
