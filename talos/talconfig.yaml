@@ -19,7 +19,7 @@ cniConfig:
   name: none
 
 nodes:
-  - hostname: "talos-k8s-server-1"
+  - hostname: "talos-k8s-node-1"
     ipAddress: "10.60.0.201"
     installDisk: "/dev/sda"
     machineSpec:
@@ -36,7 +36,7 @@ nodes:
           - network: "0.0.0.0/0"
             gateway: "10.60.0.1"
         mtu: 1500
-  - hostname: "talos-k8s-server-2"
+  - hostname: "talos-k8s-node-2"
     ipAddress: "10.60.0.202"
     installDisk: "/dev/sda"
     machineSpec:
@@ -55,7 +55,7 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.60.0.2"
-  - hostname: "talos-k8s-server-3"
+  - hostname: "talos-k8s-node-3"
     ipAddress: "10.60.0.203"
     installDisk: "/dev/sda"
     machineSpec:
@@ -74,7 +74,7 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.60.0.2"
-  - hostname: "talos-k8s-server-4"
+  - hostname: "talos-k8s-node-4"
     ipAddress: "10.60.0.204"
     installDisk: "/dev/sda"
     machineSpec:

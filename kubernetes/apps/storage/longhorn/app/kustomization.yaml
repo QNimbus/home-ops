@@ -5,10 +5,10 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./httproute.yaml
-  - ./node-configs/talos-k8s-server-1.yaml
-  - ./node-configs/talos-k8s-server-2.yaml
-  - ./node-configs/talos-k8s-server-3.yaml
-  - ./node-configs/talos-k8s-server-4.yaml
+  - ./node-configs/talos-k8s-node-1.yaml
+  - ./node-configs/talos-k8s-node-2.yaml
+  - ./node-configs/talos-k8s-node-3.yaml
+  - ./node-configs/talos-k8s-node-4.yaml
 configMapGenerator:
   - name: longhorn-values
     files:
