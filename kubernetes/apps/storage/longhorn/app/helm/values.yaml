@@ -12,6 +12,14 @@ persistence:
 csi:
   kubeletRootDir: /var/lib/kubelet
 
+# Default storage settings
+defaultSettings:
+  # Use the Talos UserVolume mount point for Longhorn data
+  # Talos will mount the user volume at /var/mnt/<volume-name>
+  defaultDataPath: /var/mnt/longhorn-storage
+  # Set replica count to match your node count (adjust as needed)
+  defaultReplicaCount: 3
+
 # Service settings
 service:
   ui:

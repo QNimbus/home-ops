@@ -1,0 +1,13 @@
+---
+# UserVolumeConfig for Longhorn dedicated storage
+# Creates a user volume on /dev/sdb for Longhorn persistent storage
+# This gets appended to machine configuration, not applied as a patch
+
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: longhorn-storage
+provisioning:
+  diskSelector:
+    match: disk.dev_path == '/dev/sdb'
+  minSize: 10GB
+  grow: true
