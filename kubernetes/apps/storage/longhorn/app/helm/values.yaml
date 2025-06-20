@@ -7,7 +7,8 @@ persistence:
   defaultDataLocality: disabled
   reclaimPolicy: Retain
   migratable: false
-  recurringJobSelector: true
+  recurringJobSelector:
+    enable: true
   backingImage:
     enable: false
   defaultReplicaDiskSelector: ""
