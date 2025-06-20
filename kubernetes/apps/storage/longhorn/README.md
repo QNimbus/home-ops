@@ -90,9 +90,14 @@ The configuration includes ServiceMonitor for Prometheus integration when availa
 
 ### Common Issues
 
-1. **Pods stuck in Pending**: Check node taints and tolerations
-2. **Storage class not available**: Verify HelmRelease status
-3. **Performance issues**: Check replica placement and node resources
+1. **"namespaces 'longhorn-system' not found" Error**:
+   - This occurs when the Kustomization tries to run in a namespace that doesn't exist yet
+   - **Solution**: The Kustomization should be in the `flux-system` namespace and use `targetNamespace: longhorn-system`
+   - The HelmRelease will create the namespace with `createNamespace: true`
+
+2. **Pods stuck in Pending**: Check node taints and tolerations
+3. **Storage class not available**: Verify HelmRelease status
+4. **Performance issues**: Check replica placement and node resources
 
 ### Useful Commands
 

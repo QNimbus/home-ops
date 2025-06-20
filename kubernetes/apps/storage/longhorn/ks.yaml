@@ -4,7 +4,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app longhorn
-  namespace: &namespace longhorn-system
+  namespace: flux-system
 spec:
   commonMetadata:
     labels:
@@ -16,8 +16,8 @@ spec:
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
-      name: *app
-      namespace: *namespace
+      name: longhorn
+      namespace: longhorn-system
   interval: 1h
   path: ./kubernetes/apps/storage/longhorn/app
   postBuild:
@@ -30,6 +30,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
+  targetNamespace: longhorn-system
   timeout: 10m
   wait: false
