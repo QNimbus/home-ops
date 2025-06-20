@@ -282,7 +282,7 @@ perform_library_update() {
 VMID=""; VM_NAME_SUFFIX=""
 CORES_OPT=""; SOCKETS_OPT=""; RAM_MB_OPT=""; ISO_NAME_OPT=""
 STORAGE_ISO_OPT=""; STORAGE_OS_OPT=""; STORAGE_EFI_OPT=""; STORAGE_DATA_OPT=""
-VLAN_TAG_OPT=""; FORCE_FLAG_OPT="false"; NO_START_FLAG_OPT="false"
+VLAN_TAG_OPT=""; FORCE_FLAG_OPT="false"; START_FLAG_OPT="false"
 
 case "$ACTION" in
     list-iso) list_iso_storages; exit $?;;
@@ -328,7 +328,7 @@ if [[ "$ACTION" == "create" ]]; then
             --storage-data=*) STORAGE_DATA_OPT="${arg#--storage-data=}";;
             --vlan=*) VLAN_TAG_OPT="${arg#--vlan=}"; if ! [[ "$VLAN_TAG_OPT" =~ ^[0-9]+$ && "$VLAN_TAG_OPT" -ge 1 && "$VLAN_TAG_OPT" -le 4094 ]]; then log_error "Invalid VLAN: '$VLAN_TAG_OPT'"; usage; exit 1; fi;;
             --force) FORCE_FLAG_OPT="true";;
-            --no-start) NO_START_FLAG_OPT="true";;
+            --start) START_FLAG_OPT="true";;
             *) if [[ "$arg" != "--verbose" ]]; then log_warning "Unknown param '$arg' for 'create'."; fi;;
         esac
     done

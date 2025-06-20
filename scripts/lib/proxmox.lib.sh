@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LibVersion: 1.0.0
+# LibVersion: 1.0.2
 #
 # Proxmox VM management functions for Talos/Kubernetes.
 # Relies on:
@@ -50,16 +50,16 @@ usage() {
     echo "  --storage-data=<STORAGE> Storage pool for data disk (default: $STORAGE_POOL_DATA)"
     echo "  --vlan=<VLAN_ID>        VLAN tag for network interface (1-4094)"
     echo "  --force                 Delete existing VM with same VMID before creating"
-    echo "  --no-start              Do not automatically start the VM after creation"
+    echo "  --start                 Automatically start the VM after creation"
     echo ""
     echo "Global Options:"
     echo "  --verbose               Show detailed output during operations"
     echo ""
     echo "Examples:"
     echo "  $SCRIPT_NAME create 9001 master-1"
-    echo "  $SCRIPT_NAME create 9002 worker-1 --iso=talos-v1.7.0-amd64.iso --cores=2 --ram=8192"
+    echo "  $SCRIPT_NAME create 9002 worker-1 --iso=talos-v1.7.0-amd64.iso --cores=2 --ram=8192 --start"
     echo "  $SCRIPT_NAME create 9003 worker-2 --iso=custom.iso --storage-iso=nfs-iso --vlan=100"
-    echo "  $SCRIPT_NAME create 9004 worker-3 --force --storage-os=local-zfs --storage-data=local-zfs"
+    echo "  $SCRIPT_NAME create 9004 worker-3 --force --storage-os=local-zfs --storage-data=local-zfs --start"
     echo "  $SCRIPT_NAME destroy 9001"
     echo "  $SCRIPT_NAME list-iso"
     echo "  $SCRIPT_NAME update --verbose"
@@ -161,10 +161,13 @@ create_vm() {
     log_success "VM $vmid ($vm_name) created successfully!"
     if [[ "${VERBOSE_FLAG:-false}" == "true" ]]; then echo; log_verbose "VM Configuration:"; qm config "$vmid"; echo; fi
 
-    if [[ "${NO_START_FLAG_OPT:-false}" == "true" ]]; then
-        log_info "VM $vmid created but not started (--no-start flag provided)."
-    else
-        log_info "Starting VM $vmid..."
+    # Always retrieve and display MAC address
+    local mac_address
+    mac_address=$(qm config "$vmid" | grep "^net0:" | grep -o -E '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' 2>/dev/null || echo "N/A")
+    log_info "VM $vmid MAC address: $mac_address"
+
+    if [[ "${START_FLAG_OPT:-false}" == "true" ]]; then
+        log_info "Starting VM $vmid (--start flag provided)..."
         if run_with_output qm start "$vmid"; then
             log_success "VM $vmid started successfully!"
             wait_for_vm_online "$vmid"
@@ -172,8 +175,14 @@ create_vm() {
             log_error "Failed to start VM $vmid. Check Proxmox task logs."
             return 1
         fi
+        log_warning "After Talos install, remember to:"
+        log_warning "  - Eject ISO         : 'qm set $vmid --ide2 none'"
+        log_warning "  - Adjust boot order : 'qm set $vmid --boot order=scsi0'"
+    else
+        log_info "VM $vmid created but not started (use --start flag to auto-start)."
+        log_info "To start manually: qm start $vmid"
+        log_warning "Remember to eject ISO ('qm set $vmid --ide2 none') and adjust boot order after Talos install."
     fi
-    log_warning "Remember to eject ISO ('qm set $vmid --ide2 none') and adjust boot order after Talos install."
     return 0
 }
 
