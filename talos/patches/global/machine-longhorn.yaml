@@ -1,0 +1,25 @@
+machine:
+  files:
+    - op: create
+      path: /etc/longhorn-prepare
+      permissions: 0o755
+      content: |-
+        #!/bin/bash
+        # Ensure longhorn storage directory exists and has proper permissions
+        mkdir -p /var/mnt/longhorn-storage
+        chmod 0755 /var/mnt/longhorn-storage
+        # Create a systemd service to ensure the directory is available
+        cat > /etc/systemd/system/longhorn-prepare.service << 'EOF'
+        [Unit]
+        Description=Prepare Longhorn Storage Directory
+        After=multi-user.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/bin/bash -c 'mkdir -p /var/mnt/longhorn-storage && chmod 0755 /var/mnt/longhorn-storage'
+        RemainAfterExit=true
+
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+        systemctl enable longhorn-prepare.service

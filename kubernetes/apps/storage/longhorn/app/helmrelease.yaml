@@ -15,6 +15,7 @@ spec:
         name: longhorn-repo
         namespace: flux-system
   install:
+    createNamespace: true
     remediation:
       retries: -1
   upgrade:
@@ -33,47 +34,3 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: longhorn-values
-  values:
-    persistence:
-      defaultClass: true
-      defaultClassReplicaCount: 3
-      reclaimPolicy: Retain
-    csi:
-      kubeletRootDir: /var/lib/kubelet
-    service:
-      ui:
-        type: ClusterIP
-    longhornUI:
-      replicas: 1
-    longhornManager:
-      priorityClass: system-cluster-critical
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
-    longhornDriver:
-      priorityClass: system-cluster-critical
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
-    longhornInstanceManager:
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule

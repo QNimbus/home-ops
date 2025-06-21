@@ -21,8 +21,12 @@ defaultSettings:
   defaultReplicaCount: 3
   # Enable automatic creation of default disks on labeled nodes only
   createDefaultDiskLabeledNodes: true
+  # Allow empty disk selector for initial setup - Longhorn will use labeled nodes
+  allowEmptyDiskSelectorVolume: true
   # Only use explicitly configured storage paths
   storageOverProvisioningPercentage: 200
+  # Ensure Longhorn waits for disk to be available
+  storageMinimalAvailablePercentage: 10
 
 # Service settings
 service:
@@ -31,20 +35,37 @@ service:
 
 # Basic tolerations for Talos control plane nodes
 longhornManager:
+  priorityClass: system-cluster-critical
   tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
     - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
 
 longhornDriver:
+  priorityClass: system-cluster-critical
   tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
     - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
 
 longhornInstanceManager:
   tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
     - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
 
