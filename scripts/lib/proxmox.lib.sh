@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LibVersion: 1.0.7
+# LibVersion: 1.0.8
 #
 # Proxmox VM management functions for Talos/Kubernetes.
 # Relies on:
@@ -91,6 +91,29 @@ create_vm() {
     local vm_name_suffix=${2:-node}
     local vm_name="${DEFAULT_VM_NAME_PREFIX}-${vm_name_suffix}"
 
+    # Handle MAC address prompt BEFORE potentially destroying existing VM
+    local mac_address_to_use=""
+    if [[ -n "${MAC_ADDRESS_OPT:-}" ]]; then
+        mac_address_to_use="$MAC_ADDRESS_OPT"
+        log_verbose "Using custom MAC address: $mac_address_to_use"
+    else
+        # If VM exists and we're forcing, show its current MAC address for convenience
+        if check_vmid_exists "$vmid" && [[ "${FORCE_FLAG_OPT:-false}" == "true" ]]; then
+            local existing_mac
+            existing_mac=$(qm config "$vmid" | grep "^net0:" | grep -o -E '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' 2>/dev/null || echo "N/A")
+            log_info "Existing VM $vmid MAC address: $existing_mac"
+        fi
+
+        log_info "No MAC address specified. A random MAC address will be generated."
+        read -r -p "Continue with random MAC address? (Y/n): " mac_choice
+        if [[ "$mac_choice" =~ ^[Nn]$ ]]; then
+            log_info "VM creation aborted. Specify a MAC address with --mac-address=XX:XX:XX:XX:XX:XX"
+            return 1
+        fi
+        log_info "Proceeding with random MAC address generation..."
+    fi
+
+    # Now handle existing VM after MAC address decision is made
     if check_vmid_exists "$vmid"; then
         if [[ "${FORCE_FLAG_OPT:-false}" == "true" ]]; then
             log_warning "VM $vmid already exists. Force flag enabled - deleting existing VM first..."
@@ -130,21 +153,6 @@ create_vm() {
     if [[ "$actual_storage_os" != "$STORAGE_POOL_OS" ]]; then log_verbose "Using custom OS storage: $actual_storage_os"; fi
     if [[ "$actual_storage_efi" != "$actual_storage_os" ]]; then log_verbose "Using custom EFI storage: $actual_storage_efi"; fi # Only log if different from OS
     if [[ "$actual_storage_data" != "$STORAGE_POOL_DATA" ]]; then log_verbose "Using custom data storage: $actual_storage_data"; fi
-
-    # Handle MAC address - prompt user if not provided
-    local mac_address_to_use=""
-    if [[ -n "${MAC_ADDRESS_OPT:-}" ]]; then
-        mac_address_to_use="$MAC_ADDRESS_OPT"
-        log_verbose "Using custom MAC address: $mac_address_to_use"
-    else
-        log_info "No MAC address specified. A random MAC address will be generated."
-        read -r -p "Continue with random MAC address? (Y/n): " mac_choice
-        if [[ "$mac_choice" =~ ^[Nn]$ ]]; then
-            log_info "VM creation aborted. Specify a MAC address with --mac-address=XX:XX:XX:XX:XX:XX"
-            return 1
-        fi
-        log_info "Proceeding with random MAC address generation..."
-    fi
 
     local net_config="virtio,bridge=$NETWORK_BRIDGE,firewall=0"
     if [[ -n "$mac_address_to_use" ]]; then
