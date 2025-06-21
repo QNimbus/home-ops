@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LibVersion: 1.0.2
+# LibVersion: 1.0.7
 #
 # Proxmox VM management functions for Talos/Kubernetes.
 # Relies on:
@@ -49,6 +49,7 @@ usage() {
     echo "  --storage-os=<STORAGE>  Storage pool for OS disk (default: $STORAGE_POOL_OS)"
     echo "  --storage-data=<STORAGE> Storage pool for data disk (default: $STORAGE_POOL_DATA)"
     echo "  --vlan=<VLAN_ID>        VLAN tag for network interface (1-4094)"
+    echo "  --mac-address=<MAC>     Specific MAC address for network interface (format: XX:XX:XX:XX:XX:XX)"
     echo "  --force                 Delete existing VM with same VMID before creating"
     echo "  --start                 Automatically start the VM after creation"
     echo ""
@@ -60,6 +61,7 @@ usage() {
     echo "  $SCRIPT_NAME create 9002 worker-1 --iso=talos-v1.7.0-amd64.iso --cores=2 --ram=8192 --start"
     echo "  $SCRIPT_NAME create 9003 worker-2 --iso=custom.iso --storage-iso=nfs-iso --vlan=100"
     echo "  $SCRIPT_NAME create 9004 worker-3 --force --storage-os=local-zfs --storage-data=local-zfs --start"
+    echo "  $SCRIPT_NAME create 9005 worker-4 --mac-address=02:00:00:00:00:01 --vlan=100"
     echo "  $SCRIPT_NAME destroy 9001"
     echo "  $SCRIPT_NAME list-iso"
     echo "  $SCRIPT_NAME update --verbose"
@@ -129,7 +131,25 @@ create_vm() {
     if [[ "$actual_storage_efi" != "$actual_storage_os" ]]; then log_verbose "Using custom EFI storage: $actual_storage_efi"; fi # Only log if different from OS
     if [[ "$actual_storage_data" != "$STORAGE_POOL_DATA" ]]; then log_verbose "Using custom data storage: $actual_storage_data"; fi
 
+    # Handle MAC address - prompt user if not provided
+    local mac_address_to_use=""
+    if [[ -n "${MAC_ADDRESS_OPT:-}" ]]; then
+        mac_address_to_use="$MAC_ADDRESS_OPT"
+        log_verbose "Using custom MAC address: $mac_address_to_use"
+    else
+        log_info "No MAC address specified. A random MAC address will be generated."
+        read -r -p "Continue with random MAC address? (Y/n): " mac_choice
+        if [[ "$mac_choice" =~ ^[Nn]$ ]]; then
+            log_info "VM creation aborted. Specify a MAC address with --mac-address=XX:XX:XX:XX:XX:XX"
+            return 1
+        fi
+        log_info "Proceeding with random MAC address generation..."
+    fi
+
     local net_config="virtio,bridge=$NETWORK_BRIDGE,firewall=0"
+    if [[ -n "$mac_address_to_use" ]]; then
+        net_config="${net_config},macaddr=${mac_address_to_use}"
+    fi
     if [[ -n "${VLAN_TAG_OPT:-}" ]]; then
         net_config="${net_config},tag=${VLAN_TAG_OPT}"
         log_verbose "Using VLAN tag: $VLAN_TAG_OPT"
@@ -162,9 +182,13 @@ create_vm() {
     if [[ "${VERBOSE_FLAG:-false}" == "true" ]]; then echo; log_verbose "VM Configuration:"; qm config "$vmid"; echo; fi
 
     # Always retrieve and display MAC address
-    local mac_address
-    mac_address=$(qm config "$vmid" | grep "^net0:" | grep -o -E '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' 2>/dev/null || echo "N/A")
-    log_info "VM $vmid MAC address: $mac_address"
+    local actual_mac_address
+    actual_mac_address=$(qm config "$vmid" | grep "^net0:" | grep -o -E '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' 2>/dev/null || echo "N/A")
+    if [[ -n "$mac_address_to_use" ]]; then
+        log_info "VM $vmid MAC address: $actual_mac_address (user-specified)"
+    else
+        log_info "VM $vmid MAC address: $actual_mac_address (randomly generated)"
+    fi
 
     if [[ "${START_FLAG_OPT:-false}" == "true" ]]; then
         log_info "Starting VM $vmid (--start flag provided)..."

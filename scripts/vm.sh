@@ -12,7 +12,7 @@
 #              Uses external libraries for utility and Proxmox functions.
 #
 # Author:      B. van Wetten <git@bvw.email>
-# Version:     1.2.3
+# Version:     1.2.6
 # Created:     2025-06-18
 # Updated:     2025-06-19
 #
@@ -201,7 +201,9 @@ check_and_prompt_script_update() { # FIXED
         read -r -p "Download and install? (y/N): " choice
         if [[ "$choice" =~ ^[Yy]$ ]]; then
             if perform_main_script_update "$remote_version"; then
-                log_success "$SCRIPT_NAME updated. Re-run: $0 $*"; exit 0
+                log_success "$SCRIPT_NAME updated successfully!"
+                log_info "📋 Reminder: Run '$0 update' again to check if libraries need updating."
+                exit 0
             else log_error "Update for $SCRIPT_NAME failed."; return 1; fi
         else log_info "Update for $SCRIPT_NAME skipped."; return 2; fi
     elif [[ "$comparison_result" -eq 1 ]]; then
@@ -282,7 +284,7 @@ perform_library_update() {
 VMID=""; VM_NAME_SUFFIX=""
 CORES_OPT=""; SOCKETS_OPT=""; RAM_MB_OPT=""; ISO_NAME_OPT=""
 STORAGE_ISO_OPT=""; STORAGE_OS_OPT=""; STORAGE_EFI_OPT=""; STORAGE_DATA_OPT=""
-VLAN_TAG_OPT=""; FORCE_FLAG_OPT="false"; START_FLAG_OPT="false"
+VLAN_TAG_OPT=""; MAC_ADDRESS_OPT=""; FORCE_FLAG_OPT="false"; START_FLAG_OPT="false"
 
 case "$ACTION" in
     list-iso) list_iso_storages; exit $?;;
@@ -327,6 +329,7 @@ if [[ "$ACTION" == "create" ]]; then
             --storage-os=*) STORAGE_OS_OPT="${arg#--storage-os=}";;
             --storage-data=*) STORAGE_DATA_OPT="${arg#--storage-data=}";;
             --vlan=*) VLAN_TAG_OPT="${arg#--vlan=}"; if ! [[ "$VLAN_TAG_OPT" =~ ^[0-9]+$ && "$VLAN_TAG_OPT" -ge 1 && "$VLAN_TAG_OPT" -le 4094 ]]; then log_error "Invalid VLAN: '$VLAN_TAG_OPT'"; usage; exit 1; fi;;
+            --mac-address=*) MAC_ADDRESS_OPT="${arg#--mac-address=}"; if ! [[ "$MAC_ADDRESS_OPT" =~ ^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$ ]]; then log_error "Invalid MAC address format: '$MAC_ADDRESS_OPT'. Expected format: XX:XX:XX:XX:XX:XX"; usage; exit 1; fi;;
             --force) FORCE_FLAG_OPT="true";;
             --start) START_FLAG_OPT="true";;
             *) if [[ "$arg" != "--verbose" ]]; then log_warning "Unknown param '$arg' for 'create'."; fi;;
