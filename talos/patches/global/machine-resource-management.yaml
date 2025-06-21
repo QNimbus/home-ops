@@ -1,0 +1,31 @@
+machine:
+  kubelet:
+    extraConfig:
+      # Reserve resources for system processes (optimized for 4-core nodes)
+      systemReserved:
+        cpu: "200m"         # Reduced from 500m
+        memory: "512Mi"     # Reduced from 1Gi
+        ephemeral-storage: "1Gi"  # Reduced from 2Gi
+      kubeReserved:
+        cpu: "300m"         # Reduced from 500m
+        memory: "768Mi"     # Reduced from 1Gi
+        ephemeral-storage: "1Gi"
+      # Optimize memory management
+      memorySwap: {}
+      serializeImagePulls: false
+      # Reduce eviction thresholds for better resource utilization
+      evictionHard:
+        memory.available: "256Mi"
+        nodefs.available: "10%"
+        imagefs.available: "10%"
+      evictionSoft:
+        memory.available: "512Mi"
+        nodefs.available: "15%"
+        imagefs.available: "15%"
+      evictionSoftGracePeriod:
+        memory.available: "2m"
+        nodefs.available: "2m"
+        imagefs.available: "2m"
+    nodeIP:
+      validSubnets:
+        - 10.60.0.0/24

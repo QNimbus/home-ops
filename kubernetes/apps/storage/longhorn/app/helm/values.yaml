@@ -27,6 +27,12 @@ defaultSettings:
   storageOverProvisioningPercentage: 200
   # Ensure Longhorn waits for disk to be available
   storageMinimalAvailablePercentage: 10
+  # Reduce resource usage for better node capacity
+  guaranteedEngineManagerCPU: 12
+  guaranteedReplicaManagerCPU: 12
+  # Limit concurrent operations to reduce resource spikes
+  concurrentAutomaticEngineUpgradePerNodeLimit: 1
+  concurrentReplicaRebuildPerNodeLimit: 2
 
 # Service settings
 service:
@@ -45,6 +51,14 @@ longhornManager:
     - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
+  # Resource limits to prevent capacity issues
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
 longhornDriver:
   priorityClass: system-cluster-critical
@@ -57,6 +71,14 @@ longhornDriver:
     - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
+  # Resource limits to prevent capacity issues
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
 
 longhornInstanceManager:
   tolerations:
@@ -68,6 +90,14 @@ longhornInstanceManager:
     - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
+  # Resource limits to prevent capacity issues - these are the main culprits
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
 
 # UI settings
 longhornUI:
