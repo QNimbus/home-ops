@@ -6,5 +6,5 @@ namespace: default
 resources:
   - ./databases.yaml
   - ./helmrelease.yaml
-  - ./paperless-secret.sops.yaml
+  - ./secret.sops.yaml
   # - ./volsync.yaml  # TODO: Enable when VolSync operator is installed
