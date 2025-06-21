@@ -165,7 +165,7 @@ spec:
           gotenberg:
             image:
               repository: docker.io/gotenberg/gotenberg
-              tag: 8.17.0@sha256:b16dd27c71509af1c8d0d3ba3df0c6cc3c8d5a7c6da8b85db32779ddb6cac21b
+              tag: 8.17.0@sha256:3ac36389a59e43a64ac56d4b683bd680ed8060374a332cbf8cef77bc6f752798
             env:
               DISABLE_GOOGLE_CHROME: "1"
             command:
