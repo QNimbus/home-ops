@@ -1,25 +1,25 @@
 machine:
   kubelet:
     extraConfig:
-      # Reserve resources for system processes (optimized for 4-core nodes)
+      # Reserve resources for system processes (balanced for 4-core nodes)
       systemReserved:
-        cpu: "200m"         # Reduced from 500m
-        memory: "512Mi"     # Reduced from 1Gi
-        ephemeral-storage: "1Gi"  # Reduced from 2Gi
+        cpu: "300m"         # Conservative: leave more for system
+        memory: "1Gi"       # Revert to original - Flux needs memory
+        ephemeral-storage: "2Gi"
       kubeReserved:
-        cpu: "300m"         # Reduced from 500m
-        memory: "768Mi"     # Reduced from 1Gi
-        ephemeral-storage: "1Gi"
+        cpu: "400m"         # Conservative: leave more for Kubernetes
+        memory: "1Gi"       # Revert to original - Flux components need memory
+        ephemeral-storage: "2Gi"
       # Optimize memory management
       memorySwap: {}
       serializeImagePulls: false
-      # Reduce eviction thresholds for better resource utilization
+      # Less aggressive eviction thresholds
       evictionHard:
-        memory.available: "256Mi"
+        memory.available: "500Mi"    # More conservative
         nodefs.available: "10%"
         imagefs.available: "10%"
       evictionSoft:
-        memory.available: "512Mi"
+        memory.available: "1Gi"      # More conservative
         nodefs.available: "15%"
         imagefs.available: "15%"
       evictionSoftGracePeriod:
