@@ -1,0 +1,113 @@
+---
+# Minimal Longhorn configuration - just the essentials to get it running
+# Using mostly defaults from the official Helm chart
+
+# StorageClass settings - only the basics
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+  reclaimPolicy: Retain
+
+# CSI settings - Talos specific
+csi:
+  kubeletRootDir: /var/lib/kubelet
+
+# Default storage settings
+defaultSettings:
+  # Use the Talos UserVolume mount point for Longhorn data
+  # Talos will mount the user volume at /var/mnt/<volume-name>
+  defaultDataPath: /var/mnt/longhorn-storage
+  # Set replica count to match your node count (adjust as needed)
+  defaultReplicaCount: 3
+  # Enable automatic creation of default disks on labeled nodes only
+  createDefaultDiskLabeledNodes: true
+  # Allow empty disk selector for initial setup - Longhorn will use labeled nodes
+  allowEmptyDiskSelectorVolume: true
+  # Only use explicitly configured storage paths
+  storageOverProvisioningPercentage: 200
+  # Ensure Longhorn waits for disk to be available
+  storageMinimalAvailablePercentage: 10
+  # Reduce resource usage for better node capacity
+  guaranteedEngineManagerCPU: 12
+  guaranteedReplicaManagerCPU: 12
+  # Limit concurrent operations to reduce resource spikes
+  concurrentAutomaticEngineUpgradePerNodeLimit: 1
+  concurrentReplicaRebuildPerNodeLimit: 2
+
+# Service settings
+service:
+  ui:
+    type: ClusterIP
+
+# Basic tolerations for Talos control plane nodes
+longhornManager:
+  priorityClass: system-cluster-critical
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+  # Resource limits to prevent capacity issues
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+longhornDriver:
+  priorityClass: system-cluster-critical
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+  # Resource limits to prevent capacity issues
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+longhornInstanceManager:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+  # Resource limits to prevent capacity issues - these are the main culprits
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
+# UI settings
+longhornUI:
+  replicas: 1
+
+# Pre-configure disk settings to ensure consistent configuration
+preUpgradeChecker:
+  jobEnabled: false
+
+# Global node configuration
+global:
+  nodeSelector: {}
+  tolerations: []
