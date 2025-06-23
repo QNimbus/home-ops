@@ -1,3 +1,16 @@
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/QNimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png?raw=true" align="center" width="144px" height="144px"/>
+
+## Home Operations Repository
+
+_Managed with Flux, Renovate, and GitHub Actions_
+
+[![Renovate](https://img.shields.io/badge/powered_by-Renovate-blue?style=for-the-badge&logo=renovate)](https://www.mend.io/renovate/)
+
+</div>
+
+---
 # ⛵ Cluster Template
 
 Welcome to my template designed for deploying a single Kubernetes cluster. Whether you're setting up a cluster at home on bare-metal or virtual machines (VMs), this project aims to simplify the process and make Kubernetes more accessible. This template is inspired by my personal [home-ops](https://github.com/onedr0p/home-ops) repository, providing a practical starting point for anyone interested in managing their own Kubernetes environment.
