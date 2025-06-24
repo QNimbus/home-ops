@@ -21,8 +21,6 @@ spec:
     name: flux-system
     namespace: flux-system
   dependsOn:
-    - name: external-secrets
-      namespace: external-secrets
     - name: onepassword-connect
       namespace: external-secrets
 
