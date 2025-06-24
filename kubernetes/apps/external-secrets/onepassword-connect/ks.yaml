@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.bjw-s.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app onepassword-connect
+  namespace: &namespace external-secrets
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  timeout: 5m
+  wait: true
+  prune: true
+  path: ./kubernetes/apps/external-secrets/onepassword-connect/app
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  postBuild:
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
