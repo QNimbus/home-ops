@@ -7,3 +7,4 @@ resources:
   - ./external-dns.yaml
   - ./external-secrets.yaml
   - ./longhorn.yaml
+  - ./goauthentik.yaml
