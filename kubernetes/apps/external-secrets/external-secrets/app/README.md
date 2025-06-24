@@ -13,7 +13,7 @@ The External Secrets Operator consists of several key components:
 
 ```
 app/
-├── README.md                    # This file
+├── README.md                   # This file
 ├── helmrelease.yaml            # FluxCD HelmRelease definition
 ├── kustomization.yaml          # Kustomize configuration
 └── helm/
@@ -62,6 +62,62 @@ Common customizations include:
 - Setting up node selectors or tolerations
 - Enabling metrics and monitoring
 
+### Using SOPS Secrets in Values
+
+You can reference SOPS-encrypted secrets in your `helm/values.yaml` file using FluxCD's variable substitution feature:
+
+#### Method 1: Variable Substitution (Recommended)
+
+1. **Create a SOPS secret file** (e.g., `secret.sops.yaml`):
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+     name: external-secrets-config
+     namespace: external-secrets
+   stringData:
+     WEBHOOK_TLS_CERT: "LS0tLS1CRUdJTi..."
+     CERT_ISSUER_NAME: "letsencrypt-prod"
+     AWS_ROLE_ARN: "arn:aws:iam::123456789:role/external-secrets"
+   ```
+
+2. **Use variables in `helm/values.yaml`**:
+   ```yaml
+   webhook:
+     extraEnv:
+       - name: WEBHOOK_CERT
+         value: "${WEBHOOK_TLS_CERT}"
+
+   serviceAccount:
+     annotations:
+       eks.amazonaws.com/role-arn: "${AWS_ROLE_ARN}"
+   ```
+
+3. **Update your Kustomization** to reference the secret:
+   ```yaml
+   postBuild:
+     substituteFrom:
+       - name: cluster-secrets
+         kind: Secret
+       - name: external-secrets-config  # Your SOPS secret
+         kind: Secret
+   ```
+
+#### Method 2: Direct Secret References
+
+For charts that support `existingSecret` patterns, you can reference SOPS secrets directly:
+
+```yaml
+# In values.yaml
+auth:
+  existingSecret: "my-sops-secret"
+  secretKeys:
+    username: "username"
+    password: "password"
+```
+
+The variables are substituted during the FluxCD reconciliation process, ensuring sensitive data remains encrypted in Git.
+
 ## FluxCD Integration
 
 ### HelmRelease Configuration
@@ -95,43 +151,43 @@ Once deployed, you can create `SecretStore` and `ExternalSecret` resources to sy
 
 ```yaml
 # SecretStore for 1Password
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: SecretStore
 metadata:
   name: onepassword-store
-  namespace: default
+  namespace: external-secrets
 spec:
   provider:
     onepassword:
-      connectHost: "http://onepassword-connect.onepassword.svc.cluster.local:8080"
+      connectHost: http://onepassword-connect.external-secrets.svc.cluster.local:8080
       vaults:
-        my-vault: 1
+        Kubernetes: 1
       auth:
         secretRef:
-          connectToken:
-            name: onepassword-token
+          connectTokenSecretRef:
+            name: onepassword-connect-secrets
             key: token
 
 ---
 # ExternalSecret that syncs from 1Password
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: app-secrets
-  namespace: default
+  name: test-secret
+  namespace: external-secrets
 spec:
   refreshInterval: 15s
   secretStoreRef:
     name: onepassword-store
     kind: SecretStore
   target:
-    name: app-secrets
+    name: my-secret
     creationPolicy: Owner
   data:
   - secretKey: password
     remoteRef:
-      key: "my-app-credentials"
-      property: password
+      key: "AccountName"
+      property: "password"
 ```
 
 ## Monitoring and Troubleshooting
