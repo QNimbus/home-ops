@@ -16,6 +16,12 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/network/unifi-dns
+  postBuild:
+    substituteFrom:
+      - name: cluster-settings
+        kind: ConfigMap
+      - name: cluster-secrets
+        kind: Secret
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -23,4 +29,3 @@ spec:
   dependsOn:
     - name: onepassword-connect
       namespace: external-secrets
-
