@@ -8,7 +8,5 @@ configMapGenerator:
       - values.yaml=./helm/values.yaml
 configurations:
   - ./helm/kustomize-config.yaml
-  - ./nameref-config.yaml
 resources:
   - ./helmrelease.yaml
-  - ./httproute.yaml

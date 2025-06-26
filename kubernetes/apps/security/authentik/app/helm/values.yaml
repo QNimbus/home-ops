@@ -31,7 +31,7 @@ server:
     main:
       # -- enable an HTTPRoute resource for the authentik server.
       # Be aware that this is an early beta of this feature. We don't guarantee this works and is subject to change.
-      enabled: false
+      enabled: true
       # # -- Set the route apiVersion
       apiVersion: gateway.networking.k8s.io/v1
       # # -- Set the route kind
@@ -42,17 +42,77 @@ server:
       https: false
       # -- Reference to parent gateways
       parentRefs:
-        - name: internal
+        - name: external
           namespace: kube-system
           sectionName: https
 
+## redis
 redis:
   enabled: true
 
+## postgresql
 postgresql:
   enabled: true
   auth:
-    enablePostgresUser: false  # Disable the "postgres" admin user
+    enablePostgresUser: false                   # Disable the "postgres" admin user
     username: "${POSTGRES_USER}"                # Custom user name
     password: "${POSTGRES_PASSWORD}"            # Custom user password
     database: "${POSTGRES_DB}"                  # Database name
+
+geoip:
+  enabled: true
+  editionIds: ${AUTHENTIK_GEOIP_MAXMIND__EDITION_IDS}
+  updateInterval: 8
+  # -- sign up under https://www.maxmind.com/en/geolite2/signup
+  accountId: "${AUTHENTIK_GEOIP_MAXMIND__ACCOUNT_ID}"
+  # -- sign up under https://www.maxmind.com/en/geolite2/signup
+  licenseKey: "${AUTHENTIK_GEOIP_MAXMIND__LICENSE_KEY}"
+
+  image:
+    # -- If defined, a repository for GeoIP images
+    repository: ghcr.io/maxmind/geoipupdate
+    # -- If defined, a tag for GeoIP images
+    tag: v7.1.0
+    # -- If defined, an image digest for GeoIP images
+    digest: ""
+    # -- If defined, an imagePullPolicy for GeoIP images
+    pullPolicy: IfNotPresent
+
+  # -- Environment variables to pass to the GeoIP containers
+  env:
+    - name: TZ
+      value: "${TIMEZONE:-UTC}"
+
+  # -- envFrom to pass to the GeoIP containers
+  # @default -- `[]` (See [values.yaml])
+  envFrom: []
+    # - configMapRef:
+    #     name: config-map-name
+    # - secretRef:
+    #     name: secret-name
+
+  # -- Additional volumeMounts to the GeoIP containers. Make sure the volumes exists for the server and the worker.
+  volumeMounts: []
+    # - name: custom
+    #   mountPath: /custom
+
+  # -- Resource limits and requests for GeoIP containers
+  resources: {}
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # limits:
+    #   memory: 128Mi
+
+  # -- GeoIP container-level security context
+  # @default -- See [values.yaml]
+  containerSecurityContext: {}
+    # Not all of the following has been tested. Use at your own risk.
+    # runAsNonRoot: true
+    # readOnlyRootFilesystem: true
+    # allowPrivilegeEscalation: false
+    # seccomProfile:
+    #   type: RuntimeDefault
+    # capabilities:
+    #   drop:
+    #     - ALL
