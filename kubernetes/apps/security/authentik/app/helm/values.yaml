@@ -1,0 +1,58 @@
+---
+fullnameOverride: &app authentik
+global:
+  podAnnotations:
+    reloader.stakater.com/auto: "true"
+  deploymentStrategy:
+    type: RollingUpdate
+
+  env:
+    - name: TZ
+      value: "${TIMEZONE:-UTC}"
+  envFrom:
+    - secretRef:
+        name: &secret authentik-secrets
+
+authentik:
+  enabled: true
+  postgresql:
+    name: "${AUTHENTIK_POSTGRESQL__NAME}"
+    host: "${AUTHENTIK_POSTGRESQL__HOST}"
+    user: "${AUTHENTIK_POSTGRESQL__USER}"
+    password: "${AUTHENTIK_POSTGRESQL__PASSWORD}"
+  secret_key: "${AUTHENTIK_SECRET_KEY}"
+
+## authentik server
+server:
+  enabled: true
+  name: server
+
+  route:
+    main:
+      # -- enable an HTTPRoute resource for the authentik server.
+      # Be aware that this is an early beta of this feature. We don't guarantee this works and is subject to change.
+      enabled: false
+      # # -- Set the route apiVersion
+      apiVersion: gateway.networking.k8s.io/v1
+      # # -- Set the route kind
+      kind: HTTPRoute
+      # -- Route hostnames
+      hostnames:
+        - "authentik.${SECRET_DOMAIN}"
+      https: false
+      # -- Reference to parent gateways
+      parentRefs:
+        - name: internal
+          namespace: kube-system
+          sectionName: https
+
+redis:
+  enabled: true
+
+postgresql:
+  enabled: true
+  auth:
+    enablePostgresUser: false  # Disable the "postgres" admin user
+    username: "${POSTGRES_USER}"                # Custom user name
+    password: "${POSTGRES_PASSWORD}"            # Custom user password
+    database: "${POSTGRES_DB}"                  # Database name
