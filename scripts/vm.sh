@@ -12,9 +12,9 @@
 #              Uses external libraries for utility and Proxmox functions.
 #
 # Author:      B. van Wetten <git@bvw.email>
-# Version:     1.3.6
+# Version:     1.3.8
 # Created:     2025-06-18
-# Updated:     2025-06-23
+# Updated:     2025-06-27
 #
 # Features:    - Automated VM creation with configurable resources (CPU, RAM, Disks)
 #              - Custom ISO mounting and storage selection
@@ -515,8 +515,8 @@ case "$ACTION" in
     *) log_error "Invalid action '$ACTION'."; usage; exit 1 ;;
 esac
 
-# Validate that create and mount actions only accept single VMID
-if [[ "$ACTION" == "create" || "$ACTION" == "mount" ]]; then
+# Validate that create action only accepts single VMID
+if [[ "$ACTION" == "create" ]]; then
     if [[ ${#VMIDS[@]} -gt 1 ]]; then
         log_error "Action '$ACTION' only supports a single VMID, got: $VMID_STRING"
         usage
