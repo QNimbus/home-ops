@@ -7,6 +7,11 @@ global:
   deploymentStrategy:
     type: RollingUpdate
 
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
   env:
     - name: TZ
       value: "${TIMEZONE:-UTC}"
@@ -48,6 +53,15 @@ server:
           namespace: kube-system
           sectionName: https-app
 
+  volumes:
+    - name: media
+      persistentVolumeClaim:
+        claimName: authentik-media
+
+  volumeMounts:
+    - name: media
+      mountPath: /media
+
 ## redis
 ## see: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
@@ -64,7 +78,7 @@ postgresql:
     database: "${POSTGRES_DB}"                  # Database name
 
 geoip:
-  enabled: true
+  enabled: false
   editionIds: ${AUTHENTIK_GEOIP_MAXMIND__EDITION_IDS}
   updateInterval: 8
   # -- sign up under https://www.maxmind.com/en/geolite2/signup
