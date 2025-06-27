@@ -98,6 +98,7 @@ global:
 
   # -- Deployment strategy for all deployed Deployments
   deploymentStrategy: {}
+    # type: RollingUpdate
     # rollingUpdate:
     #   maxSurge: 25%
     #   maxUnavailable: 25%
