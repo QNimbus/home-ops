@@ -60,11 +60,11 @@ spec:
             subPath: tmp
     route:
       app:
-        hostnames: ["tools.${DOMAIN_PROXII}"]
+        hostnames: ["tools.${DOMAIN_APP}"]
         parentRefs:
           - name: internal
             namespace: kube-system
-            sectionName: https
+            sectionName: https-app
         rules:
           - backendRefs:
               - identifier: app
