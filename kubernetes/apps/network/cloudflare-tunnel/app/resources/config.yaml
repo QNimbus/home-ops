@@ -7,4 +7,8 @@ ingress:
     service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
   - hostname: "*.${SECRET_DOMAIN}"
     service: *svc
+  - hostname: "${APP_DOMAIN}"
+    service: *svc
+  - hostname: "*.${APP_DOMAIN}"
+    service: *svc
   - service: http_status:404

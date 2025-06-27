@@ -38,13 +38,14 @@ server:
       kind: HTTPRoute
       # -- Route hostnames
       hostnames:
-        - "authentik.${SECRET_DOMAIN}"
+        # - "authentik.${SECRET_DOMAIN}"
+        - "auth.${APP_DOMAIN}"
       https: false
       # -- Reference to parent gateways
       parentRefs:
         - name: external
           namespace: kube-system
-          sectionName: https
+          sectionName: https-app
 
 ## redis
 redis:

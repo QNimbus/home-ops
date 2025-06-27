@@ -33,3 +33,21 @@ spec:
         certificateRefs:
           - kind: Secret
             name: ${SECRET_DOMAIN/./-}-production-tls
+    - name: http-app
+      protocol: HTTP
+      port: 80
+      hostname: "*.${APP_DOMAIN}"
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-app
+      protocol: HTTPS
+      port: 443
+      hostname: "*.${APP_DOMAIN}"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: ${APP_DOMAIN/./-}-tls

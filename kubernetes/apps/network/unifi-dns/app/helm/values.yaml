@@ -227,7 +227,7 @@ txtPrefix: k8s. # @schema type:[string, null]; default: null
 txtSuffix:  # @schema type:[string, null]; default: null
 
 # -- Limit possible target zones by domain suffixes.
-domainFilters: ["${SECRET_DOMAIN}"]
+domainFilters: ["${SECRET_DOMAIN}", "${APP_DOMAIN}"]  # @schema type: [array, null]; item: string; minItems:1; maxItems:100; uniqueItems: true;
 
 # -- Intentionally exclude domains from being managed.
 excludeDomains: []
