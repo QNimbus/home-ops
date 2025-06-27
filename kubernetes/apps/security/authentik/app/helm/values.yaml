@@ -1,4 +1,5 @@
 ---
+## see: https://github.com/goauthentik/helm/blob/main/charts/authentik/values.yaml
 fullnameOverride: &app authentik
 global:
   podAnnotations:
@@ -48,10 +49,12 @@ server:
           sectionName: https-app
 
 ## redis
+## see: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
   enabled: true
 
 ## postgresql
+## see: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
 postgresql:
   enabled: true
   auth:
