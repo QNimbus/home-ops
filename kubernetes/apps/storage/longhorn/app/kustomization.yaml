@@ -2,6 +2,12 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+configMapGenerator:
+  - name: longhorn-values
+    files:
+      - values.yaml=./helm/values.yaml
+configurations:
+  - ./helm/kustomizeconfig.yaml
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
@@ -11,9 +17,3 @@ resources:
   - ./node-configs/talos-k8s-node-3.yaml
   - ./node-configs/talos-k8s-node-4.yaml
   # - ./recurring-jobs.yaml
-configMapGenerator:
-  - name: longhorn-values
-    files:
-      - values.yaml=./helm/values.yaml
-configurations:
-  - ./helm/kustomizeconfig.yaml

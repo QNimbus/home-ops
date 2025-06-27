@@ -1,4 +1,6 @@
 ---
+# see: https://github.com/longhorn/charts/blob/v1.9.x/charts/longhorn/values.yaml
+#
 # Minimal Longhorn configuration - just the essentials to get it running
 # Using mostly defaults from the official Helm chart
 
@@ -33,6 +35,18 @@ defaultSettings:
   # Limit concurrent operations to reduce resource spikes
   concurrentAutomaticEngineUpgradePerNodeLimit: 1
   concurrentReplicaRebuildPerNodeLimit: 2
+
+  # Backup settings for S3-compatible storage
+  # Replace with your actual S3 details:
+  # For Cloudflare R2: "s3://your-bucket@auto/"
+  # For AWS S3: "s3://your-bucket@us-east-1/"
+  # For MinIO: "s3://your-bucket@your-region/"
+  backupTarget: "s3://longhorn@auto/"
+  backupTargetCredentialSecret: "longhorn-secret"
+  # Enable automatic backups
+  allowRecurringJobWhileVolumeDetached: true
+  # Backup compression (reduces storage costs)
+  backupCompressionMethod: "lz4"
 
 # Service settings
 service:
