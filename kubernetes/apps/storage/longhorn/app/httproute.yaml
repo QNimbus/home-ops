@@ -6,11 +6,11 @@ metadata:
   namespace: longhorn-system
 spec:
   hostnames:
-    - "longhorn.${SECRET_DOMAIN}"
+    - "longhorn.${DOMAIN_APP}"
   parentRefs:
     - name: internal
       namespace: kube-system
-      sectionName: https
+      sectionName: https-app
   rules:
     - backendRefs:
         - name: longhorn-frontend

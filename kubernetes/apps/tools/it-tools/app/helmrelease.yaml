@@ -60,7 +60,7 @@ spec:
             subPath: tmp
     route:
       app:
-        hostnames: ["tools.${SECRET_DOMAIN}"]
+        hostnames: ["tools.${DOMAIN_PROXII}"]
         parentRefs:
           - name: internal
             namespace: kube-system

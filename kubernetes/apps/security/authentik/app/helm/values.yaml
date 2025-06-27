@@ -38,8 +38,8 @@ server:
       kind: HTTPRoute
       # -- Route hostnames
       hostnames:
-        # - "authentik.${SECRET_DOMAIN}"
-        - "auth.${APP_DOMAIN}"
+        # - "authentik.${DOMAIN_PROXII}"
+        - "auth.${DOMAIN_APP}"
       https: false
       # -- Reference to parent gateways
       parentRefs:

@@ -16,4 +16,4 @@ spec:
               name: cert-manager-secret
               key: api-token
         selector:
-          dnsZones: ["${SECRET_DOMAIN}", "${APP_DOMAIN}"]
+          dnsZones: ["${DOMAIN_PROXII}", "${DOMAIN_APP}"]

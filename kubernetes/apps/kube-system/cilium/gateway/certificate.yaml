@@ -3,24 +3,24 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "${SECRET_DOMAIN/./-}-production"
+  name: "${DOMAIN_PROXII/./-}-production"
 spec:
-  secretName: "${SECRET_DOMAIN/./-}-production-tls"
+  secretName: "${DOMAIN_PROXII/./-}-production-tls"
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: "${SECRET_DOMAIN}"
-  dnsNames: ["${SECRET_DOMAIN}", "*.${SECRET_DOMAIN}"]
+  commonName: "${DOMAIN_PROXII}"
+  dnsNames: ["${DOMAIN_PROXII}", "*.${DOMAIN_PROXII}"]
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "${APP_DOMAIN/./-}"
+  name: "${DOMAIN_APP/./-}"
 spec:
-  secretName: "${APP_DOMAIN/./-}-tls"
+  secretName: "${DOMAIN_APP/./-}-tls"
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: "${APP_DOMAIN}"
-  dnsNames: ["${APP_DOMAIN}", "*.${APP_DOMAIN}"]
+  commonName: "${DOMAIN_APP}"
+  dnsNames: ["${DOMAIN_APP}", "*.${DOMAIN_APP}"]

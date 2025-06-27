@@ -5,7 +5,7 @@ kind: Gateway
 metadata:
   name: internal
   annotations:
-    external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
+    external-dns.alpha.kubernetes.io/target: "internal.${DOMAIN_PROXII}"
 spec:
   gatewayClassName: cilium
   addresses:
@@ -13,41 +13,41 @@ spec:
       value: "10.60.0.4"
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: "internal.${SECRET_DOMAIN}"
+      external-dns.alpha.kubernetes.io/hostname: "internal.${DOMAIN_PROXII}"
   listeners:
     - name: http
       protocol: HTTP
       port: 80
-      hostname: "*.${SECRET_DOMAIN}"
+      hostname: "*.${DOMAIN_PROXII}"
       allowedRoutes:
         namespaces:
           from: Same
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.${SECRET_DOMAIN}"
+      hostname: "*.${DOMAIN_PROXII}"
       allowedRoutes:
         namespaces:
           from: All
       tls:
         certificateRefs:
           - kind: Secret
-            name: ${SECRET_DOMAIN/./-}-production-tls
+            name: ${DOMAIN_PROXII/./-}-production-tls
     - name: http-app
       protocol: HTTP
       port: 80
-      hostname: "*.${APP_DOMAIN}"
+      hostname: "*.${DOMAIN_APP}"
       allowedRoutes:
         namespaces:
           from: Same
     - name: https-app
       protocol: HTTPS
       port: 443
-      hostname: "*.${APP_DOMAIN}"
+      hostname: "*.${DOMAIN_APP}"
       allowedRoutes:
         namespaces:
           from: All
       tls:
         certificateRefs:
           - kind: Secret
-            name: ${APP_DOMAIN/./-}-tls
+            name: ${DOMAIN_APP/./-}-tls
