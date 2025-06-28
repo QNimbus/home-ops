@@ -5,7 +5,7 @@ global:
   podAnnotations:
     reloader.stakater.com/reload: &secret authentik-secrets
   deploymentStrategy:
-    type: RollingUpdate
+    type: Recreate
 
   securityContext:
     runAsUser: 1000
