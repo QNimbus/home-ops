@@ -120,10 +120,7 @@ spec:
               - path: /run
                 subPath: run
       config:
-        enabled: true
-        accessMode: ReadWriteOnce
-        size: 1Gi
-        storageClass: longhorn
+        existingClaim: paperless-config
         advancedMounts:
           paperless:
             paperless:
@@ -133,10 +130,7 @@ spec:
               - path: /data
                 subPath: redis
       archive:
-        enabled: true
-        accessMode: ReadWriteOnce
-        size: 10Gi
-        storageClass: longhorn
+        existingClaim: paperless-archive
         advancedMounts:
           paperless:
             paperless:
@@ -147,10 +141,7 @@ spec:
               - path: /usr/src/paperless/media
                 subPath: media
       backups:
-        enabled: true
-        accessMode: ReadWriteOnce
-        size: 5Gi
-        storageClass: longhorn
+        existingClaim: paperless-backups
         globalMounts:
           - path: /mnt/backups
             subPath: Apps/Paperless
