@@ -6,25 +6,21 @@ metadata:
   name: &app it-tools
   namespace: &namespace tools
 spec:
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
+  wait: true
+  prune: true
   interval: 1h
+  timeout: 5m
+  retryInterval: 2m
   path: ./kubernetes/apps/tools/it-tools/app
   postBuild:
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
-  prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
-  wait: false
