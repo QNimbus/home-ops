@@ -78,7 +78,7 @@ postgresql:
     database: "${POSTGRES_DB}"                  # Database name
 
 geoip:
-  enabled: false
+  enabled: true
   editionIds: ${AUTHENTIK_GEOIP_MAXMIND__EDITION_IDS}
   updateInterval: 8
   # -- sign up under https://www.maxmind.com/en/geolite2/signup
