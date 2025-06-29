@@ -10,4 +10,3 @@ configurations:
   - ./helm/kustomize-config.yaml
 resources:
   - ./helmrelease.yaml
-  - ./pvc.yaml
