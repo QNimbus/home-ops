@@ -10,6 +10,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+      storage.dependency: longhorn
+    annotations:
+      cluster.vwn.app/longhorn-dependency: "true"
   wait: false
   prune: true
   interval: 1h
