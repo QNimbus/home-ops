@@ -86,7 +86,7 @@ spec:
   path: ./kubernetes/apps/security/authentik/pvc
   postBuild:
     substitute:
-      APP: *app
+      APP: authentik
     substituteFrom:
       - name: cluster-settings
         kind: ConfigMap
