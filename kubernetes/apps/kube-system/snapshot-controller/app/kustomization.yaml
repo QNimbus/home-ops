@@ -3,7 +3,4 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./keda.yaml
-  - ./app-template.yaml
-  - ./csi-driver-nfs.yaml
-  - ./snapshot-controller.yaml
+  - ./helmrelease.yaml
