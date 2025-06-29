@@ -10,16 +10,12 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  wait: true
+  wait: false
   prune: true
   interval: 1h
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/tools/paperless/app
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   postBuild:
     substitute:
       APP: *app
@@ -37,3 +33,8 @@ spec:
       namespace: external-secrets
     - name: paperless-storage
       namespace: tools
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: *app
+      namespace: *namespace
