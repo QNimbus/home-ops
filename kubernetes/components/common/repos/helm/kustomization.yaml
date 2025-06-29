@@ -9,3 +9,4 @@ resources:
   - ./external-secrets.yaml
   - ./longhorn.yaml
   - ./goauthentik.yaml
+  - ./csi-driver-smb.yaml
