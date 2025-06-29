@@ -2,10 +2,32 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: authentik-media
+  name: "${APP}-media"
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
       storage: 500Mi
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "${APP}-redis"
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "${APP}-postgresql"
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 8Gi
   storageClassName: longhorn

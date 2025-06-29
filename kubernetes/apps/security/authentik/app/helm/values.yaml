@@ -56,7 +56,7 @@ server:
   volumes:
     - name: media
       persistentVolumeClaim:
-        claimName: authentik-media
+        claimName: "${APP}-media"
 
   volumeMounts:
     - name: media
@@ -66,6 +66,11 @@ server:
 ## see: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
   enabled: true
+
+  master:
+    persistence:
+      enabled: true
+      existingClaim: "${APP}-redis"               # Use an existing PVC for Redis data
 
 ## postgresql
 ## see: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
@@ -77,8 +82,13 @@ postgresql:
     password: "${POSTGRES_PASSWORD}"            # Custom user password
     database: "${POSTGRES_DB}"                  # Database name
 
+  primary:
+    persistence:
+      enabled: true
+      existingClaim: "${APP}-postgresql"          # Use an existing PVC for PostgreSQL data
+
 geoip:
-  enabled: true
+  enabled: false
   editionIds: ${AUTHENTIK_GEOIP_MAXMIND__EDITION_IDS}
   updateInterval: 8
   # -- sign up under https://www.maxmind.com/en/geolite2/signup
