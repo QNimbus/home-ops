@@ -7,6 +7,8 @@ metadata:
   namespace: &namespace security
 spec:
   targetNamespace: *namespace
+  components:
+    - ../../../components/volsync
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -22,6 +24,9 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_CLAIM: authentik-config
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CACHE_CAPACITY: 1Gi
     substituteFrom:
       - name: cluster-settings
         kind: ConfigMap

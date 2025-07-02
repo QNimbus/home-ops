@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/garethr/kubernetes-json-schema/refs/heads/master/v1.6.9-standalone-strict/persistentvolumeclaim.json
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.10.3-standalone/persistentvolumeclaim-v1.json
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -11,7 +11,7 @@ spec:
       storage: 500Mi
   storageClassName: longhorn
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/garethr/kubernetes-json-schema/refs/heads/master/v1.6.9-standalone-strict/persistentvolumeclaim.json
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.10.3-standalone/persistentvolumeclaim-v1.json
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -23,7 +23,7 @@ spec:
       storage: 8Gi
   storageClassName: longhorn
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/garethr/kubernetes-json-schema/refs/heads/master/v1.6.9-standalone-strict/persistentvolumeclaim.json
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.10.3-standalone/persistentvolumeclaim-v1.json
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
