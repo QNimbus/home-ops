@@ -1,0 +1,1 @@
+/workspaces/home-ops/scripts/flux/kustomization.sh
