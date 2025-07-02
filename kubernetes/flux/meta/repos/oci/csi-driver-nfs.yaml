@@ -13,5 +13,3 @@ spec:
   ref:
     tag: 4.11.0
   url: oci://ghcr.io/home-operations/charts-mirror/csi-driver-nfs
-  verify:
-    provider: cosign

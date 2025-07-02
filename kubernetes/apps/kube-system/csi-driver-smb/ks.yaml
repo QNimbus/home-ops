@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app csi-driver-smb
+  namespace: &namespace kube-system
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/kube-system/csi-driver-smb/app
+  postBuild: {}
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn: []
+  healthChecks: []

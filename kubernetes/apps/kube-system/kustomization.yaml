@@ -6,6 +6,8 @@ namespace: kube-system
 components:
   - ../../components/common
 resources:
+  - ./csi-driver-nfs/ks.yaml
+  - ./csi-driver-smb/ks.yaml
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
   - ./metrics-server/ks.yaml
