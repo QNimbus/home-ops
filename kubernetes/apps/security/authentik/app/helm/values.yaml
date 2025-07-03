@@ -27,7 +27,7 @@ global:
   volumeMounts: &volumeMounts
     - name: "${APP}-config"
       readOnly: false
-      mountPath: /media
+      mountPath: /media/public
       subPath: authentik/media
     - name: "${APP}-config"
       readOnly: false
