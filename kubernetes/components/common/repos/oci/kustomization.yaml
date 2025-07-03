@@ -6,5 +6,6 @@ resources:
   - ./app-template.yaml
   - ./csi-driver-nfs.yaml
   - ./keda.yaml
+  - ./openebs.yaml
   - ./volsync.yaml
   - ./snapshot-controller.yaml
