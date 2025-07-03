@@ -68,6 +68,44 @@ server:
           namespace: kube-system
           sectionName: https-app
 
+  startupProbe:
+    # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    failureThreshold: 180
+    # -- Number of seconds after the container has started before [probe] is initiated
+    initialDelaySeconds: 30
+    # -- How often (in seconds) to perform the [probe]
+    periodSeconds: 5
+    # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
+    successThreshold: 1
+    # -- Number of seconds after which the [probe] times out
+    timeoutSeconds: 1
+    ## Probe configuration
+    httpGet:
+      path: "{{ .Values.authentik.web.path }}-/health/live/"
+      port: http
+
+## authentik worker
+worker:
+  enabled: true
+  name: worker
+
+  startupProbe:
+    # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    failureThreshold: 180
+    # -- Number of seconds after the container has started before [probe] is initiated
+    initialDelaySeconds: 30
+    # -- How often (in seconds) to perform the [probe]
+    periodSeconds: 5
+    # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
+    successThreshold: 1
+    # -- Number of seconds after which the [probe] times out
+    timeoutSeconds: 1
+    ## Probe configuration
+    exec:
+      command:
+        - ak
+        - healthcheck
+
 ## redis
 ## see: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
 redis:
