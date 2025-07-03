@@ -20,7 +20,7 @@ spec:
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/security/authentik
+  path: ./kubernetes/apps/security/authentik/app
   postBuild:
     substitute:
       APP: *app
