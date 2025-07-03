@@ -20,16 +20,16 @@ global:
         name: *secret
 
   volumes: &volumes
-    - name: authentik-config
+    - name: "${APP}-config"
       persistentVolumeClaim:
-        claimName: authentik-config
+        claimName: "${APP}-config"
 
   volumeMounts: &volumeMounts
-    - name: authentik-config
+    - name: "${APP}-config"
       readOnly: false
       mountPath: /media
       subPath: authentik/media
-    - name: authentik-config
+    - name: "${APP}-config"
       readOnly: false
       mountPath: /templates
       subPath: authentik/templates
@@ -116,7 +116,9 @@ redis:
 
     persistence:
       enabled: true
-      existingClaim: "${APP}-redis"               # Use an existing PVC for Redis data
+      existingClaim: "${APP}-config"            # Use an existing PVC for Redis data
+      path: /data
+      subPath: authentik/redis
 
 ## postgresql
 ## see: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
@@ -133,7 +135,9 @@ postgresql:
 
     persistence:
       enabled: true
-      existingClaim: "${APP}-postgresql"          # Use an existing PVC for PostgreSQL data
+      existingClaim: "${APP}-config"            # Use an existing PVC for PostgreSQL data
+      mountPath: /bitnami/postgresql
+      subPath: authentik/postgresql
 
 geoip:
   enabled: false
