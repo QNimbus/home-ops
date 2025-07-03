@@ -19,6 +19,21 @@ global:
     - secretRef:
         name: *secret
 
+  volumes: &volumes
+    - name: authentik-config
+      persistentVolumeClaim:
+        claimName: authentik-config
+
+  volumeMounts: &volumeMounts
+    - name: authentik-config
+      readOnly: false
+      mountPath: /media
+      subPath: authentik/media
+    - name: authentik-config
+      readOnly: false
+      mountPath: /templates
+      subPath: authentik/templates
+
 authentik:
   enabled: true
   postgresql:
@@ -52,15 +67,6 @@ server:
         - name: external
           namespace: kube-system
           sectionName: https-app
-
-  volumes:
-    - name: media
-      persistentVolumeClaim:
-        claimName: "${APP}-media"
-
-  volumeMounts:
-    - name: media
-      mountPath: /media
 
 ## redis
 ## see: https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
