@@ -8,7 +8,7 @@ metadata:
 spec:
   targetNamespace: *namespace
   components:
-    - ../../../components/volsync
+    - ../../../../components/volsync
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
