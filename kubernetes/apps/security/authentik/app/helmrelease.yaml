@@ -18,11 +18,15 @@ spec:
   install:
     remediation:
       retries: -1
+    disableWait: false
+    timeout: 10m
   upgrade:
     cleanupOnFail: true
     remediation:
       strategy: rollback
       retries: 3
+    disableWait: false
+    timeout: 10m
   valuesFrom:
     - kind: ConfigMap
       name: authentik-helm-values
