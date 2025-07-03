@@ -2,7 +2,7 @@
 ## see: https://github.com/goauthentik/helm/blob/main/charts/authentik/values.yaml
 fullnameOverride: &app authentik
 global:
-  podAnnotations:
+  podAnnotations: &podAnnotations
     reloader.stakater.com/reload: &secret authentik-secrets
   deploymentStrategy:
     type: Recreate
@@ -112,6 +112,8 @@ redis:
   enabled: true
 
   master:
+    podAnnotations: *podAnnotations
+
     persistence:
       enabled: true
       existingClaim: "${APP}-redis"               # Use an existing PVC for Redis data
@@ -127,6 +129,8 @@ postgresql:
     database: "${POSTGRES_DB}"                  # Database name
 
   primary:
+    podAnnotations: *podAnnotations
+
     persistence:
       enabled: true
       existingClaim: "${APP}-postgresql"          # Use an existing PVC for PostgreSQL data
