@@ -21,7 +21,7 @@ spec:
 
   bootstrap:
     initdb:
-      database: app
-      owner: app
+      database: postgres
+      owner: postgres
       secret:
-        name: app-secret
+        name: cloudnative-pg-bootstrap-secret
