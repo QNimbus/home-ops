@@ -42,9 +42,10 @@ spec:
                 memory: 500Mi
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
+        runAsUser: 5050
+        runAsGroup: 5050
+        fsGroup: 5050
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         controller: *app
@@ -56,7 +57,13 @@ spec:
         endpoints:
           - port: http
     persistence:
-      config-file:
+      config:
+        existingClaim: pgadmin-config
+        advancedMounts:
+          pgadmin:
+            app:
+              - path: /var/lib/pgadmin
+      servers-json-file:
         type: configMap
         name: servers.json
         globalMounts:

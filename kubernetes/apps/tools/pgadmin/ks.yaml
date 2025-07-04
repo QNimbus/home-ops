@@ -10,6 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/volsync
   wait: true
   prune: true
   interval: 1h
@@ -19,6 +21,9 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_CLAIM: pgadmin-config
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_CACHE_CAPACITY: 2Gi
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
