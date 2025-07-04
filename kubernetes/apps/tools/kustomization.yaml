@@ -6,7 +6,7 @@ namespace: tools
 components:
   - ../../components/common
 resources:
-  - ./it-tools/ks.yaml
-  - ./paperless/storage/ks.yaml
-  - ./paperless/ks.yaml
   - ./pgadmin/ks.yaml
+  # - ./it-tools/ks.yaml
+  # - ./paperless/storage/ks.yaml
+  # - ./paperless/ks.yaml
