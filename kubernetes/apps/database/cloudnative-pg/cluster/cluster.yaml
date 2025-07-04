@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: &currentCluster postgres-v17
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.4
+  primaryUpdateStrategy: unsupervised
+  replicationSlots:
+    highAvailability:
+      enabled: true
+    updateInterval: 30
+  storage:
+    size: 20Gi
+
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: &secret cloudnative-pg-secret
+
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+      secret:
+        name: app-secret

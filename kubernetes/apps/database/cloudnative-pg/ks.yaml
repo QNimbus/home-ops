@@ -3,30 +3,60 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app cloudnative-pg
+  name: &app cloudnative-pg-operator
   namespace: &namespace database
 spec:
   targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  wait: false
+  wait: true
   prune: true
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/database/cloudnative-pg/app
+  path: ./kubernetes/apps/database/cloudnative-pg/operator
   postBuild:
-    substituteFrom:
-      - name: cluster-secrets
-        kind: Secret
+    substitute:
+      APP: *app
+    substituteFrom: []
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  dependsOn: []
-  healthChecks:
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: cloudnative-pg
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
+  healthChecks: []
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app cloudnative-cluster
+  namespace: &namespace database
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  wait: true
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/database/cloudnative-pg/cluster
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom: []
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: cloudnative-pg-operator
       namespace: *namespace
+    - name: longhorn
+      namespace: longhorn-system
+  healthChecks: []
