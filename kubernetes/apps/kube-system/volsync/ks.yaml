@@ -33,6 +33,8 @@ spec:
       namespace: *namespace
     - name: snapshot-controller
       namespace: *namespace
+    - name: longhorn
+      namespace: longhorn-system
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease

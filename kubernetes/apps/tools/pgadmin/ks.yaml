@@ -24,6 +24,7 @@ spec:
       VOLSYNC_CLAIM: pgadmin-config
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_CACHE_CAPACITY: 2Gi
+      VOLSYNC_STORAGECLASS: longhorn
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
@@ -36,3 +37,5 @@ spec:
       namespace: external-secrets
     - name: cloudnative-pg-cluster
       namespace: database
+    - name: volsync
+      namespace: kube-system

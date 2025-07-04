@@ -1,0 +1,34 @@
+---
+# Ephemeral storage with Delete reclaim policy for temporary data
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-ephemeral
+  annotations:
+    storageclass.kubernetes.io/description: "Longhorn storage with Delete reclaim policy for temporary data like caches and logs"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+parameters:
+  numberOfReplicas: "1"         # Less replication for ephemeral data
+  staleReplicaTimeout: "2880"   # 48 hours for temporary data
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "best-effort"  # Optimize for performance
+---
+# Fast storage with Delete reclaim policy and performance optimizations
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-ephemeral-fast-delete
+  annotations:
+    storageclass.kubernetes.io/description: "Longhorn storage optimized for performance with automatic cleanup"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+parameters:
+  numberOfReplicas: "1"     # Balance between performance and safety
+  staleReplicaTimeout: "30" # Faster timeout for performance
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "best-effort"  # Optimize for performance
