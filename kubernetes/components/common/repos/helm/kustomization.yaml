@@ -10,3 +10,4 @@ resources:
   - ./goauthentik.yaml
   - ./longhorn.yaml
   - ./onepassword.yaml
+  - ./cloudnative-pg.yaml
