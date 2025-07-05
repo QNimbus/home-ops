@@ -16,6 +16,23 @@ parameters:
   fsType: "ext4"
   dataLocality: "best-effort"  # Optimize for performance
 ---
+# Ephemeral storage with Delete reclaim policy for temporary data
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-ephemeral-retain
+  annotations:
+    storageclass.kubernetes.io/description: "Longhorn storage with Retain policy for short-lived data that needs quick access but should be preserved for a short while after PVC deletion"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+parameters:
+  numberOfReplicas: "1"         # Less replication for ephemeral data
+  staleReplicaTimeout: "30"     # 30 minutes for temporary data
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "best-effort"  # Optimize for performance
+---
 # Fast storage with Delete reclaim policy and performance optimizations
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
