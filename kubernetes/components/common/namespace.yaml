@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: not-used
-  labels:
+  labels: []
     # TODO: Enable Pod Security Standards for enhanced security across all namespaces
     # Uncomment the following lines to enforce restricted pod security policies:
     # Benefits:
