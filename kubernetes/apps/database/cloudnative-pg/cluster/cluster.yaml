@@ -39,18 +39,21 @@ spec:
           key: S3_SECRET_KEY
 
   bootstrap:
-    initdb:
-      database: postgres
-      owner: postgres
-      secret:
-        name: cloudnative-pg-bootstrap-secret
+    # Uncomment to bootstrap this cluster with a new database
 
-  #   # Recovers from the latest S3 backup
-  #   recovery:
-  #     source: &previousCluster postgres-v17
+    # initdb:
+    #   database: postgres
+    #   owner: postgres
+    #   secret:
+    #     name: cloudnative-pg-bootstrap-secret
 
-  # externalClusters:
-  #   - name: *previousCluster
-  #     barmanObjectStore:
-  #       <<: *barmanObjectStore
-  #       serverName: postgres-v17
+    # Comment this out when starting with a new cluster
+    # Recovers from the latest S3 backup
+    recovery:
+      source: &previousCluster postgres-v17
+
+  externalClusters:
+    - name: *previousCluster
+      barmanObjectStore:
+        <<: *barmanObjectStore
+        serverName: postgres-v17
