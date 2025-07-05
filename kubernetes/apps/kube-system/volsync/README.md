@@ -71,7 +71,7 @@ This cluster uses Kubernetes Mutating Admission Policies to automatically enhanc
 
 **How it works**:
 - Matches VolSync source jobs (prefix: `volsync-src-`)
-- Injects an init container that sleeps for 0-10 random seconds
+- Injects an init container that sleeps for 1-120 random seconds
 - Spreads backup execution across time to reduce resource contention
 
 **Why it's required**:
@@ -84,7 +84,7 @@ This cluster uses Kubernetes Mutating Admission Policies to automatically enhanc
 initContainers:
 - name: jitter
   image: ghcr.io/home-operations/busybox:1.37.0
-  command: ["sh", "-c", "SLEEP_TIME=$(shuf -i 0-10 -n 1); echo \"Sleeping for $SLEEP_TIME seconds\"; sleep $SLEEP_TIME"]
+  command: ["sh", "-c", "SLEEP_TIME=$(shuf -i 1-120 -n 1); echo \"Sleeping for $SLEEP_TIME seconds\"; sleep $SLEEP_TIME"]
 ```
 
 ### 2. VolSync Mover NFS Policy (`volsync-mover-nfs`)
@@ -196,6 +196,301 @@ The component automatically creates:
 | `APP_GID` | `4000` | Group ID for mover pod |
 
 ## Monitoring and Troubleshooting
+
+### Manual Backup Operations
+
+Sometimes you may need to trigger a backup manually outside of the regular schedule. This is useful for testing, before maintenance windows, or when you need an immediate backup before making changes.
+
+#### Trigger Manual Backup
+
+To manually trigger a backup for any application using VolSync:
+
+```bash
+# Trigger manual backup (replace 'app-name' and 'namespace' with actual values)
+kubectl patch replicationsource <app-name> -n <namespace> \
+  --type='merge' \
+  -p='{"spec":{"trigger":{"manual":"sync-'$(date +%s)'"}}}'
+
+# Example: Trigger backup for pgadmin-config in tools namespace
+kubectl patch replicationsource pgadmin-config -n tools \
+  --type='merge' \
+  -p='{"spec":{"trigger":{"manual":"sync-'$(date +%s)'"}}}'
+```
+
+The manual trigger uses a timestamp to ensure uniqueness. Each manual trigger creates a new backup job.
+
+#### Check Manual Backup Progress
+
+After triggering a manual backup, monitor its progress:
+
+```bash
+# Check ReplicationSource status
+kubectl get replicationsource <app-name> -n <namespace> -o yaml
+
+# Look for the lastManualSync field in status
+kubectl get replicationsource <app-name> -n <namespace> \
+  -o jsonpath='{.status.lastManualSync}'
+
+# Check if backup job is running
+kubectl get jobs -n <namespace> | grep volsync-src-<app-name>
+
+# Monitor job progress in real-time
+kubectl get jobs -n <namespace> -w | grep volsync-src-<app-name>
+```
+
+#### Check Backup Job Status and Logs
+
+To see detailed information about the backup operation:
+
+```bash
+# Get job details
+kubectl describe job volsync-src-<app-name>-<timestamp> -n <namespace>
+
+# View backup job logs
+kubectl logs job/volsync-src-<app-name>-<timestamp> -n <namespace>
+
+# Follow logs in real-time (if job is still running)
+kubectl logs job/volsync-src-<app-name>-<timestamp> -n <namespace> -f
+
+# Check all containers in the job (including init containers)
+kubectl logs job/volsync-src-<app-name>-<timestamp> -n <namespace> --all-containers=true
+```
+
+#### Verify Backup Completion
+
+Check that the backup completed successfully:
+
+```bash
+# Check ReplicationSource conditions
+kubectl get replicationsource <app-name> -n <namespace> \
+  -o jsonpath='{.status.conditions}' | jq '.'
+
+# Look for "Synchronization completed successfully" message
+kubectl describe replicationsource <app-name> -n <namespace>
+
+# Check last sync time
+kubectl get replicationsource <app-name> -n <namespace> \
+  -o jsonpath='{.status.lastSyncTime}'
+
+# Verify backup completed without errors
+kubectl get events -n <namespace> --field-selector type=Normal | grep <app-name>
+```
+
+#### Troubleshooting Manual Backups
+
+Common issues and solutions:
+
+1. **Manual trigger not working**:
+   ```bash
+   # Check if ReplicationSource exists
+   kubectl get replicationsource <app-name> -n <namespace>
+
+   # Verify the patch was applied
+   kubectl get replicationsource <app-name> -n <namespace> \
+     -o jsonpath='{.spec.trigger.manual}'
+   ```
+
+2. **Job not starting**:
+   ```bash
+   # Check VolSync controller logs
+   kubectl logs deployment/volsync -n volsync-system
+
+   # Look for admission policy issues
+   kubectl get events -n <namespace> --field-selector type=Warning
+   ```
+
+3. **Backup job failing**:
+   ```bash
+   # Check job status and conditions
+   kubectl describe job volsync-src-<app-name>-<timestamp> -n <namespace>
+
+   # Verify NFS connectivity (if using NFS backend)
+   kubectl get pods -n <namespace> | grep volsync
+   kubectl exec -it <volsync-pod> -n <namespace> -- df -h /repository
+   ```
+
+### Browse PVC Contents with Read-Only Mount
+
+Sometimes you need to inspect the contents of a PVC without risking any modifications. You can create an ephemeral pod that mounts the PVC in read-only mode:
+
+#### Method 1: Direct PVC Mount (Read-Only)
+
+```yaml
+# Create a temporary pod to browse PVC contents
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-browser
+  namespace: <namespace>
+spec:
+  containers:
+  - name: browser
+    image: busybox:1.36
+    command: ["sleep", "3600"]
+    volumeMounts:
+    - name: data
+      mountPath: /data
+      readOnly: true  # Mount as read-only
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: <pvc-name>
+      readOnly: true  # PVC mounted read-only
+  restartPolicy: Never
+```
+
+Apply and use:
+```bash
+# Apply the pod configuration
+kubectl apply -f pvc-browser-pod.yaml
+
+# Wait for pod to be ready
+kubectl wait --for=condition=Ready pod/pvc-browser -n <namespace>
+
+# Browse the PVC contents
+kubectl exec -it pvc-browser -n <namespace> -- sh
+
+# Inside the pod, explore the data
+ls -la /data/
+find /data -type f -name "*.log" | head -10
+du -sh /data/*
+```
+
+#### Method 2: Snapshot-Based Browsing
+
+For even safer inspection, create a snapshot first and mount that:
+
+```bash
+# Create a volume snapshot
+kubectl create -f - <<EOF
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: <app-name>-browse-snapshot
+  namespace: <namespace>
+spec:
+  source:
+    persistentVolumeClaimName: <pvc-name>
+  volumeSnapshotClassName: longhorn-snapshot-vsc
+EOF
+
+# Wait for snapshot to be ready
+kubectl wait --for=condition=ReadyToUse volumesnapshot/<app-name>-browse-snapshot -n <namespace>
+
+# Create PVC from snapshot
+kubectl create -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <app-name>-browse-pvc
+  namespace: <namespace>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: <size>  # Same size as original or larger
+  dataSource:
+    name: <app-name>-browse-snapshot
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
+EOF
+
+# Mount the snapshot-based PVC (read-only for safety)
+kubectl create -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: snapshot-browser
+  namespace: <namespace>
+spec:
+  containers:
+  - name: browser
+    image: busybox:1.36
+    command: ["sleep", "3600"]
+    volumeMounts:
+    - name: snapshot-data
+      mountPath: /data
+      readOnly: true
+  volumes:
+  - name: snapshot-data
+    persistentVolumeClaim:
+      claimName: <app-name>-browse-pvc
+      readOnly: true
+  restartPolicy: Never
+EOF
+```
+
+#### Method 3: One-liner for Quick Inspection
+
+For quick data inspection without creating YAML files:
+
+```bash
+# Create ephemeral pod with read-only PVC mount
+kubectl run pvc-browser \
+  --image=busybox:1.36 \
+  --rm -it \
+  --restart=Never \
+  --namespace=<namespace> \
+  --overrides='
+{
+  "spec": {
+    "containers": [{
+      "name": "pvc-browser",
+      "image": "busybox:1.36",
+      "command": ["sh"],
+      "stdin": true,
+      "tty": true,
+      "volumeMounts": [{
+        "name": "data",
+        "mountPath": "/data",
+        "readOnly": true
+      }]
+    }],
+    "volumes": [{
+      "name": "data",
+      "persistentVolumeClaim": {
+        "claimName": "<pvc-name>",
+        "readOnly": true
+      }
+    }]
+  }
+}' -- sh
+```
+
+#### Use Cases for Read-Only PVC Browsing
+
+1. **Data Verification**: Confirm backup contents before/after operations
+2. **Troubleshooting**: Inspect application data when pods are failing
+3. **Migration Planning**: Analyze data structure before moving applications
+4. **Audit**: Review data without risk of modification
+5. **Debugging**: Check file permissions, ownership, and structure
+
+#### Cleanup
+
+Don't forget to clean up temporary resources:
+
+```bash
+# Remove browser pod
+kubectl delete pod pvc-browser -n <namespace>
+
+# Clean up snapshot-based resources (if used)
+kubectl delete pod snapshot-browser -n <namespace>
+kubectl delete pvc <app-name>-browse-pvc -n <namespace>
+kubectl delete volumesnapshot <app-name>-browse-snapshot -n <namespace>
+```
+
+#### Important Notes
+
+- **Read-Only Safety**: Always use `readOnly: true` to prevent accidental modifications
+- **Security Context**: Match the application's user/group IDs if needed for file access
+- **Resource Limits**: Add resource limits for production environments
+- **Access Modes**: Some storage classes may not support concurrent read-only access
+- **Snapshot Overhead**: Snapshot-based browsing uses additional storage temporarily
 
 ### Check VolSync Status
 
