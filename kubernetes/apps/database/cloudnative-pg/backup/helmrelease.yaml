@@ -25,7 +25,7 @@ spec:
       cloudnative-backup:
         type: cronjob
         cronjob:
-          schedule: "@daily"
+          schedule: &cronSchedule "@daily"
           ttlSecondsAfterFinished: 43200
         annotations:
           reloader.stakater.com/auto: "true"
@@ -52,7 +52,7 @@ spec:
               BACKUP_LATEST_TYPE: "symlink"
               POSTGRES_EXTRA_OPTS: "-b -C -c -Z6"
               POSTGRES_HOST: "${DB_SERVER}"
-              SCHEDULE: "@daily"
+              SCHEDULE: *cronSchedule # e.g. "@daily" - not strictly required since we run the backup.sh script manually
               TZ: "${TIMEZONE}"
             envFrom:
               - secretRef:
