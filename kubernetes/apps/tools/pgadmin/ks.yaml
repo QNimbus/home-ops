@@ -21,6 +21,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      APP_UID: "5050"
+      APP_GID: "5050"
       VOLSYNC_CLAIM: pgadmin-config
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_CACHE_CAPACITY: 2Gi
