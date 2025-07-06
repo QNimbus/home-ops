@@ -73,11 +73,11 @@ spec:
     route:
       app:
         hostnames:
-          - "pgadmin.${DOMAIN_PROXII}"
+          - "pgadmin.${DOMAIN_APP}"
         parentRefs:
-          - name: internal
+          - name: external
             namespace: kube-system
-            sectionName: https
+            sectionName: https-app
         rules:
           - backendRefs:
               - identifier: app
