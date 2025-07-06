@@ -17,3 +17,16 @@ parameters:
   numberOfReplicas: "3"
   staleReplicaTimeout: "30"
   unmapMarkSnapChainRemoved: ignored
+---
+# Longhorn-cache (Longhorn storage class with best-effort data locality and single replica)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-cache
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  dataLocality: best-effort
+  numberOfReplicas: "1"
