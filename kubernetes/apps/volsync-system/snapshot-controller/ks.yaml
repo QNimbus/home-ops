@@ -3,8 +3,8 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app openebs
-  namespace: &namespace kube-system
+  name: &app snapshot-controller
+  namespace: &namespace volsync-system
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -15,15 +15,8 @@ spec:
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/kube-system/openebs/app
-  postBuild:
-    substitute:
-      APP: *app
-    substituteFrom:
-      - name: cluster-settings
-        kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
+  path: ./kubernetes/apps/volsync-system/snapshot-controller/app
+  postBuild: {}
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -32,5 +25,5 @@ spec:
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
-      name: *app
+      name: snapshot-controller
       namespace: *namespace

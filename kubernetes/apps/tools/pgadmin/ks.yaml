@@ -27,8 +27,6 @@ spec:
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_CACHE_CAPACITY: 2Gi
       VOLSYNC_STORAGECLASS: longhorn
-      VOLSYNC_STORAGECLASS_SOURCE: longhorn
-      VOLSYNC_STORAGECLASS_DESTINATION: longhorn
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
@@ -42,4 +40,4 @@ spec:
     - name: cloudnative-pg-cluster
       namespace: database
     - name: volsync
-      namespace: kube-system
+      namespace: volsync-system
