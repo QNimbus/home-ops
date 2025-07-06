@@ -27,8 +27,8 @@ spec:
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_CACHE_CAPACITY: 2Gi
       VOLSYNC_STORAGECLASS: longhorn
-      VOLSYNC_STORAGECLASS_SOURCE: longhorn-ephemeral
-      VOLSYNC_STORAGECLASS_DESTINATION: longhorn-ephemeral
+      VOLSYNC_STORAGECLASS_SOURCE: longhorn-delete
+      VOLSYNC_STORAGECLASS_DESTINATION: longhorn-delete
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
