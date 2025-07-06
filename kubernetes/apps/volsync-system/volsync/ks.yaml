@@ -29,8 +29,6 @@ spec:
     name: flux-system
     namespace: flux-system
   dependsOn:
-    - name: openebs
-      namespace: *namespace
     - name: snapshot-controller
       namespace: *namespace
     - name: longhorn

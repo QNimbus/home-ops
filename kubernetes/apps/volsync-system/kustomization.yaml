@@ -6,6 +6,5 @@ namespace: volsync-system
 components:
   - ../../components/common
 resources:
-  - ./openebs/ks.yaml
   - ./volsync/ks.yaml
   - ./snapshot-controller/ks.yaml
