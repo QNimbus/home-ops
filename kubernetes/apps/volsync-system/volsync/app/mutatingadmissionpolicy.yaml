@@ -26,10 +26,6 @@ spec:
     - name: has-volsync-created-by-labels
       expression: >
         object.metadata.labels["app.kubernetes.io/created-by"] == "volsync"
-    - name: is-scheduled-replication
-      expression: >
-        !object.metadata.name.endsWith("-manual") &&
-        !(object.metadata.labels["volsync.backube/no-jitter"] == "true")
   failurePolicy: Fail
   reinvocationPolicy: IfNeeded
   mutations:
