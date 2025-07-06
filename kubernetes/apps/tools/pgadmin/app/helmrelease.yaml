@@ -72,10 +72,9 @@ spec:
             readOnly: true
     route:
       app:
-        hostnames:
-          - "pgadmin.${DOMAIN_APP}"
+        hostnames: ["pgadmin.${DOMAIN_APP}"]
         parentRefs:
-          - name: external
+          - name: internal
             namespace: kube-system
             sectionName: https-app
         rules:
