@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/volsync
-  wait: true
+  wait: false
   prune: true
   interval: 1h
   timeout: 5m
