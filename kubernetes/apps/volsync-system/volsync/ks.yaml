@@ -31,6 +31,8 @@ spec:
   dependsOn:
     - name: snapshot-controller
       namespace: *namespace
+    - name: openebs
+      namespace: *namespace
     - name: longhorn
       namespace: longhorn-system
   healthChecks:

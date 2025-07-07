@@ -23,6 +23,6 @@ spec:
       runAsUser: ${APP_UID:-65534}
       runAsGroup: ${APP_GID:-65534}
       fsGroup: ${APP_GID:-65534}
-    repository: "${APP}-volsync"
+    repository: "${APP}-volsync-secret"
     storageClassName: "${VOLSYNC_STORAGECLASS_DESTINATION:-longhorn-cache}"
     volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-longhorn-snapclass}"
