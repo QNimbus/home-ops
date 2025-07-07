@@ -314,6 +314,9 @@ The base Renovate configuration in your repository can be viewed at [.renovaterc
 
 Below is a general guide on trying to debug an issue with an resource or application. For example, if a workload/resource is not showing up or a pod has started but in a `CrashLoopBackOff` or `Pending` state. These steps do not include a way to fix the problem as the problem could be one of many different things.
 
+> [!TIP]
+> For comprehensive FluxCD troubleshooting commands and solutions, refer to the official [FluxCD Troubleshooting Cheatsheet](https://fluxcd.io/flux/cheatsheets/troubleshooting/). This cheatsheet provides detailed guidance on debugging Flux sources, Kustomizations, HelmReleases, and common issues with helpful CLI commands.
+
 1. Check if the Flux resources are up-to-date and in a ready state:
 
    📍 _Run `task reconcile` to force Flux to sync your Git repository state_
