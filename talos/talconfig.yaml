@@ -124,6 +124,7 @@ nodes:
 
 # Global patches
 patches:
+  - "@./patches/global/machine-features.yaml"
   - "@./patches/global/machine-files.yaml"
   - "@./patches/global/machine-kubelet.yaml"
   - "@./patches/global/machine-network.yaml"
@@ -133,6 +134,7 @@ patches:
 # Controller patches
 controlPlane:
   patches:
+    - "@./patches/controller/machine-features.yaml"
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
 
