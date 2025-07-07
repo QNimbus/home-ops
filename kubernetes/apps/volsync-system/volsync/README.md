@@ -199,9 +199,7 @@ The component automatically creates:
 
 ### Manual Backup Operations
 
-⚠️ **Note**: This section describes the legacy approach. **Use the new Manual Backup method described above** which provides dedicated manual ReplicationSources without jitter delays.
-
-For compatibility, the old method still works but is not recommended:
+Sometimes you may need to trigger a backup manually outside of the regular schedule. This is useful for testing, before maintenance windows, or when you need an immediate backup before making changes.
 
 #### Trigger Manual Backup
 
@@ -660,59 +658,3 @@ kubectl get pvc ${APP} -n <namespace>
 - **Monitor First Deployment**: Watch bootstrap logs for new applications
 - **Backup Verification**: Verify first backup completes successfully
 - **Repository Management**: Use consistent naming for backup repositories
-
-## Backup Types
-
-This setup provides two types of backups:
-
-### 1. Scheduled Backups (Automatic)
-
-- **Purpose**: Regular, automated backups for continuous data protection
-- **Schedule**: Hourly (`0 * * * *`)
-- **Jitter**: Includes random 1-120 second delay to prevent thundering herd
-- **Resource**: `ReplicationSource` named `${APP}`
-- **Use Case**: Ongoing protection with automatic retention management
-
-### 2. Manual Backups (On-Demand)
-
-- **Purpose**: Immediate backups before maintenance, testing, or critical changes
-- **Trigger**: Manual via script or kubectl patch
-- **Jitter**: No delay - executes immediately
-- **Resource**: `ReplicationSource` named `${APP}-manual`
-- **Use Case**: Pre-maintenance backups, testing, urgent data capture
-
-### Triggering Manual Backups
-
-#### Option 1: Using the Provided Script
-
-```bash
-# Trigger manual backup using the convenience script
-./scripts/manual-backup.sh <pvc-name> <namespace>
-
-# Example: Backup pgadmin-config PVC in tools namespace
-./scripts/manual-backup.sh pgadmin-config tools
-```
-
-#### Option 2: Direct kubectl Command
-
-```bash
-# Trigger manual backup directly
-kubectl patch replicationsource <pvc-name>-manual -n <namespace> \
-  --type='merge' \
-  -p='{"spec":{"trigger":{"manual":"manual-'$(date +%s)'"}}}'
-
-# Example: Backup pgadmin-config PVC
-kubectl patch replicationsource pgadmin-config-manual -n tools \
-  --type='merge' \
-  -p='{"spec":{"trigger":{"manual":"manual-'$(date +%s)'"}}}'
-```
-
-### Monitoring Manual Backups
-
-```bash
-# Check status
-kubectl get replicationsource <pvc-name>-manual -n <namespace> -w
-
-# View job logs
-kubectl logs job/$(kubectl get jobs -n <namespace> -o name | grep volsync-src-<pvc-name>-manual | head -1 | cut -d/ -f2) -n <namespace>
-```
