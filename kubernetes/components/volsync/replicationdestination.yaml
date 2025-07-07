@@ -25,4 +25,4 @@ spec:
       fsGroup: ${APP_GID:-65534}
     repository: "${APP}-volsync"
     storageClassName: "${VOLSYNC_STORAGECLASS_DESTINATION:-longhorn-cache}"
-    volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-longhorn}"
+    volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-longhorn-snapclass}"
