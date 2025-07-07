@@ -3,3 +3,7 @@ machine:
     disableSearchDomain: true
     nameservers:
       - 10.60.0.1
+    extraHostEntries:
+      - ip: 10.60.0.2
+        aliases:
+          - kube-vip.talos.vwn.io
