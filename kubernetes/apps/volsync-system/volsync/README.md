@@ -10,6 +10,42 @@ VolSync is a Kubernetes operator that enables backup, restore, and migration of 
 - **OpenEBS**: Local path provisioner for cache and temporary storage
 - **NFS Server**: External backup destination for long-term data retention
 
+## Quick Reference
+
+### New Application Deployment Checklist
+
+1. **Deploy application** with VolSync component
+2. **Verify PVC is bound** and application starts
+3. **Immediately trigger manual backup**:
+   ```bash
+   kubectl patch replicationsource <app-name> -n <namespace> \
+     --type='merge' \
+     -p='{"spec":{"trigger":{"manual":"initial-'$(date +%s)'"}}}'
+   ```
+4. **Wait for backup completion**:
+   ```bash
+   kubectl get replicationsource <app-name> -n <namespace> \
+     -o jsonpath='{.status.latestMoverStatus.logs}'
+   ```
+5. **Verify backup exists**:
+   ```bash
+   # Should show snapshot files, not empty directory
+   kubectl run verify-backup --rm -i --image=busybox --restart=Never \
+     --overrides='{"spec":{"volumes":[{"name":"repo","nfs":{"server":"truenas.lan.home.vwn.io","path":"/mnt/vault/cluster/volsync"}}],"containers":[{"name":"verify","image":"busybox","command":["ls","-la","/repository/<app-name>/snapshots/"],"volumeMounts":[{"name":"repo","mountPath":"/repository"}]}]}}' \
+     -n <namespace>
+   ```
+
+✅ **Application is now safe for removal/restoration operations**
+
+### Bootstrap Window Emergency Recovery
+
+If you need to restore an application that was removed during the bootstrap window:
+
+1. **Accept that data is lost** (no backup exists)
+2. **Deploy application normally** (will start with empty PVC)
+3. **Restore application state manually** from external sources if needed
+4. **Trigger immediate backup** to prevent future bootstrap window issues
+
 ## Architecture
 
 ```
@@ -308,6 +344,47 @@ Common issues and solutions:
    kubectl get pods -n <namespace> | grep volsync
    kubectl exec -it <volsync-pod> -n <namespace> -- df -h /repository
    ```
+
+4. **Bootstrap Window Restoration Failure**:
+
+   **Symptom**: Restoration says "No eligible snapshots found" for a previously working application
+
+   **Cause**: Application was removed during bootstrap window (before first backup completed)
+
+   **Solution**:
+   ```bash
+   # Check if backup repository is empty
+   kubectl apply -f - <<EOF
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: debug-repo
+     namespace: <namespace>
+   spec:
+     containers:
+     - name: debug
+       image: busybox
+       command: ["sleep", "300"]
+       volumeMounts:
+       - name: repository
+         mountPath: /repository
+     volumes:
+     - name: repository
+       nfs:
+         server: truenas.lan.home.vwn.io
+         path: /mnt/vault/cluster/volsync
+     restartPolicy: Never
+   EOF
+
+   # Check if snapshots directory is empty
+   kubectl exec debug-repo -n <namespace> -- ls -la /repository/<app-name>/snapshots/
+
+   # If empty, this confirms bootstrap window issue
+   # Solution: Let application start with empty PVC and wait for first backup
+   kubectl delete pod debug-repo -n <namespace>
+   ```
+
+   **Prevention**: Always trigger manual backup immediately after new deployments
 
 ### Browse PVC Contents with Read-Only Mount
 
@@ -652,9 +729,82 @@ kubectl get pvc ${APP} -n <namespace>
    - Wait for bootstrap process to complete
    - Check application pod events
 
-### 7. Best Practices
+### 7. Bootstrap Window Caveat
+
+⚠️ **CRITICAL**: There is a **bootstrap window vulnerability** between application deployment and first backup completion.
+
+#### The Problem
+
+When a new kustomization is deployed:
+
+1. ✅ **Initial deployment works fine** - PVC is empty, application starts normally
+2. ⏰ **Bootstrap window begins** - Application is running, but no backup exists yet
+3. ❌ **If removed during this window** - Restoration will fail because no backup data exists
+4. ✅ **After first backup completes** - Restoration works normally
+
+#### Timeline Example
+
+```
+00:00 - Application deployed (empty PVC, starts fine)
+01:00 - First scheduled backup runs (hourly: 0 * * * *)
+01:03 - First backup completes ✅
+01:04+ - Removal/restoration now works safely
+```
+
+**Risk Period**: Between deployment and first backup completion (~1 hour max)
+
+#### Detection and Mitigation
+
+**Check if first backup completed**:
+```bash
+# Verify backup repository has snapshots
+kubectl get replicationsource <app-name> -n <namespace> \
+  -o jsonpath='{.status.latestMoverStatus.logs}'
+
+# Look for successful backup message like:
+# "snapshot abc123de saved"
+# "Restic completed in Xs"
+```
+
+**Force immediate backup after deployment**:
+```bash
+# Trigger manual backup immediately after deployment
+kubectl patch replicationsource <app-name> -n <namespace> \
+  --type='merge' \
+  -p='{"spec":{"trigger":{"manual":"initial-backup-'$(date +%s)'"}}}'
+```
+
+**Verify backup completion before any maintenance**:
+```bash
+# Check that backup repository contains data
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: verify-backup
+  namespace: <namespace>
+spec:
+  containers:
+  - name: verify
+    image: busybox
+    command: ["sh", "-c", "ls -la /repository/<app-name>/snapshots/ && echo 'Backup verification complete'"]
+    volumeMounts:
+    - name: repository
+      mountPath: /repository
+  volumes:
+  - name: repository
+    nfs:
+      server: truenas.lan.home.vwn.io
+      path: /mnt/vault/cluster/volsync
+  restartPolicy: Never
+EOF
+```
+
+### 8. Best Practices
 
 - **Wait for Bootstrap**: Don't start applications until PVC is bound
 - **Monitor First Deployment**: Watch bootstrap logs for new applications
-- **Backup Verification**: Verify first backup completes successfully
+- **Backup Verification**: **ALWAYS verify first backup completes before any removal/maintenance**
+- **Manual Initial Backup**: Consider triggering immediate backup after new deployments
 - **Repository Management**: Use consistent naming for backup repositories
+- **Bootstrap Window Awareness**: Never remove applications during the bootstrap window (0-60 minutes after deployment)
