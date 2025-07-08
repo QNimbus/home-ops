@@ -192,7 +192,7 @@ serviceMonitor:
   targetLabels: []
 
 # -- Log level.
-logLevel: debug  # @schema enum:[panic, debug, info, warning, error, fatal]; type:string; default: "info"
+logLevel: info  # @schema enum:[panic, debug, info, warning, error, fatal]; type:string; default: "info"
 
 # -- Log format.
 logFormat: text  # @schema enum:["text", "json"]; type:string; default: "text"
