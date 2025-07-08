@@ -26,9 +26,10 @@ spec:
       VOLSYNC_CLAIM: pgadmin-config
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_CACHE_CAPACITY: 2Gi
-      VOLSYNC_CACHE_SNAPSHOTCLASS: longhorn
-      VOLSYNC_STORAGECLASS_SOURCE: longhorn
-      VOLSYNC_STORAGECLASS_DESTINATION: longhorn
+      VOLSYNC_CACHE_SNAPSHOTCLASS: longhorn-cache
+      VOLSYNC_STORAGECLASS_SOURCE: longhorn-cache
+      VOLSYNC_STORAGECLASS_DESTINATION: longhorn-cache
+      VOLSYNC_STORAGECLASS: longhorn
     substituteFrom:
       - name: cluster-settings
         kind: ConfigMap
