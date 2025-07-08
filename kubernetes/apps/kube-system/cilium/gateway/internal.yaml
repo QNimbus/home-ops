@@ -51,3 +51,14 @@ spec:
         certificateRefs:
           - kind: Secret
             name: ${DOMAIN_APP/./-}-tls
+    - name: https-app-kvm
+      protocol: HTTPS
+      port: 443
+      hostname: "*.kvm.${DOMAIN_APP}"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: "kvm-${DOMAIN_APP/./-}-tls"
