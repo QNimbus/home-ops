@@ -25,5 +25,5 @@ spec:
       fsGroup: ${VOLSYNC_GID:-65534}
     enableFileDeletion: true
     # true for Rook-Ceph, false for Longhorn
-    cleanupCachePVC: true
-    cleanupTempPVC: true
+    cleanupCachePVC: false
+    cleanupTempPVC: false

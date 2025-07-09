@@ -6,9 +6,17 @@
 
 # StorageClass settings - only the basics
 persistence:
+  # -- Setting that allows you to specify the default Longhorn StorageClass.
   defaultClass: true
+  # -- Filesystem type of the default Longhorn StorageClass.
+  defaultFsType: ext4
+  # -- Replica count of the default Longhorn StorageClass.
   defaultClassReplicaCount: 3
-  reclaimPolicy: Retain
+  # -- VolumeBindingMode controls when volume binding and dynamic provisioning should occur. (Options: "Immediate", "WaitForFirstConsumer") (Defaults to "Immediate")
+  volumeBindingMode: WaitForFirstConsumer
+  # -- Data locality of the default Longhorn StorageClass. (Options: "disabled", "best-effort")
+  defaultDataLocality: best-effort
+  reclaimPolicy: Delete
 
 # CSI settings - Talos specific
 csi:
