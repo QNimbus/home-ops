@@ -195,8 +195,8 @@ configMapGenerator:
       - APP=my-app
       - VOLSYNC_CLAIM=my-app-data
       - VOLSYNC_CACHE_CAPACITY=5Gi
-      - APP_UID=1000
-      - APP_GID=1000
+      - VOLSYNC_UID=1000
+      - VOLSYNC_GID=1000
 ```
 
 ### 3. Automatic Resources Created
@@ -228,8 +228,8 @@ The component automatically creates:
 | `VOLSYNC_SNAPSHOTCLASS` | `longhorn-snapshot-vsc` | Snapshot class |
 | `VOLSYNC_CACHE_SNAPSHOTCLASS` | `openebs-hostpath` | Cache storage class |
 | `VOLSYNC_COPYMETHOD` | `Snapshot` | Backup method |
-| `APP_UID` | `4000` | User ID for mover pod |
-| `APP_GID` | `4000` | Group ID for mover pod |
+| `VOLSYNC_UID` | `4000` | User ID for mover pod |
+| `VOLSYNC_GID` | `4000` | Group ID for mover pod |
 
 ## Monitoring and Troubleshooting
 

@@ -9,22 +9,20 @@ spec:
   trigger:
     schedule: "0 * * * *"
   restic:
-    accessModes:
-      - "${VOLSYNC_SNAP_ACCESSMODES:-ReadWriteOnce}"
-    cacheAccessModes:
-      - "${VOLSYNC_CACHE_ACCESSMODES:-ReadWriteOnce}"
-    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-1Gi}"
-    cacheStorageClassName: "${VOLSYNC_CACHE_SNAPSHOTCLASS:-openebs-hostpath}"
-    copyMethod: "${VOLSYNC_COPYMETHOD:-Snapshot}"
-    moverSecurityContext:
-      runAsUser: ${APP_UID:-65534}
-      runAsGroup: ${APP_GID:-65534}
-      fsGroup: ${APP_GID:-65534}
     pruneIntervalDays: 7
     repository: "${APP}-volsync-secret"
+    copyMethod: "${VOLSYNC_COPYMETHOD:-Snapshot}"
+    volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-longhorn-snapclass}"
+    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-8Gi}"
+    cacheAccessModes: [ "${VOLSYNC_CACHE_ACCESSMODES:-ReadWriteOnce}" ]
+    cacheStorageClassName: "${VOLSYNC_CACHE_SNAPSHOTCLASS:-openebs-hostpath}"
+    storageClassName: "${VOLSYNC_STORAGECLASS:-longhorn}"
+    accessModes: [ "${VOLSYNC_ACCESSMODES:-ReadWriteOnce}" ]
+    moverSecurityContext:
+      runAsUser: ${VOLSYNC_UID:-65534}
+      runAsGroup: ${VOLSYNC_GID:-65534}
+      fsGroup: ${VOLSYNC_GID:-65534}
     retain:
       hourly: 24
       daily: 7
-      weekly: 4
-    storageClassName: "${VOLSYNC_STORAGECLASS_SOURCE:-longhorn-cache}"
-    volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-longhorn-snapclass}"
+      weekly: 5
