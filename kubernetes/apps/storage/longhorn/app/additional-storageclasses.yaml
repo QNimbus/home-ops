@@ -26,7 +26,10 @@ metadata:
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 reclaimPolicy: Delete
-volumeBindingMode: WaitForFirstConsumer
+volumeBindingMode: Immediate
+# volumeBindingMode: WaitForFirstConsumer
 parameters:
-  dataLocality: best-effort
   numberOfReplicas: "1"
+  staleReplicaTimeout: "30"
+  dataLocality: best-effort
+  replicaAutoBalance: best-effort

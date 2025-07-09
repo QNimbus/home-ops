@@ -39,6 +39,9 @@ defaultSettings:
   allowRecurringJobWhileVolumeDetached: true
   # Backup compression (reduces storage costs)
   backupCompressionMethod: "lz4"
+  # Enable automatic deletion of orphaned backups
+  orphanAutoDeletion: true
+  nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
 
 defaultBackupStore:
   backupTarget: "s3://longhorn@auto/"
