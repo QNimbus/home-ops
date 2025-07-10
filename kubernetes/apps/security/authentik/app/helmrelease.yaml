@@ -1,0 +1,71 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app authentik
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: authentik
+      version: 2025.6.3
+      sourceRef:
+        kind: HelmRepository
+        name: goauthentik
+        namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: authentik-secret
+      valuesKey: AUTHENTIK_SECRET_KEY
+      targetPath: authentik.secret_key
+    - kind: Secret
+      name: authentik-secret
+      valuesKey: POSTGRES_HOST
+      targetPath: authentik.postgresql.host
+    - kind: Secret
+      name: authentik-secret
+      valuesKey: REDIS_HOST
+      targetPath: authentik.redis.host
+    - kind: Secret
+      name: authentik-secret
+      valuesKey: REDIS_PASSWORD
+      targetPath: authentik.redis.password
+  values:
+    fullnameOverride: *app
+    server:
+      ingress:
+        enabled: true
+        hosts: ["auth.${DOMAIN_APP}"]
+      volumes:
+        - name: postgres-creds
+          secret:
+            secretName: authentik-postgres-credentials
+      volumeMounts:
+        - name: postgres-creds
+          mountPath: /postgres-creds
+          readOnly: true
+    worker:
+      volumes:
+        - name: postgres-creds
+          secret:
+            secretName: authentik-postgres-credentials
+      volumeMounts:
+        - name: postgres-creds
+          mountPath: /postgres-creds
+          readOnly: true
+    authentik:
+      postgresql:
+        host: "${DB_SERVER}"
+        user: file:///postgres-creds/username
+        password: file:///postgres-creds/password
+      redis:
+        host: "${REDIS_SERVER}"
