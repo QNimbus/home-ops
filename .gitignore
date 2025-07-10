@@ -22,3 +22,4 @@ Thumbs.db
 .env
 .Trash*/
 1password-credentials.json
+__pycache__

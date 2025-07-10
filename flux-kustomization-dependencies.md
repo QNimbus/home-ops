@@ -2,7 +2,7 @@
 
 This document shows the dependency relationships between all Flux Kustomizations in the cluster.
 
-**Total Kustomizations:** 39
+**Total Kustomizations:** 37
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ This document shows the dependency relationships between all Flux Kustomizations
 | `monitoring` | keda | 1 |
 | `network` | cloudflare-dns, cloudflare-tunnel, k8s-gateway, unifi-dns | 4 |
 | `system-upgrade` | system-upgrade-controller, system-upgrade-controller-plans | 2 |
-| `tools` | it-tools, paperless, paperless-storage, pgadmin | 4 |
+| `tools` | it-tools, pgadmin | 2 |
 | `volsync-system` | openebs, snapshot-controller, volsync | 3 |
 
 ## Complete Dependency Overview
@@ -275,33 +275,6 @@ This section shows all dependencies (direct and indirect) for each kustomization
 
 **Dependencies:** *None (root level)*
 
-### tools/paperless
-
-**Total Dependencies:** 4
-
-**Dependency Chain:**
-
-- **Direct:** `external-secrets/onepassword-connect`, `tools/paperless-storage`
-- **Level 2:** `external-secrets/external-secrets`, `longhorn-system/longhorn`
-
-**All Dependencies (flat list):**
-`external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `longhorn-system/longhorn`, `tools/paperless-storage`
-
-
-### tools/paperless-storage
-
-**Total Dependencies:** 3
-
-**Dependency Chain:**
-
-- **Direct:** `longhorn-system/longhorn`
-- **Level 2:** `external-secrets/onepassword-connect`
-- **Level 3:** `external-secrets/external-secrets`
-
-**All Dependencies (flat list):**
-`external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `longhorn-system/longhorn`
-
-
 ### tools/pgadmin
 
 **Total Dependencies:** 9
@@ -470,10 +443,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/database/cloudnative-pg/ks.yaml`
   - *Path:* `./kubernetes/apps/database/cloudnative-pg/cluster`
   - *Dependencies:* `database/cloudnative-pg-operator`, `external-secrets/onepassword-store`, `longhorn-system/longhorn`
-- **tools/paperless-storage**
-  - *File:* `kubernetes/apps/tools/paperless/storage/ks.yaml`
-  - *Path:* `./kubernetes/apps/tools/paperless/storage`
-  - *Dependencies:* `longhorn-system/longhorn`
 - **volsync-system/volsync**
   - *File:* `kubernetes/apps/volsync-system/volsync/ks.yaml`
   - *Path:* `./kubernetes/apps/volsync-system/volsync/app`
@@ -486,10 +455,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/database/cloudnative-pg/ks.yaml`
   - *Path:* `./kubernetes/apps/database/cloudnative-pg/backup`
   - *Dependencies:* `database/cloudnative-pg-cluster`, `external-secrets/onepassword-store`
-- **tools/paperless**
-  - *File:* `kubernetes/apps/tools/paperless/ks.yaml`
-  - *Path:* `./kubernetes/apps/tools/paperless/app`
-  - *Dependencies:* `external-secrets/onepassword-connect`, `tools/paperless-storage`
 - **tools/pgadmin**
   - *File:* `kubernetes/apps/tools/pgadmin/ks.yaml`
   - *Path:* `./kubernetes/apps/tools/pgadmin/app`
@@ -508,7 +473,7 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `kvm-pve1` | `external` | `network/k8s-gateway` | *None* |
 | `proxmox-ve` | `external` | `network/k8s-gateway` | *None* |
 | `external-secrets` | `external-secrets` | *None* | `external-secrets/onepassword-store`<br>`external-secrets/onepassword-connect` |
-| `onepassword-connect` | `external-secrets` | `external-secrets/external-secrets` | `tools/paperless`<br>`network/unifi-dns`<br>`flux-system/tailscale-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` |
+| `onepassword-connect` | `external-secrets` | `external-secrets/external-secrets` | `network/unifi-dns`<br>`flux-system/tailscale-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` |
 | `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup` |
 | `cluster-apps` | `flux-system` | `flux-system/cluster-meta` | *None* |
 | `cluster-meta` | `flux-system` | *None* | `flux-system/cluster-apps` |
@@ -523,7 +488,7 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `metrics-server` | `kube-system` | *None* | *None* |
 | `reloader` | `kube-system` | *None* | *None* |
 | `spegel` | `kube-system` | *None* | *None* |
-| `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `tools/paperless-storage`<br>`volsync-system/volsync`<br>`database/cloudnative-pg-cluster` |
+| `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `volsync-system/volsync`<br>`database/cloudnative-pg-cluster` |
 | `keda` | `monitoring` | *None* | *None* |
 | `cloudflare-dns` | `network` | *None* | *None* |
 | `cloudflare-tunnel` | `network` | *None* | *None* |
@@ -532,8 +497,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `system-upgrade-controller` | `system-upgrade` | *None* | `system-upgrade/system-upgrade-controller-plans` |
 | `system-upgrade-controller-plans` | `system-upgrade` | `system-upgrade/system-upgrade-controller` | *None* |
 | `it-tools` | `tools` | *None* | *None* |
-| `paperless` | `tools` | `external-secrets/onepassword-connect`<br>`tools/paperless-storage` | *None* |
-| `paperless-storage` | `tools` | `longhorn-system/longhorn` | `tools/paperless` |
 | `pgadmin` | `tools` | `external-secrets/onepassword-store`<br>`database/cloudnative-pg-cluster`<br>`volsync-system/volsync` | *None* |
 | `openebs` | `volsync-system` | *None* | `volsync-system/volsync` |
 | `snapshot-controller` | `volsync-system` | *None* | `volsync-system/volsync` |
@@ -576,8 +539,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `system-upgrade/system-upgrade-controller` | `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml` |
 | `system-upgrade/system-upgrade-controller-plans` | `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml` |
 | `tools/it-tools` | `kubernetes/apps/tools/it-tools/ks.yaml` |
-| `tools/paperless` | `kubernetes/apps/tools/paperless/ks.yaml` |
-| `tools/paperless-storage` | `kubernetes/apps/tools/paperless/storage/ks.yaml` |
 | `tools/pgadmin` | `kubernetes/apps/tools/pgadmin/ks.yaml` |
 | `volsync-system/openebs` | `kubernetes/apps/volsync-system/openebs/ks.yaml` |
 | `volsync-system/snapshot-controller` | `kubernetes/apps/volsync-system/snapshot-controller/ks.yaml` |

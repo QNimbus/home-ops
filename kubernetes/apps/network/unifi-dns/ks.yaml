@@ -17,6 +17,8 @@ spec:
   retryInterval: 2m
   path: ./kubernetes/apps/network/unifi-dns/app
   postBuild:
+    substitute:
+      APP: *app
     substituteFrom:
       - name: cluster-settings
         kind: ConfigMap
