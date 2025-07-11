@@ -21,46 +21,79 @@ spec:
       pgadmin:
         annotations:
           reloader.stakater.com/auto: "true"
-        strategy: RollingUpdate
+        replicas: 1
+        strategy: Recreate
+        revisionHistoryLimit: 3
+        initContainers:
+          fix-perms:
+            image:
+              repository: busybox
+              tag: 1.37.0
+            command:
+              - /bin/sh
+              - -c
+              - |
+                cp /pgadmin4/pgpass /var/lib/pgadmin/pgpass
+                cp /pgadmin4/servers.json /var/lib/pgadmin/servers.json
+                chmod 0600 /var/lib/pgadmin/pgpass
+                chmod 0600 /var/lib/pgadmin/servers.json
+                chown 5050:5050 /var/lib/pgadmin/pgpass
+                chown 5050:5050 /var/lib/pgadmin/servers.json
         containers:
           app:
             image:
               repository: docker.io/dpage/pgadmin4
               tag: 9.4.0
             env:
-              PGADMIN_LISTEN_PORT: &port 80
-              PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
-              PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
+              PGADMIN_LISTEN_PORT: &port 5050
+              PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 30 # Debug (0, 10, 20, 30, 40, 50: NOTSET, DEBUG, INFO, SQL, WARNING, ERROR, CRITICAL)
+              PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+              PGADMIN_CONFIG_MAIL_PORT: "587"
+              PGADMIN_CONFIG_MAIL_USE_TLS: "True"
+              PGADMIN_DISABLE_POSTFIX: "True"
+              PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/servers.json
+              PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED: "False"
             envFrom:
               - secretRef:
-                  name: pgadmin-secret
+                  name: &secret pgadmin-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /misc/ping
+                    port: *port
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
             resources:
               requests:
                 cpu: 10m
-                memory: 100Mi
+                memory: 150Mi
               limits:
-                memory: 500Mi
+                memory: 384Mi
     defaultPodOptions:
       securityContext:
         runAsUser: "${APP_UID:-5050}"
         runAsGroup: "${APP_GID:-5050}"
         fsGroup: "${APP_GID:-5050}"
         fsGroupChangePolicy: OnRootMismatch
-    service:
-      app:
-        controller: *app
-        ports:
-          http:
-            port: *port
-    serviceMonitor:
-      app:
-        endpoints:
-          - port: http
     persistence:
+      pgpass:
+        type: secret
+        name: *secret
+        globalMounts:
+          - path: /pgadmin4/pgpass
+            subPath: pgpass
       config:
         existingClaim: pgadmin-config
         advancedMounts:
           pgadmin:
+            fix-perms:
+              - path: /var/lib/pgadmin
             app:
               - path: /var/lib/pgadmin
       servers-json-file:
@@ -69,7 +102,6 @@ spec:
         globalMounts:
           - path: /pgadmin4/servers.json
             subPath: servers.json
-            readOnly: true
     route:
       app:
         hostnames: ["pgadmin.${DOMAIN_APP}"]
@@ -81,3 +113,13 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: http
