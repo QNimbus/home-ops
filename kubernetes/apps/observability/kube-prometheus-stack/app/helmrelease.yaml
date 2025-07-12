@@ -1,0 +1,368 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app kube-prometheus-stack
+spec:
+  # How often Flux checks for updates to the Helm chart
+  interval: 1h
+  chartRef:
+    # References an OCIRepository source (defined elsewhere) for the chart
+    kind: OCIRepository
+    name: kube-prometheus-stack
+  install:
+    remediation:
+      # Retry installation indefinitely (-1) if it fails
+      retries: -1
+  upgrade:
+    # Delete resources that can't be upgraded before attempting upgrade
+    cleanupOnFail: true
+    remediation:
+      # Retry upgrades up to 3 times before giving up
+      retries: 3
+  values:
+    # ============================================================================
+    # CUSTOM RESOURCE DEFINITION (CRD) CONFIGURATION
+    # ============================================================================
+    # Controls installation and management of Prometheus Operator CRDs
+    # These are required for ServiceMonitors, PrometheusRules, etc.
+    crds:
+      # Enable CRD installation as part of the chart deployment
+      enabled: true
+      # Upgrade job configuration for managing CRDs during helm upgrades
+      # This is a BETA feature that helps with CRD upgrades since Helm doesn't upgrade CRDs by default
+      # COMMENTED OUT: Not essential for basic setup, can be enabled later
+      # upgradeJob:
+      #   # Enable the upgrade job to handle CRD updates automatically
+      #   enabled: true
+      #   # Force conflicts resolution during CRD upgrades
+      #   # This allows the upgrade job to proceed even if there are conflicts
+      #   forceConflicts: true
+
+    # ============================================================================
+    # PROMETHEUS OPERATOR CONFIGURATION
+    # ============================================================================
+    # Controls naming of Prometheus Operator objects
+    # When true, removes the "prometheus-operator" prefix from resource names
+    # COMMENTED OUT: Not essential for basic functionality
+    # cleanPrometheusOperatorObjectNames: true
+    # ============================================================================
+    # PROMETHEUS SERVER CONFIGURATION
+    # ============================================================================
+    prometheus:
+      # ========================================================================
+      # GATEWAY API ROUTE CONFIGURATION (BETA)
+      # ========================================================================
+      # Gateway API route configuration for exposing Prometheus externally
+      # This is a BETA feature and may change in future versions
+      route:
+        main:
+          # Enable the Gateway API route for Prometheus web UI
+          enabled: true
+          # Hostnames that this route should respond to
+          # Uses environment variable substitution for the domain
+          hostnames: ["prometheus.${DOMAIN_APP}"]
+          # Reference to the Gateway that will handle this route
+          parentRefs:
+            - name: internal                # Name of the Gateway resource
+              namespace: kube-system       # Namespace where Gateway is located
+              sectionName: https-app       # Specific listener section in the Gateway
+
+      # ========================================================================
+      # PROMETHEUS INSTANCE SPECIFICATION
+      # ========================================================================
+      # Core configuration for the Prometheus server deployment
+      prometheusSpec:
+        # ====================================================================
+        # CONTAINER IMAGE CONFIGURATION
+        # ====================================================================
+        # COMMENTED OUT: Using default Prometheus image for basic setup
+        # Custom Prometheus image with additional features (prompp)
+        # prompp adds improved performance and additional features over standard Prometheus
+        # image:
+        #   registry: docker.io              # Container registry to pull from
+        #   repository: prompp/prompp        # Repository containing the enhanced Prometheus image
+        #   tag: 2.53.2-0.2.6               # Specific version tag (Prometheus 2.53.2 with prompp 0.2.6)
+
+        # ====================================================================
+        # SECURITY CONTEXT CONFIGURATION
+        # ====================================================================
+        # COMMENTED OUT: Using chart defaults for basic setup
+        # Pod and container security settings for enhanced security posture
+        # securityContext:
+        #   runAsNonRoot: true               # Run container as non-root user for security
+        #   runAsUser: 64535                 # Specific non-root user ID
+        #   runAsGroup: 64535                # Specific group ID
+        #   fsGroup: 64535                   # File system group for volume ownership
+
+        # ====================================================================
+        # DISCOVERY AND MONITORING CONFIGURATION
+        # ====================================================================
+        # Control how Prometheus discovers monitoring targets
+        # These settings determine which ServiceMonitors, PodMonitors, etc. are selected
+
+        # When false, Prometheus will select ALL PodMonitors in accessible namespaces
+        # When true, only PodMonitors matching Helm values selectors are included
+        podMonitorSelectorNilUsesHelmValues: false
+
+        # When false, Prometheus will select ALL Probes in accessible namespaces
+        # When true, only Probes matching Helm values selectors are included
+        probeSelectorNilUsesHelmValues: false
+
+        # When false, Prometheus will select ALL PrometheusRules in accessible namespaces
+        # When true, only PrometheusRules matching Helm values selectors are included
+        ruleSelectorNilUsesHelmValues: false
+
+        # When false, Prometheus will select ALL ScrapeConfigs in accessible namespaces
+        # When true, only ScrapeConfigs matching Helm values selectors are included
+        scrapeConfigSelectorNilUsesHelmValues: false
+
+        # When false, Prometheus will select ALL ServiceMonitors in accessible namespaces
+        # When true, only ServiceMonitors matching Helm values selectors are included
+        serviceMonitorSelectorNilUsesHelmValues: false
+
+        # ====================================================================
+        # DATA RETENTION CONFIGURATION
+        # ====================================================================
+        # Controls how long Prometheus keeps metrics data
+        # SIMPLIFIED: Using minimal retention for basic setup
+        retention: 7d                      # Keep metrics for 7 days (reduced from 14d)
+        # retentionSize: 20GB               # COMMENTED OUT: Let it grow naturally for basic setup
+
+        # ====================================================================
+        # RESOURCE ALLOCATION
+        # ====================================================================
+        # COMMENTED OUT: Using chart defaults for basic setup
+        # CPU and memory resource requests and limits for the Prometheus container
+        # resources:
+        #   requests:
+        #     cpu: 300m                      # Request 300 millicores (0.3 CPU)
+        #     memory: 1Gi                    # Request 1 GiB of memory
+        #   limits:
+        #     memory: 2Gi                    # Limit memory usage to 2 GiB (no CPU limit for monitoring workloads)
+
+        # ====================================================================
+        # PERSISTENT STORAGE CONFIGURATION
+        # ====================================================================
+        # SIMPLIFIED: Using minimal storage for basic setup
+        # Configuration for Prometheus data persistence
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              # COMMENTED OUT: Using default storage class for basic setup
+              # Storage class for the persistent volume (Longhorn)
+              # storageClassName: longhorn
+              resources:
+                requests:
+                  # Minimal storage allocation for basic setup
+                  storage: 10Gi             # Reduced from 20Gi
+
+    # ============================================================================
+    # ALERTMANAGER CONFIGURATION
+    # ============================================================================
+    # Alertmanager handles alerts sent by Prometheus and routes them to notification channels
+    alertmanager:
+      # ========================================================================
+      # GATEWAY API ROUTE CONFIGURATION
+      # ========================================================================
+      # Gateway API route configuration for exposing Alertmanager externally
+      route:
+        main:
+          # Enable the Gateway API route for Alertmanager web UI
+          enabled: true
+          # Hostnames that this route should respond to
+          # Uses a different domain variable for app-specific applications
+          hostnames: ["alertmanager.${DOMAIN_APP}"]
+          # Reference to the Gateway that will handle this route
+          parentRefs:
+            - name: internal              # Name of the Gateway resource
+              namespace: kube-system      # Namespace where Gateway is located
+              sectionName: https-app      # Specific listener section for apps domain
+
+      # ========================================================================
+      # ALERTMANAGER INSTANCE SPECIFICATION
+      # ========================================================================
+      alertmanagerSpec:
+        # COMMENTED OUT: Using default Alertmanager configuration for basic setup
+        # Configuration object reference for Alertmanager routing and notification rules
+        # This references an AlertmanagerConfiguration custom resource
+        # alertmanagerConfiguration:
+        #   name: alertmanager              # Name of the AlertmanagerConfiguration resource
+        #   global:
+        #     # How long to wait before marking an alert as resolved if no new instances arrive
+        #     resolveTimeout: 5m
+
+        # External URL where Alertmanager will be accessible
+        # Used for generating URLs in notifications and the web UI
+        externalUrl: "https://alertmanager.${DOMAIN_APP}"
+
+        # ====================================================================
+        # PERSISTENT STORAGE FOR ALERTMANAGER
+        # ====================================================================
+        # SIMPLIFIED: Using minimal storage for basic setup
+        # Storage configuration for Alertmanager's notification log and silences
+        storage:
+          volumeClaimTemplate:
+            spec:
+              # COMMENTED OUT: Using default storage class for basic setup
+              # Storage class for the persistent volume (Ceph block storage)
+              # storageClassName: longhorn # ceph-block
+              resources:
+                requests:
+                  # Small storage allocation since Alertmanager data is lightweight
+                  storage: 50Mi
+
+    # ============================================================================
+    # KUBERNETES COMPONENT MONITORING CONFIGURATION
+    # ============================================================================
+
+    # ========================================================================
+    # ETCD MONITORING CONFIGURATION
+    # ========================================================================
+    # COMMENTED OUT: Advanced monitoring, not essential for basic setup
+    # Configuration for monitoring etcd (Kubernetes' key-value store)
+    # kubeEtcd:
+    #   service:
+    #     # Override the default etcd service selector since etcd runs on control plane nodes
+    #     # The kube-apiserver component selector is used as a proxy to find control plane nodes
+    #     selector:
+    #       component: kube-apiserver # etcd runs on control plane nodes
+
+    # ========================================================================
+    # KUBE-PROXY MONITORING CONFIGURATION
+    # ========================================================================
+    # kube-proxy is responsible for network routing within the cluster
+    kubeProxy:
+      # Disable kube-proxy monitoring (common when using Cilium or other CNIs that replace kube-proxy)
+      enabled: false
+
+    # ============================================================================
+    # NODE EXPORTER CONFIGURATION
+    # ============================================================================
+    # prometheus-node-exporter collects hardware and OS metrics from cluster nodes
+    # This is a dependency chart: prometheus-community/prometheus-node-exporter
+    prometheus-node-exporter:
+      # SIMPLIFIED: Using defaults for basic setup
+      # Override the default fullname to use a shorter, cleaner name
+      # fullnameOverride: node-exporter
+
+      # SIMPLIFIED: Using basic ServiceMonitor configuration
+      # Prometheus ServiceMonitor configuration for scraping node-exporter metrics
+      prometheus:
+        monitor:
+          # Enable automatic discovery of node-exporter instances by Prometheus
+          enabled: true
+          # COMMENTED OUT: Basic setup doesn't need custom relabeling
+          # Relabeling rules to add additional metadata to metrics
+          # relabelings:
+          #   - action: replace           # Replace the target label with source label value
+          #     regex: (.*)              # Match any value
+          #     replacement: $1          # Use the matched value as replacement
+          #     sourceLabels: ["__meta_kubernetes_pod_node_name"]  # Source: Kubernetes node name
+          #     targetLabel: kubernetes_node                       # Target: Add as kubernetes_node label
+
+    # ============================================================================
+    # KUBE-STATE-METRICS CONFIGURATION
+    # ============================================================================
+    # kube-state-metrics exposes Kubernetes object state as Prometheus metrics
+    # This is a dependency chart: prometheus-community/kube-state-metrics
+    kube-state-metrics:
+      # SIMPLIFIED: Using defaults for basic setup
+      # Override the default fullname to use a shorter, cleaner name
+      # fullnameOverride: kube-state-metrics
+
+      # COMMENTED OUT: Advanced label configuration, not essential for basic setup
+      # Configure which metric labels are exposed for specific Kubernetes resources
+      # This controls the cardinality of metrics by allowing all labels ([*]) for these resources
+      # metricLabelsAllowlist:
+      #   - pods=[*]                      # Include all labels from Pod resources
+      #   - deployments=[*]               # Include all labels from Deployment resources
+      #   - persistentvolumeclaims=[*]    # Include all labels from PVC resources
+
+      # SIMPLIFIED: Using basic ServiceMonitor configuration
+      # Prometheus ServiceMonitor configuration for scraping kube-state-metrics
+      prometheus:
+        monitor:
+          # Enable automatic discovery of kube-state-metrics by Prometheus
+          enabled: true
+          # COMMENTED OUT: Basic setup doesn't need custom relabeling
+          # Relabeling rules to add additional metadata to metrics
+          # relabelings:
+          #   - action: replace           # Replace the target label with source label value
+          #     regex: (.*)              # Match any value
+          #     replacement: $1          # Use the matched value as replacement
+          #     sourceLabels: ["__meta_kubernetes_pod_node_name"]  # Source: Kubernetes node name
+          #     targetLabel: kubernetes_node                       # Target: Add as kubernetes_node label
+
+    # ============================================================================
+    # GRAFANA CONFIGURATION
+    # ============================================================================
+    # Configuration for the Grafana dependency chart
+    # This is a dependency chart: grafana/grafana
+    grafana:
+      # Disable Grafana deployment (likely managed separately or not needed)
+      enabled: false
+      # COMMENTED OUT: Dashboard management not essential for basic Prometheus setup
+      # Force deployment of dashboards even when Grafana is disabled
+      # This creates ConfigMaps with dashboard JSON that can be used by external Grafana instances
+      # forceDeployDashboards: true
+
+    # ============================================================================
+    # CUSTOM PROMETHEUS RULES
+    # ============================================================================
+    # COMMENTED OUT: Custom rules not essential for basic setup
+    # Additional PrometheusRule resources to be created alongside the default rules
+    # These define custom alerting rules for application-specific monitoring
+    # additionalPrometheusRulesMap:
+
+    #   # ========================================================================
+    #   # DOCKER HUB RATE LIMITING ALERTS
+    #   # ========================================================================
+    #   # Monitors for potential Docker Hub rate limiting issues
+    #   dockerhub-rules:
+    #     groups:
+    #       - name: dockerhub
+    #         rules:
+    #           - alert: DockerhubRateLimitRisk
+    #             annotations:
+    #               summary: Kubernetes cluster Dockerhub rate limit risk
+    #             # Alert when more than 100 containers from docker.io have been seen in the last 30 seconds
+    #             # This could indicate high pull rate that might hit Docker Hub limits
+    #             expr: count(time() - container_last_seen{image=~"(docker.io).*",container!=""} < 30) > 100
+    #             labels:
+    #               severity: critical
+
+    #   # ========================================================================
+    #   # OUT OF MEMORY (OOM) KILL ALERTS
+    #   # ========================================================================
+    #   # Monitors for containers being killed due to memory pressure
+    #   oom-rules:
+    #     groups:
+    #       - name: oom
+    #         rules:
+    #           - alert: OomKilled
+    #             annotations:
+    #               summary: Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has been OOMKilled {{ $value }} times in the last 10 minutes.
+    #             # Alert when a container has been OOM killed (restarted due to memory pressure)
+    #             # Compares restart count now vs 10 minutes ago and checks termination reason
+    #             expr: (kube_pod_container_status_restarts_total - kube_pod_container_status_restarts_total offset 10m >= 1) and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}[10m]) == 1
+    #             labels:
+    #               severity: critical
+
+    #   # ========================================================================
+    #   # ZFS STORAGE ALERTS
+    #   # ========================================================================
+    #   # Monitors ZFS pool health for storage issues
+    #   zfs-rules:
+    #     groups:
+    #       - name: zfs
+    #         rules:
+    #           - alert: ZfsUnexpectedPoolState
+    #             annotations:
+    #               summary: ZFS pool {{$labels.zpool}} on {{$labels.instance}} is in a unexpected state {{$labels.state}}
+    #             # Alert when any ZFS pool is not in the expected "online" state
+    #             # This could indicate disk failures, degraded arrays, or other storage issues
+    #             expr: node_zfs_zpool_state{state!="online"} > 0
+    #             labels:
+    #               severity: critical
