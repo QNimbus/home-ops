@@ -43,7 +43,7 @@ spec:
                 name: "jitter",
                 image: "ghcr.io/home-operations/busybox:1.37.0@sha256:026ed7273270ec08f6902b4ae8334c23b473e5394bec3bbbdbfe580c710d50bc",
                 imagePullPolicy: "IfNotPresent",
-                command: ["sh", "-c", "SLEEP_TIME=$(shuf -i 1-5 -n 1); echo \"Sleeping for $SLEEP_TIME seconds\"; sleep $SLEEP_TIME"]
+                command: ["sh", "-c", "SLEEP_TIME=$(shuf -i 1-120 -n 1); echo \"Sleeping for $SLEEP_TIME seconds\"; sleep $SLEEP_TIME"]
               }
             }
           ]
