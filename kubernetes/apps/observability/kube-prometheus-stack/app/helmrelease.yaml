@@ -45,8 +45,7 @@ spec:
     # ============================================================================
     # Controls naming of Prometheus Operator objects
     # When true, removes the "prometheus-operator" prefix from resource names
-    # COMMENTED OUT: Not essential for basic functionality
-    # cleanPrometheusOperatorObjectNames: true
+    cleanPrometheusOperatorObjectNames: true
     # ============================================================================
     # PROMETHEUS SERVER CONFIGURATION
     # ============================================================================
@@ -77,24 +76,22 @@ spec:
         # ====================================================================
         # CONTAINER IMAGE CONFIGURATION
         # ====================================================================
-        # COMMENTED OUT: Using default Prometheus image for basic setup
         # Custom Prometheus image with additional features (prompp)
         # prompp adds improved performance and additional features over standard Prometheus
-        # image:
-        #   registry: docker.io              # Container registry to pull from
-        #   repository: prompp/prompp        # Repository containing the enhanced Prometheus image
-        #   tag: 2.53.2-0.2.6               # Specific version tag (Prometheus 2.53.2 with prompp 0.2.6)
+        image:
+          registry: docker.io               # Container registry to pull from
+          repository: prompp/prompp         # Repository containing the enhanced Prometheus image
+          tag: 2.53.2-0.2.6                 # Specific version tag (Prometheus 2.53.2 with prompp 0.2.6)
 
         # ====================================================================
         # SECURITY CONTEXT CONFIGURATION
         # ====================================================================
-        # COMMENTED OUT: Using chart defaults for basic setup
         # Pod and container security settings for enhanced security posture
-        # securityContext:
-        #   runAsNonRoot: true               # Run container as non-root user for security
-        #   runAsUser: 64535                 # Specific non-root user ID
-        #   runAsGroup: 64535                # Specific group ID
-        #   fsGroup: 64535                   # File system group for volume ownership
+        securityContext:
+          runAsNonRoot: true               # Run container as non-root user for security
+          runAsUser: 64535                 # Specific non-root user ID
+          runAsGroup: 64535                # Specific group ID
+          fsGroup: 64535                   # File system group for volume ownership
 
         # ====================================================================
         # DISCOVERY AND MONITORING CONFIGURATION
@@ -127,8 +124,7 @@ spec:
         # ====================================================================
         # Controls how long Prometheus keeps metrics data
         # SIMPLIFIED: Using minimal retention for basic setup
-        retention: 7d                      # Keep metrics for 7 days (reduced from 14d)
-        # retentionSize: 20GB               # COMMENTED OUT: Let it grow naturally for basic setup
+        retention: 14d                      # Keep metrics for 14 days
 
         # ====================================================================
         # RESOURCE ALLOCATION
@@ -156,7 +152,7 @@ spec:
               resources:
                 requests:
                   # Minimal storage allocation for basic setup
-                  storage: 10Gi             # Reduced from 20Gi
+                  storage: 20Gi
 
     # ============================================================================
     # ALERTMANAGER CONFIGURATION
