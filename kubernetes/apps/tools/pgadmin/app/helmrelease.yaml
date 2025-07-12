@@ -37,8 +37,8 @@ spec:
                 cp /pgadmin4/servers.json /var/lib/pgadmin/servers.json
                 chmod 0600 /var/lib/pgadmin/pgpass
                 chmod 0600 /var/lib/pgadmin/servers.json
-                chown 5050:5050 /var/lib/pgadmin/pgpass
-                chown 5050:5050 /var/lib/pgadmin/servers.json
+                chown ${APP_UID:=5050}:${APP_GID:=5050} /var/lib/pgadmin/pgpass
+                chown ${APP_UID:=5050}:${APP_GID:=5050} /var/lib/pgadmin/servers.json
         containers:
           app:
             image:
@@ -77,9 +77,9 @@ spec:
                 memory: 384Mi
     defaultPodOptions:
       securityContext:
-        runAsUser: "${APP_UID:-5050}"
-        runAsGroup: "${APP_GID:-5050}"
-        fsGroup: "${APP_GID:-5050}"
+        runAsUser: "${APP_UID:=5050}"
+        runAsGroup: "${APP_GID:=5050}"
+        fsGroup: "${APP_GID:=5050}"
         fsGroupChangePolicy: OnRootMismatch
     persistence:
       pgpass:
