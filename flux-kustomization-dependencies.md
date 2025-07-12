@@ -2,7 +2,7 @@
 
 This document shows the dependency relationships between all Flux Kustomizations in the cluster.
 
-**Total Kustomizations:** 37
+**Total Kustomizations:** 36
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document shows the dependency relationships between all Flux Kustomizations
 | Namespace | Kustomizations | Count |
 |-----------|----------------|-------|
 | `cert-manager` | cert-manager | 1 |
-| `database` | cloudnative-pg-backup, cloudnative-pg-cluster, cloudnative-pg-operator, redis | 4 |
+| `database` | cloudnative-pg-backup, cloudnative-pg-cluster, cloudnative-pg-operator | 3 |
 | `default` | echo | 1 |
 | `external` | kvm-pve1, proxmox-ve | 2 |
 | `external-secrets` | external-secrets, onepassword-connect, onepassword-store | 3 |
@@ -65,10 +65,6 @@ This section shows all dependencies (direct and indirect) for each kustomization
 
 
 ### database/cloudnative-pg-operator
-
-**Dependencies:** *None (root level)*
-
-### database/redis
 
 **Dependencies:** *None (root level)*
 
@@ -323,9 +319,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 - **database/cloudnative-pg-operator**
   - *File:* `kubernetes/apps/database/cloudnative-pg/ks.yaml`
   - *Path:* `./kubernetes/apps/database/cloudnative-pg/operator`
-- **database/redis**
-  - *File:* `kubernetes/apps/database/redis/ks.yaml`
-  - *Path:* `./kubernetes/apps/database/redis/app`
 - **default/echo**
   - *File:* `kubernetes/apps/default/echo/ks.yaml`
   - *Path:* `./kubernetes/apps/default/echo/app`
@@ -468,7 +461,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `cloudnative-pg-backup` | `database` | `database/cloudnative-pg-cluster`<br>`external-secrets/onepassword-store` | *None* |
 | `cloudnative-pg-cluster` | `database` | `database/cloudnative-pg-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` | `tools/pgadmin`<br>`database/cloudnative-pg-backup` |
 | `cloudnative-pg-operator` | `database` | *None* | `database/cloudnative-pg-cluster` |
-| `redis` | `database` | *None* | *None* |
 | `echo` | `default` | *None* | *None* |
 | `kvm-pve1` | `external` | `network/k8s-gateway` | *None* |
 | `proxmox-ve` | `external` | `network/k8s-gateway` | *None* |
@@ -510,7 +502,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `database/cloudnative-pg-backup` | `kubernetes/apps/database/cloudnative-pg/ks.yaml` |
 | `database/cloudnative-pg-cluster` | `kubernetes/apps/database/cloudnative-pg/ks.yaml` |
 | `database/cloudnative-pg-operator` | `kubernetes/apps/database/cloudnative-pg/ks.yaml` |
-| `database/redis` | `kubernetes/apps/database/redis/ks.yaml` |
 | `default/echo` | `kubernetes/apps/default/echo/ks.yaml` |
 | `external/kvm-pve1` | `kubernetes/apps/external/kvm-pve1/ks.yaml` |
 | `external/proxmox-ve` | `kubernetes/apps/external/proxmox-ve/ks.yaml` |

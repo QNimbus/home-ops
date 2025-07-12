@@ -24,6 +24,7 @@ _Managed with Flux, Renovate, and GitHub Actions_
   - [Flux Workflow](#flux-workflow)
   - [Tailscale Operator Flux Dependency Diagram](#tailscale-operator-flux-dependency-diagram)
   - [Key Dependencies Explained](#key-dependencies-explained)
+  - [Deployment Strategies](#deployment-strategies)
 - [ Cloud Dependencies](#-cloud-dependencies)
 - [ DNS](#-dns)
 - [ Hardware](#-hardware)
@@ -124,6 +125,48 @@ The example shows that `tailscale-operator` won't be deployed or upgraded until 
 3. **Tailscale Operator**: `tailscale-operator` Kustomization deploys with OAuth credentials available
 
 This simple dependency chain ensures secure access to Tailscale OAuth credentials before deployment.
+
+### Deployment Strategies
+
+When deploying stateful applications in Kubernetes, choosing the right deployment strategy is crucial for avoiding issues with persistent storage. The choice between `RollingUpdate` and `Recreate` strategies often depends on how your application interacts with `ReadWriteOnce` (RWO) Persistent Volume Claims.
+
+**Understanding the Problem**
+
+Most storage classes in Kubernetes use `ReadWriteOnce` access mode, meaning a PVC can only be mounted by a single node at a time. This creates a fundamental conflict with `RollingUpdate` strategy:
+
+1. Old pod is running with PVC attached
+2. RollingUpdate tries to start new pod
+3. New pod can't start because PVC is still bound to old pod
+4. Results in `FailedMount` or `ContainerCreating` state
+
+**When to Use Each Strategy**
+
+| Strategy | Best For | Pros | Cons |
+|----------|----------|------|------|
+| `RollingUpdate` | Stateless apps, apps with RWX storage | Zero downtime, gradual rollout | **Breaks with RWO PVCs** |
+| `Recreate` | Stateful apps with persistent storage | **Solves PVC binding issues** | Brief downtime during updates |
+
+**Examples from this Repository**
+
+```yaml
+# ✅ Correct for stateful apps (pgAdmin, databases)
+controllers:
+  app:
+    strategy: Recreate  # Ensures old pod releases PVC before new pod starts
+
+# ✅ Correct for stateless apps (web frontends, APIs)
+controllers:
+  app:
+    strategy: RollingUpdate  # Zero downtime for apps without persistent storage
+```
+
+**Alternative Solutions**
+
+- **StatefulSets**: Use for applications requiring stable identity and ordered deployment
+- **ReadWriteMany storage**: Use NFS, CephFS, or other RWX-capable storage classes
+- **Multiple replicas with anti-affinity**: Requires RWX storage for shared data
+
+For most homelab scenarios with local storage, `Recreate` strategy is the pragmatic choice for stateful applications. The brief downtime during updates is acceptable for admin tools and services, while preventing the frustration of stuck deployments.
 
 ---
 
