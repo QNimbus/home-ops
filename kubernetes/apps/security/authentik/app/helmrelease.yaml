@@ -57,23 +57,23 @@ spec:
             - name: internal
               namespace: kube-system
               sectionName: https-app
-      volumes:
+      volumes: &volumes
         - name: postgres-creds
           secret:
             secretName: authentik-postgres-credentials
-      volumeMounts:
+        - name: redis-creds
+          secret:
+            secretName: authentik-redis-credentials
+      volumeMounts: &volumeMounts
         - name: postgres-creds
           mountPath: /postgres-creds
+          readOnly: true
+        - name: redis-creds
+          mountPath: /redis-creds
           readOnly: true
     worker:
-      volumes:
-        - name: postgres-creds
-          secret:
-            secretName: authentik-postgres-credentials
-      volumeMounts:
-        - name: postgres-creds
-          mountPath: /postgres-creds
-          readOnly: true
+      volumes: *volumes
+      volumeMounts: *volumeMounts
     authentik:
       postgresql:
         host: "${DB_SERVER}"
@@ -81,4 +81,4 @@ spec:
         password: file:///postgres-creds/password
       redis:
         host: "${REDIS_SERVER}"
-        password: file:///postgres-creds/redis-password
+        password: file:///redis-creds/password

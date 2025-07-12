@@ -30,6 +30,9 @@ spec:
               pullPolicy: IfNotPresent
             env:
               REDIS_REPLICATION_MODE: master
+            envFrom:
+              - secretRef:
+                  name: redis-secret
             resources:
               requests:
                 cpu: 10m
