@@ -29,22 +29,34 @@ spec:
       targetPath: authentik.secret_key
     - kind: Secret
       name: authentik-secret
-      valuesKey: POSTGRES_HOST
+      valuesKey: AUTHENTIK_POSTGRESQL__HOST
       targetPath: authentik.postgresql.host
     - kind: Secret
       name: authentik-secret
-      valuesKey: REDIS_HOST
+      valuesKey: AUTHENTIK_REDIS__HOST
       targetPath: authentik.redis.host
     - kind: Secret
       name: authentik-secret
-      valuesKey: REDIS_PASSWORD
+      valuesKey: AUTHENTIK_REDIS__PASSWORD
       targetPath: authentik.redis.password
   values:
     fullnameOverride: *app
     server:
-      ingress:
-        enabled: true
-        hosts: ["auth.${DOMAIN_APP}"]
+      initContainers:
+        - name: init-db
+          image: ghcr.io/home-operations/postgres-init:17.5.0
+          envFrom:
+            - secretRef:
+                name: authentik-secret
+      route:
+        main:
+          enabled: true
+          hostnames:
+            - "auth.${DOMAIN_APP}"
+          parentRefs:
+            - name: internal
+              namespace: kube-system
+              sectionName: https-app
       volumes:
         - name: postgres-creds
           secret:
@@ -69,3 +81,4 @@ spec:
         password: file:///postgres-creds/password
       redis:
         host: "${REDIS_SERVER}"
+        password: file:///postgres-creds/redis-password
