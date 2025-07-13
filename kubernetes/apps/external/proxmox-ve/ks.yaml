@@ -20,11 +20,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-    substituteFrom:
-      - name: cluster-settings
-        kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
   sourceRef:
     kind: GitRepository
     name: flux-system

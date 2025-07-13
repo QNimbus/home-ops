@@ -129,14 +129,13 @@ spec:
         # ====================================================================
         # RESOURCE ALLOCATION
         # ====================================================================
-        # COMMENTED OUT: Using chart defaults for basic setup
         # CPU and memory resource requests and limits for the Prometheus container
-        # resources:
-        #   requests:
-        #     cpu: 300m                      # Request 300 millicores (0.3 CPU)
-        #     memory: 1Gi                    # Request 1 GiB of memory
-        #   limits:
-        #     memory: 2Gi                    # Limit memory usage to 2 GiB (no CPU limit for monitoring workloads)
+        resources:
+          requests:
+            cpu: 300m                      # Request 300 millicores (0.3 CPU)
+            memory: 1Gi                    # Request 1 GiB of memory
+          limits:
+            memory: 2Gi                    # Limit memory usage to 2 GiB (no CPU limit for monitoring workloads)
 
         # ====================================================================
         # PERSISTENT STORAGE CONFIGURATION
@@ -146,9 +145,8 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              # COMMENTED OUT: Using default storage class for basic setup
               # Storage class for the persistent volume (Longhorn)
-              # storageClassName: longhorn
+              storageClassName: longhorn
               resources:
                 requests:
                   # Minimal storage allocation for basic setup

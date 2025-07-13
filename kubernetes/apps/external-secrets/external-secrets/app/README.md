@@ -64,9 +64,53 @@ Common customizations include:
 
 ### Using SOPS Secrets in Values
 
-You can reference SOPS-encrypted secrets in your `helm/values.yaml` file using FluxCD's variable substitution feature:
+You can reference SOPS-encrypted secrets in your `helm/values.yaml` file using FluxCD's variable substitution feature. This GitOps setup includes automatic patching that provides access to cluster-wide secrets and configuration.
 
-#### Method 1: Variable Substitution (Recommended)
+#### Automatic Cluster Variable Substitution
+
+**All Kustomizations automatically receive cluster-wide variables** unless explicitly disabled. The cluster-level Kustomization (`kubernetes/flux/cluster/ks.yaml`) applies a patch to all child Kustomizations that adds:
+
+```yaml
+postBuild:
+  substituteFrom:
+    - name: cluster-settings  # Cluster-wide ConfigMap with common settings
+      kind: ConfigMap
+    - name: cluster-secrets   # SOPS-encrypted Secret with cluster-wide secrets
+      kind: Secret
+```
+
+This means you can reference variables like `${DOMAIN_APP}`, `${CLUSTER_NAME}`, or any other values stored in these cluster-wide resources directly in your `helm/values.yaml` without additional configuration.
+
+#### Disabling Automatic Substitution
+
+To disable automatic cluster variable substitution for a specific Kustomization, add this label:
+
+```yaml
+metadata:
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
+```
+
+#### Method 1: Using Cluster Variables (Automatic)
+
+Reference cluster-wide variables directly in your `helm/values.yaml`:
+
+```yaml
+webhook:
+  extraEnv:
+    - name: CLUSTER_NAME
+      value: "${CLUSTER_NAME}"  # From cluster-settings ConfigMap
+    - name: SECRET_KEY
+      value: "${SECRET_KEY}"    # From cluster-secrets Secret
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: "${AWS_ROLE_ARN}"  # From cluster-secrets
+```
+
+#### Method 2: Additional Custom Secrets
+
+For application-specific secrets, create a SOPS secret file and add it to your Kustomization:
 
 1. **Create a SOPS secret file** (e.g., `secret.sops.yaml`):
    ```yaml
@@ -78,7 +122,7 @@ You can reference SOPS-encrypted secrets in your `helm/values.yaml` file using F
    stringData:
      WEBHOOK_TLS_CERT: "LS0tLS1CRUdJTi..."
      CERT_ISSUER_NAME: "letsencrypt-prod"
-     AWS_ROLE_ARN: "arn:aws:iam::123456789:role/external-secrets"
+     CUSTOM_API_KEY: "sk-1234567890"
    ```
 
 2. **Use variables in `helm/values.yaml`**:
@@ -87,23 +131,20 @@ You can reference SOPS-encrypted secrets in your `helm/values.yaml` file using F
      extraEnv:
        - name: WEBHOOK_CERT
          value: "${WEBHOOK_TLS_CERT}"
-
-   serviceAccount:
-     annotations:
-       eks.amazonaws.com/role-arn: "${AWS_ROLE_ARN}"
+       - name: API_KEY
+         value: "${CUSTOM_API_KEY}"
    ```
 
-3. **Update your Kustomization** to reference the secret:
+3. **Add to your Kustomization** (extends the automatic cluster substitution):
    ```yaml
    postBuild:
      substituteFrom:
-       - name: cluster-secrets
-         kind: Secret
-       - name: external-secrets-config  # Your SOPS secret
+       # cluster-settings and cluster-secrets are added automatically
+       - name: external-secrets-config  # Your additional SOPS secret
          kind: Secret
    ```
 
-#### Method 2: Direct Secret References
+#### Method 3: Direct Secret References
 
 For charts that support `existingSecret` patterns, you can reference SOPS secrets directly:
 
@@ -116,7 +157,26 @@ auth:
     password: "password"
 ```
 
-The variables are substituted during the FluxCD reconciliation process, ensuring sensitive data remains encrypted in Git.
+#### Variable Substitution Process
+
+Variables are substituted during the FluxCD reconciliation process in this order:
+1. **Automatic cluster variables** from `cluster-settings` ConfigMap and `cluster-secrets` Secret
+2. **Additional custom variables** from any secrets/configmaps you specify
+3. **Values are rendered** into the final Helm chart deployment
+
+This ensures sensitive data remains encrypted in Git while being available during deployment.
+
+## FluxCD Integration
+
+### Automatic Cluster Integration
+
+This GitOps setup automatically integrates with cluster-wide configuration through FluxCD patches. The cluster-level Kustomization (`kubernetes/flux/cluster/ks.yaml`) applies patches to all child Kustomizations (unless disabled) that provide:
+
+- **SOPS Decryption**: Automatic decryption of SOPS-encrypted secrets
+- **Cluster Variables**: Access to `cluster-settings` ConfigMap and `cluster-secrets` Secret
+- **Consistent Configuration**: Shared settings across all applications
+
+The automatic patching targets all Kustomizations except those with the label `substitution.flux.home.arpa/disabled: "true"`.
 
 ## FluxCD Integration
 

@@ -16,10 +16,6 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/database/cloudnative-pg/operator
-  postBuild:
-    substitute:
-      APP: *app
-    substituteFrom: []
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -44,10 +40,6 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/database/cloudnative-pg/cluster
-  postBuild:
-    substitute:
-      APP: *app
-    substituteFrom: []
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -78,14 +70,6 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/database/cloudnative-pg/backup
-  postBuild:
-    substitute:
-      APP: *app
-    substituteFrom:
-      - name: cluster-settings
-        kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
   sourceRef:
     kind: GitRepository
     name: flux-system

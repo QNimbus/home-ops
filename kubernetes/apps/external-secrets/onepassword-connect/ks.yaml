@@ -20,9 +20,8 @@ spec:
     secretRef:
       name: sops-age
   postBuild:
-    substituteFrom:
-      - name: cluster-secrets
-        kind: Secret
+    substitute:
+      APP: *app
   sourceRef:
     kind: GitRepository
     name: flux-system
