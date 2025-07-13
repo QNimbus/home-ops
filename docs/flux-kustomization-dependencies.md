@@ -2,7 +2,7 @@
 
 This document shows the dependency relationships between all Flux Kustomizations in the cluster.
 
-**Total Kustomizations:** 36
+**Total Kustomizations:** 37
 
 ## Table of Contents
 
@@ -26,6 +26,7 @@ This document shows the dependency relationships between all Flux Kustomizations
 | `longhorn-system` | longhorn | 1 |
 | `monitoring` | keda | 1 |
 | `network` | cloudflare-dns, cloudflare-tunnel, k8s-gateway, unifi-dns | 4 |
+| `observability` | kube-prometheus-stack | 1 |
 | `system-upgrade` | system-upgrade-controller, system-upgrade-controller-plans | 2 |
 | `tools` | it-tools, pgadmin | 2 |
 | `volsync-system` | openebs, snapshot-controller, volsync | 3 |
@@ -251,6 +252,19 @@ This section shows all dependencies (direct and indirect) for each kustomization
 `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
 
 
+### observability/kube-prometheus-stack
+
+**Total Dependencies:** 4
+
+**Dependency Chain:**
+
+- **Direct:** `external-secrets/onepassword-store`, `longhorn-system/longhorn`
+- **Level 2:** `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
+
+**All Dependencies (flat list):**
+`external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `external-secrets/onepassword-store`, `longhorn-system/longhorn`
+
+
 ### system-upgrade/system-upgrade-controller
 
 **Dependencies:** *None (root level)*
@@ -436,6 +450,10 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/database/cloudnative-pg/ks.yaml`
   - *Path:* `./kubernetes/apps/database/cloudnative-pg/cluster`
   - *Dependencies:* `database/cloudnative-pg-operator`, `external-secrets/onepassword-store`, `longhorn-system/longhorn`
+- **observability/kube-prometheus-stack**
+  - *File:* `kubernetes/apps/observability/kube-prometheus-stack/ks.yaml`
+  - *Path:* `./kubernetes/apps/observability/kube-prometheus-stack/app`
+  - *Dependencies:* `external-secrets/onepassword-store`, `longhorn-system/longhorn`
 - **volsync-system/volsync**
   - *File:* `kubernetes/apps/volsync-system/volsync/ks.yaml`
   - *Path:* `./kubernetes/apps/volsync-system/volsync/app`
@@ -466,7 +484,7 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `proxmox-ve` | `external` | `network/k8s-gateway` | *None* |
 | `external-secrets` | `external-secrets` | *None* | `external-secrets/onepassword-store`<br>`external-secrets/onepassword-connect` |
 | `onepassword-connect` | `external-secrets` | `external-secrets/external-secrets` | `network/unifi-dns`<br>`flux-system/tailscale-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` |
-| `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup` |
+| `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup` |
 | `cluster-apps` | `flux-system` | `flux-system/cluster-meta` | *None* |
 | `cluster-meta` | `flux-system` | *None* | `flux-system/cluster-apps` |
 | `flux-instance` | `flux-system` | `flux-system/flux-operator` | *None* |
@@ -480,12 +498,13 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `metrics-server` | `kube-system` | *None* | *None* |
 | `reloader` | `kube-system` | *None* | *None* |
 | `spegel` | `kube-system` | *None* | *None* |
-| `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `volsync-system/volsync`<br>`database/cloudnative-pg-cluster` |
+| `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `volsync-system/volsync`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster` |
 | `keda` | `monitoring` | *None* | *None* |
 | `cloudflare-dns` | `network` | *None* | *None* |
 | `cloudflare-tunnel` | `network` | *None* | *None* |
 | `k8s-gateway` | `network` | *None* | `external/kvm-pve1`<br>`external/proxmox-ve` |
 | `unifi-dns` | `network` | `external-secrets/onepassword-connect` | *None* |
+| `kube-prometheus-stack` | `observability` | `external-secrets/onepassword-store`<br>`longhorn-system/longhorn` | *None* |
 | `system-upgrade-controller` | `system-upgrade` | *None* | `system-upgrade/system-upgrade-controller-plans` |
 | `system-upgrade-controller-plans` | `system-upgrade` | `system-upgrade/system-upgrade-controller` | *None* |
 | `it-tools` | `tools` | *None* | *None* |
@@ -527,6 +546,7 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `network/cloudflare-tunnel` | `kubernetes/apps/network/cloudflare-tunnel/ks.yaml` |
 | `network/k8s-gateway` | `kubernetes/apps/network/k8s-gateway/ks.yaml` |
 | `network/unifi-dns` | `kubernetes/apps/network/unifi-dns/ks.yaml` |
+| `observability/kube-prometheus-stack` | `kubernetes/apps/observability/kube-prometheus-stack/ks.yaml` |
 | `system-upgrade/system-upgrade-controller` | `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml` |
 | `system-upgrade/system-upgrade-controller-plans` | `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml` |
 | `tools/it-tools` | `kubernetes/apps/tools/it-tools/ks.yaml` |

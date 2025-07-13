@@ -76,7 +76,7 @@ Flux watches the cluster in my [kubernetes](./kubernetes/) folder (see [Folder S
 
 The way Flux works for me here is it will recursively search the `kubernetes/apps` folder until it finds the most top level `kustomization.yaml` per directory and then apply all the resources listed in it. That aforementioned `kustomization.yaml` will generally only have a namespace resource and one or many Flux kustomizations (`ks.yaml`). Under the control of those Flux kustomizations there will be a `HelmRelease` or other resources related to the application which will be applied.
 
-**📋 For a comprehensive view of all Flux Kustomizations and their dependencies, see the [Flux Kustomization Dependencies](./flux-kustomization-dependencies.md) document. This auto-generated visualization shows the complete dependency hierarchy, deployment order, and relationships between all 39 Kustomizations in the cluster.**
+**📋 For a comprehensive view of all Flux Kustomizations and their dependencies, see the [Flux Kustomization Dependencies](./docs/flux-kustomization-dependencies.md) document. This auto-generated visualization shows the complete dependency hierarchy, deployment order, and relationships between all 39 Kustomizations in the cluster.**
 
 [Renovate](https://github.com/renovatebot/renovate) watches my **entire** repository looking for dependency updates, when they are found a PR is automatically created. When some PRs are merged Flux applies the changes to my cluster.
 
