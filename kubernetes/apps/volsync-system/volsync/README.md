@@ -221,6 +221,7 @@ The component automatically creates:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `APP` | (required) | Application name for backup repository |
+| `VOLSYNC_CAPACITY` | (required) | Volume size |
 | `VOLSYNC_CLAIM` | `${APP}` | PVC name to backup |
 | `VOLSYNC_CACHE_CAPACITY` | `5Gi` | Cache volume size |
 | `VOLSYNC_CACHE_ACCESSMODES` | `ReadWriteOnce` | Cache volume access mode |
