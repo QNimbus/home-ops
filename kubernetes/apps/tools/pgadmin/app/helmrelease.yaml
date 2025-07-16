@@ -37,8 +37,8 @@ spec:
                 cp /pgadmin4/servers.json /var/lib/pgadmin/servers.json
                 chmod 0600 /var/lib/pgadmin/pgpass
                 chmod 0600 /var/lib/pgadmin/servers.json
-                chown ${APP_UID:=5050}:${APP_GID:=5050} /var/lib/pgadmin/pgpass
-                chown ${APP_UID:=5050}:${APP_GID:=5050} /var/lib/pgadmin/servers.json
+                chown 5050:5050 /var/lib/pgadmin/pgpass
+                chown 5050:5050 /var/lib/pgadmin/servers.json
         containers:
           app:
             image:
@@ -46,7 +46,7 @@ spec:
               tag: 9.4.0
             env:
               PGADMIN_LISTEN_PORT: &port 5050
-              PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 30 # Debug (0, 10, 20, 30, 40, 50: NOTSET, DEBUG, INFO, SQL, WARNING, ERROR, CRITICAL)
+              PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 20 # Debug (0, 10, 20, 30, 40, 50: NOTSET, DEBUG, INFO, SQL, WARNING, ERROR, CRITICAL)
               PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
               PGADMIN_CONFIG_MAIL_PORT: "587"
               PGADMIN_CONFIG_MAIL_USE_TLS: "True"
@@ -77,9 +77,9 @@ spec:
                 memory: 384Mi
     defaultPodOptions:
       securityContext:
-        runAsUser: "${APP_UID:=5050}"
-        runAsGroup: "${APP_GID:=5050}"
-        fsGroup: "${APP_GID:=5050}"
+        runAsUser: 5050
+        runAsGroup: 5050
+        fsGroup: 5050
         fsGroupChangePolicy: OnRootMismatch
     persistence:
       pgpass:
@@ -119,7 +119,3 @@ spec:
         ports:
           http:
             port: *port
-    serviceMonitor:
-      app:
-        endpoints:
-          - port: http
