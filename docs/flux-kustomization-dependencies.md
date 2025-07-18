@@ -2,7 +2,7 @@
 
 This document shows the dependency relationships between all Flux Kustomizations in the cluster.
 
-**Total Kustomizations:** 37
+**Total Kustomizations:** 42
 
 ## Table of Contents
 
@@ -17,16 +17,16 @@ This document shows the dependency relationships between all Flux Kustomizations
 | Namespace | Kustomizations | Count |
 |-----------|----------------|-------|
 | `cert-manager` | cert-manager | 1 |
-| `database` | cloudnative-pg-backup, cloudnative-pg-cluster, cloudnative-pg-operator | 3 |
+| `database` | cloudnative-pg-backup, cloudnative-pg-cluster, cloudnative-pg-operator, dragonfly-cluster, dragonfly-operator | 5 |
 | `default` | echo | 1 |
 | `external` | kvm-pve1, proxmox-ve | 2 |
 | `external-secrets` | external-secrets, onepassword-connect, onepassword-store | 3 |
 | `flux-system` | cluster-apps, cluster-meta, flux-instance, flux-operator, tailscale-operator | 5 |
 | `kube-system` | cilium, cilium-gateway, coredns, csi-driver-nfs, csi-driver-smb, metrics-server, reloader, spegel | 8 |
 | `longhorn-system` | longhorn | 1 |
-| `monitoring` | keda | 1 |
 | `network` | cloudflare-dns, cloudflare-tunnel, k8s-gateway, unifi-dns | 4 |
-| `observability` | kube-prometheus-stack | 1 |
+| `observability` | gatus, keda, kube-prometheus-stack | 3 |
+| `security` | authentik, authentik-secrets | 2 |
 | `system-upgrade` | system-upgrade-controller, system-upgrade-controller-plans | 2 |
 | `tools` | it-tools, pgadmin | 2 |
 | `volsync-system` | openebs, snapshot-controller, volsync | 3 |
@@ -68,6 +68,33 @@ This section shows all dependencies (direct and indirect) for each kustomization
 ### database/cloudnative-pg-operator
 
 **Dependencies:** *None (root level)*
+
+### database/dragonfly-cluster
+
+**Total Dependencies:** 4
+
+**Dependency Chain:**
+
+- **Direct:** `database/dragonfly-operator`
+- **Level 2:** `external-secrets/onepassword-store`
+- **Level 3:** `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
+
+**All Dependencies (flat list):**
+`database/dragonfly-operator`, `external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `external-secrets/onepassword-store`
+
+
+### database/dragonfly-operator
+
+**Total Dependencies:** 3
+
+**Dependency Chain:**
+
+- **Direct:** `external-secrets/onepassword-store`
+- **Level 2:** `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
+
+**All Dependencies (flat list):**
+`external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `external-secrets/onepassword-store`
+
 
 ### default/echo
 
@@ -223,10 +250,6 @@ This section shows all dependencies (direct and indirect) for each kustomization
 `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
 
 
-### monitoring/keda
-
-**Dependencies:** *None (root level)*
-
 ### network/cloudflare-dns
 
 **Dependencies:** *None (root level)*
@@ -252,6 +275,24 @@ This section shows all dependencies (direct and indirect) for each kustomization
 `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
 
 
+### observability/gatus
+
+**Total Dependencies:** 3
+
+**Dependency Chain:**
+
+- **Direct:** `longhorn-system/longhorn`
+- **Level 2:** `external-secrets/onepassword-connect`
+- **Level 3:** `external-secrets/external-secrets`
+
+**All Dependencies (flat list):**
+`external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `longhorn-system/longhorn`
+
+
+### observability/keda
+
+**Dependencies:** *None (root level)*
+
 ### observability/kube-prometheus-stack
 
 **Total Dependencies:** 4
@@ -263,6 +304,33 @@ This section shows all dependencies (direct and indirect) for each kustomization
 
 **All Dependencies (flat list):**
 `external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `external-secrets/onepassword-store`, `longhorn-system/longhorn`
+
+
+### security/authentik
+
+**Total Dependencies:** 12
+
+**Dependency Chain:**
+
+- **Direct:** `security/authentik-secrets`, `volsync-system/volsync`, `database/cloudnative-pg-cluster`, `database/dragonfly-cluster`
+- **Level 2:** `external-secrets/onepassword-connect`, `volsync-system/snapshot-controller`, `volsync-system/openebs`, `longhorn-system/longhorn`, `database/cloudnative-pg-operator`, `external-secrets/onepassword-store`, `database/dragonfly-operator`
+- **Level 3:** `external-secrets/external-secrets`
+
+**All Dependencies (flat list):**
+`database/cloudnative-pg-cluster`, `database/cloudnative-pg-operator`, `database/dragonfly-cluster`, `database/dragonfly-operator`, `external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `external-secrets/onepassword-store`, `longhorn-system/longhorn`, `security/authentik-secrets`, `volsync-system/openebs`, `volsync-system/snapshot-controller`, `volsync-system/volsync`
+
+
+### security/authentik-secrets
+
+**Total Dependencies:** 2
+
+**Dependency Chain:**
+
+- **Direct:** `external-secrets/onepassword-connect`
+- **Level 2:** `external-secrets/external-secrets`
+
+**All Dependencies (flat list):**
+`external-secrets/external-secrets`, `external-secrets/onepassword-connect`
 
 
 ### system-upgrade/system-upgrade-controller
@@ -366,9 +434,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 - **kube-system/spegel**
   - *File:* `kubernetes/apps/kube-system/spegel/ks.yaml`
   - *Path:* `./kubernetes/apps/kube-system/spegel/app`
-- **monitoring/keda**
-  - *File:* `kubernetes/apps/monitoring/keda/ks.yaml`
-  - *Path:* `./kubernetes/apps/monitoring/keda/app`
 - **network/cloudflare-dns**
   - *File:* `kubernetes/apps/network/cloudflare-dns/ks.yaml`
   - *Path:* `./kubernetes/apps/network/cloudflare-dns`
@@ -378,6 +443,9 @@ This shows the deployment order based on dependencies. Items at the top are depl
 - **network/k8s-gateway**
   - *File:* `kubernetes/apps/network/k8s-gateway/ks.yaml`
   - *Path:* `./kubernetes/apps/network/k8s-gateway`
+- **observability/keda**
+  - *File:* `kubernetes/apps/observability/keda/ks.yaml`
+  - *Path:* `./kubernetes/apps/observability/keda/app`
 - **system-upgrade/system-upgrade-controller**
   - *File:* `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml`
   - *Path:* `./kubernetes/apps/system-upgrade/system-upgrade-controller/app`
@@ -442,6 +510,10 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/network/unifi-dns/ks.yaml`
   - *Path:* `./kubernetes/apps/network/unifi-dns/app`
   - *Dependencies:* `external-secrets/onepassword-connect`
+- **security/authentik-secrets**
+  - *File:* `kubernetes/apps/security/authentik/ks.yaml`
+  - *Path:* `./kubernetes/apps/security/authentik/secrets`
+  - *Dependencies:* `external-secrets/onepassword-connect`
 
 ### Level 3
 *Depends on items from level 2 and below*
@@ -450,6 +522,14 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/database/cloudnative-pg/ks.yaml`
   - *Path:* `./kubernetes/apps/database/cloudnative-pg/cluster`
   - *Dependencies:* `database/cloudnative-pg-operator`, `external-secrets/onepassword-store`, `longhorn-system/longhorn`
+- **database/dragonfly-operator**
+  - *File:* `kubernetes/apps/database/dragonfly/ks.yaml`
+  - *Path:* `./kubernetes/apps/database/dragonfly/operator`
+  - *Dependencies:* `external-secrets/onepassword-store`
+- **observability/gatus**
+  - *File:* `kubernetes/apps/observability/gatus/ks.yaml`
+  - *Path:* `./kubernetes/apps/observability/gatus/app`
+  - *Dependencies:* `longhorn-system/longhorn`
 - **observability/kube-prometheus-stack**
   - *File:* `kubernetes/apps/observability/kube-prometheus-stack/ks.yaml`
   - *Path:* `./kubernetes/apps/observability/kube-prometheus-stack/app`
@@ -466,10 +546,22 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/database/cloudnative-pg/ks.yaml`
   - *Path:* `./kubernetes/apps/database/cloudnative-pg/backup`
   - *Dependencies:* `database/cloudnative-pg-cluster`, `external-secrets/onepassword-store`
+- **database/dragonfly-cluster**
+  - *File:* `kubernetes/apps/database/dragonfly/ks.yaml`
+  - *Path:* `./kubernetes/apps/database/dragonfly/cluster`
+  - *Dependencies:* `database/dragonfly-operator`
 - **tools/pgadmin**
   - *File:* `kubernetes/apps/tools/pgadmin/ks.yaml`
   - *Path:* `./kubernetes/apps/tools/pgadmin/app`
   - *Dependencies:* `external-secrets/onepassword-store`, `database/cloudnative-pg-cluster`, `volsync-system/volsync`
+
+### Level 5
+*Depends on items from level 4 and below*
+
+- **security/authentik**
+  - *File:* `kubernetes/apps/security/authentik/ks.yaml`
+  - *Path:* `./kubernetes/apps/security/authentik/app`
+  - *Dependencies:* `security/authentik-secrets`, `volsync-system/volsync`, `database/cloudnative-pg-cluster`, `database/dragonfly-cluster`
 
 ## Detailed Dependency Matrix
 
@@ -477,14 +569,16 @@ This shows the deployment order based on dependencies. Items at the top are depl
 |---------------|-----------|--------------|------------|
 | `cert-manager` | `cert-manager` | *None* | `kube-system/cilium-gateway` |
 | `cloudnative-pg-backup` | `database` | `database/cloudnative-pg-cluster`<br>`external-secrets/onepassword-store` | *None* |
-| `cloudnative-pg-cluster` | `database` | `database/cloudnative-pg-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` | `tools/pgadmin`<br>`database/cloudnative-pg-backup` |
+| `cloudnative-pg-cluster` | `database` | `database/cloudnative-pg-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` | `tools/pgadmin`<br>`database/cloudnative-pg-backup`<br>`security/authentik` |
 | `cloudnative-pg-operator` | `database` | *None* | `database/cloudnative-pg-cluster` |
+| `dragonfly-cluster` | `database` | `database/dragonfly-operator` | `security/authentik` |
+| `dragonfly-operator` | `database` | `external-secrets/onepassword-store` | `database/dragonfly-cluster` |
 | `echo` | `default` | *None* | *None* |
 | `kvm-pve1` | `external` | `network/k8s-gateway` | *None* |
 | `proxmox-ve` | `external` | `network/k8s-gateway` | *None* |
 | `external-secrets` | `external-secrets` | *None* | `external-secrets/onepassword-store`<br>`external-secrets/onepassword-connect` |
-| `onepassword-connect` | `external-secrets` | `external-secrets/external-secrets` | `network/unifi-dns`<br>`flux-system/tailscale-operator`<br>`external-secrets/onepassword-store`<br>`longhorn-system/longhorn` |
-| `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup` |
+| `onepassword-connect` | `external-secrets` | `external-secrets/external-secrets` | `network/unifi-dns`<br>`flux-system/tailscale-operator`<br>`external-secrets/onepassword-store`<br>`security/authentik-secrets`<br>`longhorn-system/longhorn` |
+| `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup`<br>`database/dragonfly-operator` |
 | `cluster-apps` | `flux-system` | `flux-system/cluster-meta` | *None* |
 | `cluster-meta` | `flux-system` | *None* | `flux-system/cluster-apps` |
 | `flux-instance` | `flux-system` | `flux-system/flux-operator` | *None* |
@@ -498,20 +592,23 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `metrics-server` | `kube-system` | *None* | *None* |
 | `reloader` | `kube-system` | *None* | *None* |
 | `spegel` | `kube-system` | *None* | *None* |
-| `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `volsync-system/volsync`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster` |
-| `keda` | `monitoring` | *None* | *None* |
+| `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `volsync-system/volsync`<br>`observability/kube-prometheus-stack`<br>`observability/gatus`<br>`database/cloudnative-pg-cluster` |
 | `cloudflare-dns` | `network` | *None* | *None* |
 | `cloudflare-tunnel` | `network` | *None* | *None* |
 | `k8s-gateway` | `network` | *None* | `external/kvm-pve1`<br>`external/proxmox-ve` |
 | `unifi-dns` | `network` | `external-secrets/onepassword-connect` | *None* |
+| `gatus` | `observability` | `longhorn-system/longhorn` | *None* |
+| `keda` | `observability` | *None* | *None* |
 | `kube-prometheus-stack` | `observability` | `external-secrets/onepassword-store`<br>`longhorn-system/longhorn` | *None* |
+| `authentik` | `security` | `security/authentik-secrets`<br>`volsync-system/volsync`<br>`database/cloudnative-pg-cluster`<br>`database/dragonfly-cluster` | *None* |
+| `authentik-secrets` | `security` | `external-secrets/onepassword-connect` | `security/authentik` |
 | `system-upgrade-controller` | `system-upgrade` | *None* | `system-upgrade/system-upgrade-controller-plans` |
 | `system-upgrade-controller-plans` | `system-upgrade` | `system-upgrade/system-upgrade-controller` | *None* |
 | `it-tools` | `tools` | *None* | *None* |
 | `pgadmin` | `tools` | `external-secrets/onepassword-store`<br>`database/cloudnative-pg-cluster`<br>`volsync-system/volsync` | *None* |
 | `openebs` | `volsync-system` | *None* | `volsync-system/volsync` |
 | `snapshot-controller` | `volsync-system` | *None* | `volsync-system/volsync` |
-| `volsync` | `volsync-system` | `volsync-system/snapshot-controller`<br>`volsync-system/openebs`<br>`longhorn-system/longhorn` | `tools/pgadmin` |
+| `volsync` | `volsync-system` | `volsync-system/snapshot-controller`<br>`volsync-system/openebs`<br>`longhorn-system/longhorn` | `tools/pgadmin`<br>`security/authentik` |
 
 ## File Locations
 
@@ -521,6 +618,8 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `database/cloudnative-pg-backup` | `kubernetes/apps/database/cloudnative-pg/ks.yaml` |
 | `database/cloudnative-pg-cluster` | `kubernetes/apps/database/cloudnative-pg/ks.yaml` |
 | `database/cloudnative-pg-operator` | `kubernetes/apps/database/cloudnative-pg/ks.yaml` |
+| `database/dragonfly-cluster` | `kubernetes/apps/database/dragonfly/ks.yaml` |
+| `database/dragonfly-operator` | `kubernetes/apps/database/dragonfly/ks.yaml` |
 | `default/echo` | `kubernetes/apps/default/echo/ks.yaml` |
 | `external/kvm-pve1` | `kubernetes/apps/external/kvm-pve1/ks.yaml` |
 | `external/proxmox-ve` | `kubernetes/apps/external/proxmox-ve/ks.yaml` |
@@ -541,12 +640,15 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `kube-system/reloader` | `kubernetes/apps/kube-system/reloader/ks.yaml` |
 | `kube-system/spegel` | `kubernetes/apps/kube-system/spegel/ks.yaml` |
 | `longhorn-system/longhorn` | `kubernetes/apps/storage/longhorn/ks.yaml` |
-| `monitoring/keda` | `kubernetes/apps/monitoring/keda/ks.yaml` |
 | `network/cloudflare-dns` | `kubernetes/apps/network/cloudflare-dns/ks.yaml` |
 | `network/cloudflare-tunnel` | `kubernetes/apps/network/cloudflare-tunnel/ks.yaml` |
 | `network/k8s-gateway` | `kubernetes/apps/network/k8s-gateway/ks.yaml` |
 | `network/unifi-dns` | `kubernetes/apps/network/unifi-dns/ks.yaml` |
+| `observability/gatus` | `kubernetes/apps/observability/gatus/ks.yaml` |
+| `observability/keda` | `kubernetes/apps/observability/keda/ks.yaml` |
 | `observability/kube-prometheus-stack` | `kubernetes/apps/observability/kube-prometheus-stack/ks.yaml` |
+| `security/authentik` | `kubernetes/apps/security/authentik/ks.yaml` |
+| `security/authentik-secrets` | `kubernetes/apps/security/authentik/ks.yaml` |
 | `system-upgrade/system-upgrade-controller` | `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml` |
 | `system-upgrade/system-upgrade-controller-plans` | `kubernetes/apps/system-upgrade/system-upgrade-controller/ks.yaml` |
 | `tools/it-tools` | `kubernetes/apps/tools/it-tools/ks.yaml` |
