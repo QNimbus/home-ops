@@ -15,9 +15,6 @@ spec:
       name: sops-age
   interval: 1h
   path: ./kubernetes/apps/network/k8s-gateway
-  postBuild:
-    substitute:
-      APP: *app
   prune: true
   retryInterval: 2m
   sourceRef:
