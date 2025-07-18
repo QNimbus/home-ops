@@ -1,0 +1,110 @@
+---
+# yaml-language-server: $schema=https://schemas.bykaj.io/monitoring.coreos.com/prometheusrule_v1.json
+# PrometheusRule for CloudNative PostgreSQL monitoring
+# These rules provide alerts for various PostgreSQL performance and health metrics
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cloudnative-pg-rules
+spec:
+  groups:
+    - name: cloudnative-pg.rules
+      rules:
+        # Alert when a transaction is running for an extended period
+        # Long-running transactions can block other operations and cause performance issues
+        # They may indicate poor query optimization or application issues
+        - alert: LongRunningTransaction
+          annotations:
+            description: Pod {{ $labels.pod }} is taking more than 5 minutes (300 seconds) for a query.
+            summary: A query is taking longer than 5 minutes.
+          expr: |-
+            cnpg_backends_max_tx_duration_seconds > 300
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg
+
+        # Alert when database backends are in a waiting state for too long
+        # Excessive waiting can indicate lock contention or resource constraints
+        # This may impact application performance and responsiveness
+        - alert: BackendsWaiting
+          annotations:
+            description: Pod {{ $labels.pod }} has been waiting for longer than 5 minutes
+            summary: If a backend is waiting for longer than 5 minutes
+          expr: |-
+            cnpg_backends_waiting_total > 300
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg
+        # Alert on transaction ID wraparound risk
+        # PostgreSQL uses transaction IDs (XIDs) that can eventually wrap around
+        # This monitors the distance to wraparound, which if reached can cause data loss
+        # Values approaching 2 billion are concerning, 300 million is an early warning
+        - alert: PGDatabase
+          annotations:
+            description: Over 300,000,000 transactions from frozen xid on pod {{ $labels.pod }}
+            summary: Number of transactions from the frozen XID to the current one
+          expr: |-
+            cnpg_pg_database_xid_age > 300000000
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg
+
+        # Alert on replication lag between primary and standby
+        # Excessive lag indicates the standby is falling behind in processing WAL records
+        # This affects disaster recovery capabilities and can lead to data loss in failover
+        - alert: PGReplication
+          annotations:
+            description: Standby is lagging behind by over 300 seconds (5 minutes)
+            summary: The standby is lagging behind the primary
+          expr: |-
+            cnpg_pg_replication_lag > 300
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg
+        # Alert on WAL archiving failures
+        # WAL archiving is critical for point-in-time recovery and backup strategies
+        # Failed archiving can compromise the ability to recover to specific points in time
+        # This alert triggers when the last failed archive time is more recent than the last successful one
+        - alert: LastFailedArchiveTime
+          annotations:
+            description: Archiving failed for {{ $labels.pod }}
+            summary: Checks the last time archiving failed. Will be < 0 when it has not failed.
+          expr: |-
+            (cnpg_pg_stat_archiver_last_failed_time - cnpg_pg_stat_archiver_last_archived_time) > 1
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg
+
+        # Alert on database deadlocks
+        # Deadlocks occur when transactions are waiting for each other in a circular dependency
+        # High deadlock rates indicate application design issues or concurrency problems
+        # PostgreSQL automatically detects and resolves deadlocks by canceling transactions
+        - alert: DatabaseDeadlockConflicts
+          annotations:
+            description: There are over 10 deadlock conflicts in {{ $labels.pod }}
+            summary: Checks the number of database conflicts
+          expr: |-
+            cnpg_pg_stat_database_deadlocks > 10
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg
+        # Alert on replica streaming replication failures
+        # This detects when a replica is in recovery mode but its WAL receiver is not active
+        # Such a condition indicates the replica is not properly streaming from the primary
+        # This can lead to increased replication lag and eventually split-brain scenarios
+        - alert: ReplicaFailingReplication
+          annotations:
+            description: Replica {{ $labels.pod }} is failing to replicate
+            summary: Checks if the replica is failing to replicate
+          expr: |-
+            cnpg_pg_replication_in_recovery > cnpg_pg_replication_is_wal_receiver_up
+          for: 1m
+          labels:
+            severity: warning
+            kustomization: cloudnative-pg

@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://schemas.bykaj.io/monitoring.coreos.com/prometheusrule_v1.json
+# PrometheusRule for VolSync monitoring
+# These rules monitor the health and status of the VolSync data replication system
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: volsync
+spec:
+  groups:
+    - name: volsync.rules
+      rules:
+        # Alert when the VolSync metrics endpoint disappears from Prometheus targets
+        # This indicates that the VolSync controller is not running or is unreachable
+        # Without the controller, volume replication and synchronization will not occur
+        # This is a critical alert as it means the entire VolSync system is compromised
+        - alert: VolSyncComponentAbsent
+          expr: |
+            absent(up{job="volsync-metrics"})
+          annotations:
+            summary: >-
+              VolSync component has disappeared from Prometheus target discovery
+          for: 5m
+          labels:
+            severity: critical
+            kustomization: volsync
+
+        # Alert when a VolSync-managed volume is out of sync with its source
+        # This metric is exposed when a ReplicationSource or ReplicationDestination
+        # resource has detected a synchronization issue
+        # Out-of-sync volumes mean data is not being properly replicated, risking data loss
+        # The value 1 indicates the volume is out of sync, while 0 means it's in sync
+        - alert: VolSyncVolumeOutOfSync
+          expr: |
+            volsync_volume_out_of_sync == 1
+          annotations:
+            summary: >-
+              {{ $labels.obj_namespace }}/{{ $labels.obj_name }} volume is out of sync
+          for: 5m
+          labels:
+            severity: critical
+            kustomization: volsync
