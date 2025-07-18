@@ -10,7 +10,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-      substitution.flux.home.arpa/disabled: "true"
   components:
     - ../../../../components/volsync
   wait: false
@@ -27,13 +26,6 @@ spec:
       VOLSYNC_CLAIM: authentik-config
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_CACHE_CAPACITY: 1Gi
-    substituteFrom:
-      - name: cluster-settings
-        kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
-      - name: authentik-secrets
-        kind: Secret
   sourceRef:
     kind: GitRepository
     name: flux-system
