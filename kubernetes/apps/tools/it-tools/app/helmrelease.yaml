@@ -62,7 +62,7 @@ spec:
       app:
         hostnames: ["tools.${DOMAIN_APP}"]
         parentRefs:
-          - name: internal
+          - name: external
             namespace: kube-system
             sectionName: https-app
         rules:
