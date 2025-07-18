@@ -15,7 +15,7 @@ spec:
   wait: false
   prune: true
   interval: 1h
-  timeout: 5m
+  timeout: 10m
   retryInterval: 2m
   path: ./kubernetes/apps/tools/pgadmin/app
   postBuild:
@@ -25,6 +25,9 @@ spec:
       VOLSYNC_GID: "5050"
       VOLSYNC_CLAIM: pgadmin-config
       VOLSYNC_CAPACITY: 2Gi
+    substituteFrom:
+      - name: cluster-settings
+        kind: ConfigMap
   sourceRef:
     kind: GitRepository
     name: flux-system

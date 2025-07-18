@@ -41,8 +41,8 @@ initContainers:
         cp /pgadmin4/servers.json /var/lib/pgadmin/servers.json
         chmod 0600 /var/lib/pgadmin/pgpass
         chmod 0600 /var/lib/pgadmin/servers.json
-        chown ${APP_UID:=5050}:${APP_GID:=5050} /var/lib/pgadmin/pgpass
-        chown ${APP_UID:=5050}:${APP_GID:=5050} /var/lib/pgadmin/servers.json
+        chown 5050:5050 /var/lib/pgadmin/pgpass
+        chown 5050:5050 /var/lib/pgadmin/servers.json
 ```
 
 **Why this is needed**: ConfigMaps and Secrets are mounted read-only, but pgAdmin requires write access to its config directory and specific file permissions for security.
