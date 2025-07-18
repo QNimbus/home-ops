@@ -10,6 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+      substitution.flux.home.arpa/disabled: "true"
   components:
     - ../../../../components/volsync
   wait: false
@@ -28,6 +29,8 @@ spec:
     substituteFrom:
       - name: cluster-settings
         kind: ConfigMap
+      - name: cluster-secrets
+        kind: Secret
   sourceRef:
     kind: GitRepository
     name: flux-system

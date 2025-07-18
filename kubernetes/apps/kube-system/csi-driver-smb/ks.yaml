@@ -16,7 +16,6 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/kube-system/csi-driver-smb/app
-  postBuild: {}
   sourceRef:
     kind: GitRepository
     name: flux-system

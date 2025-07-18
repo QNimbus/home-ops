@@ -10,6 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+      substitution.flux.home.arpa/disabled: "true"
   components:
     - ../../../../components/volsync
   wait: false
@@ -65,9 +66,6 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/security/authentik/secrets
-  postBuild:
-    substitute:
-      APP: *app
   sourceRef:
     kind: GitRepository
     name: flux-system
