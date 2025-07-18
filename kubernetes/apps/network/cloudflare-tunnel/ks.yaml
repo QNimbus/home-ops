@@ -6,21 +6,24 @@ metadata:
   name: &app cloudflare-tunnel
   namespace: &namespace network
 spec:
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 10m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/cloudflare-tunnel/app
   decryption:
     provider: sops
     secretRef:
       name: sops-age
-  interval: 1h
-  path: ./kubernetes/apps/network/cloudflare-tunnel
-  prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
-  wait: false
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
