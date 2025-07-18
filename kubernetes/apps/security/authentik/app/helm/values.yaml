@@ -289,7 +289,7 @@ server:
       # labels: {}
       # -- Route hostnames
       hostnames:
-        - "auth.${DOMAIN_APP}"
+        - "auth.${DOMAIN_ID}"
       # -- Create http route for redirect
       # httpsRedirect: false
       # -- uses `server.service.servicePortHttps` instead of `server.service.servicePortHttp`
@@ -298,7 +298,7 @@ server:
       parentRefs:
         - name: external
           namespace: kube-system
-          sectionName: https-app
+          sectionName: https-id
       # -- Route matches
       # matches:
       #   - path:
