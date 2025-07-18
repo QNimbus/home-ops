@@ -280,9 +280,9 @@ server:
       # -- enable an HTTPRoute resource for the authentik server.
       enabled: true
       # -- Set the route apiVersion
-      apiVersion: gateway.networking.k8s.io/v1
+      # apiVersion: gateway.networking.k8s.io/v1
       # -- Set the route kind
-      kind: HTTPRoute
+      # kind: HTTPRoute
       # -- Route annotations
       # annotations: {}
       # -- Route labels
@@ -296,7 +296,7 @@ server:
       # https: false
       # -- Reference to parent gateways
       parentRefs:
-        - name: internal
+        - name: external
           namespace: kube-system
           sectionName: https-app
       # -- Route matches
