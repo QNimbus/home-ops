@@ -198,10 +198,10 @@ logLevel: info  # @schema enum:[panic, debug, info, warning, error, fatal]; type
 logFormat: text  # @schema enum:["text", "json"]; type:string; default: "text"
 
 # -- Interval for DNS updates.
-interval: 1m
+interval: 10m
 
 # -- If `true`, triggers run loop on create/update/delete events in addition of regular interval.
-triggerLoopOnEvent: false
+triggerLoopOnEvent: true
 
 # -- if `true`, _ExternalDNS_ will run in a namespaced scope (`Role`` and `Rolebinding`` will be namespaced too).
 namespaced: false
@@ -209,6 +209,7 @@ namespaced: false
 # -- _Kubernetes_ resources to monitor for DNS entries.
 sources:
   - service
+  - gateway-tlsroute
   - gateway-httproute
 
 # -- How DNS records are synchronized between sources and providers; available values are `sync` & `upsert-only`.
@@ -227,7 +228,8 @@ txtPrefix: k8s. # @schema type:[string, null]; default: null
 txtSuffix:  # @schema type:[string, null]; default: null
 
 # -- Limit possible target zones by domain suffixes.
-domainFilters: ["${DOMAIN_PROXII}", "${DOMAIN_APP}", "${DOMAIN_ID}", "kvm.${DOMAIN_APP}"]  # @schema type: [array, null]; item: string; minItems:1; maxItems:100; uniqueItems: true;
+# domainFilters: ["${DOMAIN_PROXII}", "${DOMAIN_APP}", "home.${DOMAIN_APP}", "kvm.${DOMAIN_APP}", "${DOMAIN_ID}"]  # @schema type: [array, null]; item: string; minItems:1; maxItems:100; uniqueItems: true;
+domainFilters: []
 
 # -- Intentionally exclude domains from being managed.
 excludeDomains: []
@@ -303,19 +305,19 @@ provider:  # @schema type: [object, string];
     # @default -- See _values.yaml_
     serviceMonitor:
       enabled: true
-      interval:
-      scheme:
-      tlsConfig: {}
-      bearerTokenFile:
-      scrapeTimeout:
-      metricRelabelings: []
-      relabelings: []
+      # interval:
+      # scheme:
+      # tlsConfig: {}
+      # bearerTokenFile:
+      # scrapeTimeout:
+      # metricRelabelings: []
+      # relabelings: []
 
 # -- Extra arguments to provide to _ExternalDNS_.
 # An array or map can be used, with maps allowing for value overrides; maps also support slice values to use the same arg multiple times.
-extraArgs:  # @schema type: [array, null, object]; item: string; uniqueItems: true;
-  - --ignore-ingress-tls-spec
-  - --gateway-name=internal
+extraArgs: [] # @schema type: [array, null, object]; item: string; uniqueItems: true;
+  # - --ignore-ingress-tls-spec
+  # - --gateway-name=internal
 
 secretConfiguration:
   # -- If `true`, create a `Secret` to store sensitive provider configuration (**DEPRECATED**).

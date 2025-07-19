@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://schemas.bykaj.io/gateway.networking.k8s.io/tlsroute_v1alpha2.json
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+metadata:
+  name: &app proxmox-ve
+spec:
+  hostnames: ["pve.${DOMAIN_APP}"]
+  parentRefs:
+    - name: services
+      namespace: kube-system
+      sectionName: tls-app
+  rules:
+    - backendRefs:
+        - name: *app
+          port: 443
