@@ -32,7 +32,7 @@ spec:
       retries: 3
   values:
     fullnameOverride: k8s-gateway
-    domain: "${DOMAIN_PROXII}, ${DOMAIN_APP}"
+    domain: "${DOMAIN_PROXII}, ${DOMAIN_APP}, ${DOMAIN_ID}"
     ttl: 1
     service:
       type: LoadBalancer

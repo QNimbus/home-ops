@@ -326,7 +326,7 @@ spec:
           # https: false
           # -- Reference to parent gateways
           parentRefs:
-            - name: external
+            - name: internal
               namespace: kube-system
               sectionName: https-id
           # -- Route matches

@@ -16,10 +16,6 @@ spec:
   timeout: 10m
   retryInterval: 2m
   path: ./kubernetes/apps/network/cloudflare-tunnel/app
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   sourceRef:
     kind: GitRepository
     name: flux-system
