@@ -60,6 +60,7 @@ spec:
               name: sops-age
           postBuild:
             substituteFrom:
+              $patch: merge
               - name: cluster-settings
                 kind: ConfigMap
               - name: cluster-secrets

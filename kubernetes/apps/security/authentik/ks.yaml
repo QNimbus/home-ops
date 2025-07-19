@@ -5,10 +5,6 @@ kind: Kustomization
 metadata:
   name: &app authentik
   namespace: &namespace security
-  labels:
-    app.kubernetes.io/name: *app
-    # Disable default patch for Kustomizations
-    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -33,10 +29,6 @@ spec:
     substituteFrom:
       - name: authentik-secrets
         kind: Secret
-      - name: cluster-secrets
-        kind: Secret
-      - kind: ConfigMap
-        name: cluster-settings
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -57,10 +49,6 @@ kind: Kustomization
 metadata:
   name: &app authentik-secrets
   namespace: &namespace security
-  labels:
-    app.kubernetes.io/name: *app
-    # Disable default patch for Kustomizations
-    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: *namespace
   components: []
