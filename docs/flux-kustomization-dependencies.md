@@ -2,7 +2,7 @@
 
 This document shows the dependency relationships between all Flux Kustomizations in the cluster.
 
-**Total Kustomizations:** 42
+**Total Kustomizations:** 40
 
 ## Table of Contents
 
@@ -19,7 +19,6 @@ This document shows the dependency relationships between all Flux Kustomizations
 | `cert-manager` | cert-manager | 1 |
 | `database` | cloudnative-pg-backup, cloudnative-pg-cluster, cloudnative-pg-operator, dragonfly-cluster, dragonfly-operator | 5 |
 | `default` | echo | 1 |
-| `external` | kvm-pve1, proxmox-ve | 2 |
 | `external-secrets` | external-secrets, onepassword-connect, onepassword-store | 3 |
 | `flux-system` | cluster-apps, cluster-meta, flux-instance, flux-operator, tailscale-operator | 5 |
 | `kube-system` | cilium, cilium-gateway, coredns, csi-driver-nfs, csi-driver-smb, metrics-server, reloader, spegel | 8 |
@@ -99,30 +98,6 @@ This section shows all dependencies (direct and indirect) for each kustomization
 ### default/echo
 
 **Dependencies:** *None (root level)*
-
-### external/kvm-pve1
-
-**Total Dependencies:** 1
-
-**Dependency Chain:**
-
-- **Direct:** `network/k8s-gateway`
-
-**All Dependencies (flat list):**
-`network/k8s-gateway`
-
-
-### external/proxmox-ve
-
-**Total Dependencies:** 1
-
-**Dependency Chain:**
-
-- **Direct:** `network/k8s-gateway`
-
-**All Dependencies (flat list):**
-`network/k8s-gateway`
-
 
 ### external-secrets/external-secrets
 
@@ -256,7 +231,16 @@ This section shows all dependencies (direct and indirect) for each kustomization
 
 ### network/cloudflare-tunnel
 
-**Dependencies:** *None (root level)*
+**Total Dependencies:** 3
+
+**Dependency Chain:**
+
+- **Direct:** `external-secrets/onepassword-store`
+- **Level 2:** `external-secrets/external-secrets`, `external-secrets/onepassword-connect`
+
+**All Dependencies (flat list):**
+`external-secrets/external-secrets`, `external-secrets/onepassword-connect`, `external-secrets/onepassword-store`
+
 
 ### network/k8s-gateway
 
@@ -437,9 +421,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 - **network/cloudflare-dns**
   - *File:* `kubernetes/apps/network/cloudflare-dns/ks.yaml`
   - *Path:* `./kubernetes/apps/network/cloudflare-dns`
-- **network/cloudflare-tunnel**
-  - *File:* `kubernetes/apps/network/cloudflare-tunnel/ks.yaml`
-  - *Path:* `./kubernetes/apps/network/cloudflare-tunnel`
 - **network/k8s-gateway**
   - *File:* `kubernetes/apps/network/k8s-gateway/ks.yaml`
   - *Path:* `./kubernetes/apps/network/k8s-gateway`
@@ -462,14 +443,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 ### Level 1
 *Depends on items from level 0 and below*
 
-- **external/kvm-pve1**
-  - *File:* `kubernetes/apps/external/kvm-pve1/ks.yaml`
-  - *Path:* `./kubernetes/apps/external/kvm-pve1/resources`
-  - *Dependencies:* `network/k8s-gateway`
-- **external/proxmox-ve**
-  - *File:* `kubernetes/apps/external/proxmox-ve/ks.yaml`
-  - *Path:* `./kubernetes/apps/external/proxmox-ve/resources`
-  - *Dependencies:* `network/k8s-gateway`
 - **external-secrets/onepassword-connect**
   - *File:* `kubernetes/apps/external-secrets/onepassword-connect/ks.yaml`
   - *Path:* `./kubernetes/apps/external-secrets/onepassword-connect/app`
@@ -526,6 +499,10 @@ This shows the deployment order based on dependencies. Items at the top are depl
   - *File:* `kubernetes/apps/database/dragonfly/ks.yaml`
   - *Path:* `./kubernetes/apps/database/dragonfly/operator`
   - *Dependencies:* `external-secrets/onepassword-store`
+- **network/cloudflare-tunnel**
+  - *File:* `kubernetes/apps/network/cloudflare-tunnel/ks.yaml`
+  - *Path:* `./kubernetes/apps/network/cloudflare-tunnel/app`
+  - *Dependencies:* `external-secrets/onepassword-store`
 - **observability/gatus**
   - *File:* `kubernetes/apps/observability/gatus/ks.yaml`
   - *Path:* `./kubernetes/apps/observability/gatus/app`
@@ -574,11 +551,9 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `dragonfly-cluster` | `database` | `database/dragonfly-operator` | `security/authentik` |
 | `dragonfly-operator` | `database` | `external-secrets/onepassword-store` | `database/dragonfly-cluster` |
 | `echo` | `default` | *None* | *None* |
-| `kvm-pve1` | `external` | `network/k8s-gateway` | *None* |
-| `proxmox-ve` | `external` | `network/k8s-gateway` | *None* |
 | `external-secrets` | `external-secrets` | *None* | `external-secrets/onepassword-store`<br>`external-secrets/onepassword-connect` |
 | `onepassword-connect` | `external-secrets` | `external-secrets/external-secrets` | `network/unifi-dns`<br>`flux-system/tailscale-operator`<br>`external-secrets/onepassword-store`<br>`security/authentik-secrets`<br>`longhorn-system/longhorn` |
-| `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup`<br>`database/dragonfly-operator` |
+| `onepassword-store` | `external-secrets` | `external-secrets/external-secrets`<br>`external-secrets/onepassword-connect` | `tools/pgadmin`<br>`observability/kube-prometheus-stack`<br>`database/cloudnative-pg-cluster`<br>`database/cloudnative-pg-backup`<br>`database/dragonfly-operator`<br>`network/cloudflare-tunnel` |
 | `cluster-apps` | `flux-system` | `flux-system/cluster-meta` | *None* |
 | `cluster-meta` | `flux-system` | *None* | `flux-system/cluster-apps` |
 | `flux-instance` | `flux-system` | `flux-system/flux-operator` | *None* |
@@ -594,8 +569,8 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `spegel` | `kube-system` | *None* | *None* |
 | `longhorn` | `longhorn-system` | `external-secrets/onepassword-connect` | `volsync-system/volsync`<br>`observability/kube-prometheus-stack`<br>`observability/gatus`<br>`database/cloudnative-pg-cluster` |
 | `cloudflare-dns` | `network` | *None* | *None* |
-| `cloudflare-tunnel` | `network` | *None* | *None* |
-| `k8s-gateway` | `network` | *None* | `external/kvm-pve1`<br>`external/proxmox-ve` |
+| `cloudflare-tunnel` | `network` | `external-secrets/onepassword-store` | *None* |
+| `k8s-gateway` | `network` | *None* | *None* |
 | `unifi-dns` | `network` | `external-secrets/onepassword-connect` | *None* |
 | `gatus` | `observability` | `longhorn-system/longhorn` | *None* |
 | `keda` | `observability` | *None* | *None* |
@@ -621,8 +596,6 @@ This shows the deployment order based on dependencies. Items at the top are depl
 | `database/dragonfly-cluster` | `kubernetes/apps/database/dragonfly/ks.yaml` |
 | `database/dragonfly-operator` | `kubernetes/apps/database/dragonfly/ks.yaml` |
 | `default/echo` | `kubernetes/apps/default/echo/ks.yaml` |
-| `external/kvm-pve1` | `kubernetes/apps/external/kvm-pve1/ks.yaml` |
-| `external/proxmox-ve` | `kubernetes/apps/external/proxmox-ve/ks.yaml` |
 | `external-secrets/external-secrets` | `kubernetes/apps/external-secrets/external-secrets/ks.yaml` |
 | `external-secrets/onepassword-connect` | `kubernetes/apps/external-secrets/onepassword-connect/ks.yaml` |
 | `external-secrets/onepassword-store` | `kubernetes/apps/external-secrets/external-secrets/ks.yaml` |
