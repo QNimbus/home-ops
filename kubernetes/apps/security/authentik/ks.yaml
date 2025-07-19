@@ -5,8 +5,6 @@ kind: Kustomization
 metadata:
   name: &app authentik
   namespace: &namespace security
-  labels:
-    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -20,10 +18,6 @@ spec:
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/security/authentik/app
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   postBuild:
     substitute:
       APP: *app
@@ -32,46 +26,16 @@ spec:
       VOLSYNC_CLAIM: authentik-config
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_CACHE_CAPACITY: 1Gi
-    substituteFrom:
-      - name: cluster-settings
-        kind: ConfigMap
-      - name: cluster-secrets
-        kind: Secret
-      - name: authentik-secrets
-        kind: Secret
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   dependsOn:
-    - name: authentik-secrets
-      namespace: security
+    - name: onepassword-store
+      namespace: external-secrets
     - name: volsync
       namespace: volsync-system
     - name: cloudnative-pg-cluster
       namespace: database
     - name: dragonfly-cluster
       namespace: database
----
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app authentik-secrets
-  namespace: &namespace security
-spec:
-  targetNamespace: *namespace
-  components: []
-  wait: true
-  prune: true
-  interval: 1h
-  timeout: 5m
-  retryInterval: 2m
-  path: ./kubernetes/apps/security/authentik/secrets
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  dependsOn:
-    - name: onepassword-connect
-      namespace: external-secrets
