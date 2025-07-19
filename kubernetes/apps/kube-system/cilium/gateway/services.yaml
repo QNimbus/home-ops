@@ -3,7 +3,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: external
+  name: services
   annotations:
     external-dns.alpha.kubernetes.io/target: "services.home.${DOMAIN_PROXII}"
 spec:
@@ -36,7 +36,7 @@ spec:
     - name: tls-app
       protocol: TLS
       port: 443
-      hostname: "*.${DOMAIN_APP}"
+      hostname: "*.home.${DOMAIN_APP}"
       tls:
         mode: Passthrough
       allowedRoutes:
