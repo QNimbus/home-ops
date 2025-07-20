@@ -1,0 +1,32 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app happydomain
+  namespace: &namespace tools
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  # components:
+  #   - ../../../../components/volsync
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 10m
+  retryInterval: 2m
+  path: ./kubernetes/apps/tools/happydomain/app
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CLAIM: happydomain-data
+      VOLSYNC_CAPACITY: 256Mi
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: volsync
+      namespace: volsync-system
