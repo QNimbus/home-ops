@@ -24,18 +24,49 @@ spec:
           app:
             image:
               repository: happydomain/happydomain
-              tag: 0.4.1
+              tag: 0.4.1@sha256:e60ba2a081b2dd9218db7afdc0f3a86dfe27262839bee450c8ddb2896d22e5ef
             env:
-              HAPPYDOMAIN_NO_AUTH: "1"            # example from upstream README
-            ports:
-              - name: http
-                containerPort: &port 8081
-    service:
-      app:
-        controller: happydomain
-        ports:
-          http:
-            port: *port
+              HAPPYDOMAIN_DEFAULT_NS: "https://1.1.1.1:443/dns-query"
+              HAPPYDOMAIN_DISABLE_EMBEDDED_LOGIN: "1"
+              HAPPYDOMAIN_DISABLE_REGISTRATION: "1"
+              HAPPYDOMAIN_EXTERNALURL: "https://happydomain.${DOMAIN_APP}"
+              HAPPYDOMAIN_LEVELDB_PATH: "/data/"
+              HAPPYDOMAIN_MAIL_SMTP_PORT: "587"
+              HAPPYDOMAIN_NO_AUTH: "1"
+              HAPPYDOMAIN_STORAGE_ENGINE: "leveldb"
+            envFrom:
+              - secretRef:
+                  name: happydomain-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 8081
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        fsGroupChangePolicy: OnRootMismatch
     persistence:
       config-file:
         type: configMap
@@ -48,6 +79,12 @@ spec:
         existingClaim: happydomain-data
         globalMounts:
           - path: /data
+    service:
+      app:
+        controller: happydomain
+        ports:
+          http:
+            port: *port
     route:
       happydomain:
         hostnames: ["happydomain.${DOMAIN_APP}"]
