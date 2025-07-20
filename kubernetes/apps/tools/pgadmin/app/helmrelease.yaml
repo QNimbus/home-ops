@@ -102,6 +102,12 @@ spec:
         globalMounts:
           - path: /pgadmin4/servers.json
             subPath: servers.json
+      config-py:
+        type: configMap
+        name: pgadmin-config-py
+        globalMounts:
+          - path: /pgadmin4/config.py
+            subPath: config.py
     route:
       app:
         hostnames: ["pgadmin.${DOMAIN_APP}"]
