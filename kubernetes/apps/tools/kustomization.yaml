@@ -6,7 +6,6 @@ namespace: tools
 components:
   - ../../components/common
 resources:
-  - ./happydomain/ks.yaml
   - ./pgadmin/ks.yaml
   - ./it-tools/ks.yaml
   # - ./paperless/storage/ks.yaml
