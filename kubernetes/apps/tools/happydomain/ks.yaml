@@ -10,8 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # components:
-  #   - ../../../../components/volsync
+  components:
+    - ../../../../components/volsync
   wait: false
   prune: true
   interval: 1h
@@ -21,6 +21,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_UID: "15353"
+      VOLSYNC_GID: "65533"
       VOLSYNC_CLAIM: happydomain-data
       VOLSYNC_CAPACITY: 256Mi
   sourceRef:

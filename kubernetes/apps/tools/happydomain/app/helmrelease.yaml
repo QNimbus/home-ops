@@ -36,18 +36,18 @@ spec:
         ports:
           http:
             port: *port
-    # persistence:
-    #   config-file:
-    #     type: configMap
-    #     name: happydomain-config
-    #     globalMounts:
-    #       - path: /etc/happydomain.conf
-    #         subPath: happydomain.conf
-    #         readOnly: true
-    #   data:
-    #     existingClaim: happydomain-data
-    #     globalMounts:
-    #       - path: /data
+    persistence:
+      config-file:
+        type: configMap
+        name: happydomain-config
+        globalMounts:
+          - path: /etc/happydomain.conf
+            subPath: happydomain.conf
+            readOnly: true
+      data:
+        existingClaim: happydomain-data
+        globalMounts:
+          - path: /data
     route:
       happydomain:
         hostnames: ["happydomain.${DOMAIN_APP}"]
