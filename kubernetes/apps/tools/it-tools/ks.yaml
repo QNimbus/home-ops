@@ -10,12 +10,19 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  wait: true
+  components:
+    - ../../../../components/gatus/internal
+  wait: false
   prune: true
   interval: 1h
-  timeout: 5m
+  timeout: 10m
   retryInterval: 2m
   path: ./kubernetes/apps/tools/it-tools/app
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_NAME: tools
+      GATUS_SUBDOMAIN: tools
   sourceRef:
     kind: GitRepository
     name: flux-system
