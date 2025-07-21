@@ -1,0 +1,32 @@
+---
+web:
+  port: ${WEB_PORT}
+storage:
+  type: sqlite
+  path: /config/sqlite.db
+  caching: true
+metrics: true
+debug: false
+ui:
+  title: Health Dashboard | BeSquared Apps
+  header: Health Dashboard
+  logo: https://github.com/qnimbus/home-ops/blob/main/assets/images/home-ops-logo.png?raw=true
+  description: |
+    If something's broken, trust me, I already know – my phone is screaming, my monitoring dashboard looks like a Christmas tree, and I'm either frantically fixing it while questioning my life choices, or I'm the one who broke it because 'it'll just take 5 minutes to deploy this tiny change on a Friday afternoon'.
+  link: https://github.com/qnimbus/home-ops
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 1m
+endpoints:
+  - name: "Flux Webhook"
+    group: "3. Infrastructure Services"
+    url: https://flux-webhook.proxii.nl
+    interval: 1m
+    ui:
+      hide-url: true
+      hide-hostname: true
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 404"
