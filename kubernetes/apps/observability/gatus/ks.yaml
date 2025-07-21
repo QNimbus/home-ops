@@ -23,8 +23,8 @@ spec:
       APP: *app
       GATUS_DOMAIN: "status.${DOMAIN_APP}"
       VOLSYNC_CLAIM: gatus-config
-      VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_CACHE_CAPACITY: 1Gi
+      VOLSYNC_CAPACITY: 256Mi
+      VOLSYNC_CACHE_CAPACITY: 256Mi
   sourceRef:
     kind: GitRepository
     name: flux-system
