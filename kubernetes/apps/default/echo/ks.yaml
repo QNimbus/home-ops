@@ -6,21 +6,24 @@ metadata:
   name: &app echo
   namespace: &namespace default
 spec:
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
-  interval: 1h
-  path: ./kubernetes/apps/default/echo/app
+  components:
+    - ../../../../components/gatus/public
+  wait: false
   prune: true
+  interval: 1h
+  timeout: 10m
   retryInterval: 2m
+  path: ./kubernetes/apps/default/echo/app
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_NAME: Echo
+      GATUS_DOMAIN: "echo.proxii.nl"
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
-  wait: false
