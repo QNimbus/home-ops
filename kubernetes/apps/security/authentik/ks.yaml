@@ -21,6 +21,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_NAME: Authentik
+      GATUS_DOMAIN: auth.vanwetten.id
       VOLSYNC_UID: "1000"
       VOLSYNC_GID: "1000"
       VOLSYNC_CLAIM: authentik-config
