@@ -24,8 +24,8 @@ endpoints:
     url: https://flux-webhook.proxii.nl
     interval: 1m
     ui:
-      hide-url: true
-      hide-hostname: true
+      hide-url: false
+      hide-hostname: false
     client:
       dns-resolver: tcp://1.1.1.1:53
     conditions:

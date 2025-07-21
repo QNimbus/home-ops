@@ -10,13 +10,19 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  components: []
+  components:
+    - ../../../../components/gatus/internal
   wait: false
   prune: true
   interval: 1h
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/observability/kube-prometheus-stack/app
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_NAME: Prometheus
+      GATUS_SUBDOMAIN: prometheus
   sourceRef:
     kind: GitRepository
     name: flux-system
