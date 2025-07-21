@@ -22,6 +22,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_NAME: pgAdmin
       VOLSYNC_UID: "5050"
       VOLSYNC_GID: "5050"
       VOLSYNC_CLAIM: pgadmin-config

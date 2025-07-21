@@ -21,7 +21,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_NAME: tools
+      GATUS_NAME: IT-Tools
       GATUS_SUBDOMAIN: tools
   sourceRef:
     kind: GitRepository
