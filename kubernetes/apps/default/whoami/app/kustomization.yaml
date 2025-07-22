@@ -4,8 +4,3 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./helmrelease.yaml
-  # Choose one of the following Tailscale exposure methods:
-  # Option 1: LoadBalancer Service (simpler, HTTP only)
-  - ./tailscale-service.yaml
-  # Option 2: Ingress (HTTPS with TLS, includes identity headers)
-  # - ./tailscale-ingress.yaml
