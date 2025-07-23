@@ -10,9 +10,10 @@ spec:
   ingressClassName: tailscale
   tls:
     - hosts:
-        - echo
+        - echo.buri-ray.ts.net
   rules:
-    - http:
+    - host: echo.buri-ray.ts.net
+      http:
         paths:
           - path: /
             pathType: Prefix

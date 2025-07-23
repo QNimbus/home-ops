@@ -27,6 +27,7 @@ spec:
       targetPath: oauth.clientSecret
   values:
     fullnameOverride: *app
+    installCRDs: true
     operatorConfig:
       defaultTags:
         - "tag:k8s-operator"

@@ -10,9 +10,10 @@ spec:
   ingressClassName: tailscale
   tls:
     - hosts:
-        - whoami
+        - whoami.buri-ray.ts.net
   rules:
-    - http:
+    - host: whoami.buri-ray.ts.net
+      http:
         paths:
           - path: /
             pathType: Prefix
