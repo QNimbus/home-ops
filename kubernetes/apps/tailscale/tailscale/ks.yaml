@@ -25,6 +25,8 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
+    - name: coredns
+      namespace: kube-system
   postBuild:
     substitute: {}
     substituteFrom:
