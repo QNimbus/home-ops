@@ -11,7 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/public
+    - ../../../../components/gatus/tailnet
   wait: false
   prune: true
   interval: 1h
@@ -22,7 +22,6 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Echo
-      GATUS_DOMAIN: "echo.proxii.nl"
   sourceRef:
     kind: GitRepository
     name: flux-system

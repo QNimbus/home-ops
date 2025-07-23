@@ -11,7 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/internal
+    - ../../../../components/gatus/tailnet
   wait: false
   prune: true
   interval: 1h

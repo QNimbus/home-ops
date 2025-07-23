@@ -31,7 +31,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
   - name: "Flux Webhook"
-    group: "4. Infrastructure Services"
+    group: "5. Infrastructure Services"
     url: https://flux-webhook.proxii.nl
     interval: 1m
     ui:
