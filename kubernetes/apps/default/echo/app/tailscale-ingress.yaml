@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echo-tailscale
+  namespace: default
+  annotations:
+    tailscale.com/hostname: echo
+spec:
+  ingressClassName: tailscale
+  tls:
+    - hosts:
+        - echo
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 80

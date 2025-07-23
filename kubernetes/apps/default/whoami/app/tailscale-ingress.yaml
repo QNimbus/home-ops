@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whoami-tailscale
+  namespace: default
+  annotations:
+    tailscale.com/hostname: whoami
+spec:
+  ingressClassName: tailscale
+  tls:
+    - hosts:
+        - whoami
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: whoami
+                port:
+                  number: 80
