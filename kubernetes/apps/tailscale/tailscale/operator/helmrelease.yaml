@@ -15,8 +15,6 @@ spec:
         name: tailscale
         namespace: flux-system
   valuesFrom:
-    - kind: ConfigMap
-      name: tailscale-operator-helm-values
     - kind: Secret
       name: tailscale-operator
       valuesKey: clientId
@@ -27,9 +25,10 @@ spec:
       targetPath: oauth.clientSecret
   values:
     fullnameOverride: *app
-    installCRDs: false
     operatorConfig:
+      hostname: tailscale-operator
       defaultTags:
         - "tag:k8s-operator"
+
     proxyConfig:
       defaultTags: "tag:k8s"
