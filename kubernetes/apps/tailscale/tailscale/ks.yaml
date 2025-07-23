@@ -3,6 +3,28 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: tailscale-crds
+  namespace: tailscale
+spec:
+  targetNamespace: tailscale
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: tailscale
+  wait: true
+  prune: false  # Don't prune CRDs
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/tailscale/tailscale/crds
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: &app tailscale
   namespace: &namespace tailscale
 spec:
@@ -15,12 +37,14 @@ spec:
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/tailscale/tailscale/operator
+  path: ./kubernetes/apps/tailscale/tailscale/app
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   dependsOn:
+    - name: tailscale-crds
+      namespace: tailscale
     - name: onepassword-store
       namespace: external-secrets
     - name: coredns
