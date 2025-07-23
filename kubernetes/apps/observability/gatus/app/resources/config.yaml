@@ -19,8 +19,19 @@ connectivity:
     target: 1.1.1.1:53
     interval: 1m
 endpoints:
+  - name: "TrueNAS Scale"
+    group: "3. LAN Local Services"
+    url: https://truenas.lan.home.vwn.io
+    interval: 1m
+    ui:
+      hide-url: false
+      hide-hostname: false
+    client:
+      dns-resolver: tcp://10.43.0.10:53
+    conditions:
+      - "[STATUS] == 200"
   - name: "Flux Webhook"
-    group: "3. Infrastructure Services"
+    group: "4. Infrastructure Services"
     url: https://flux-webhook.proxii.nl
     interval: 1m
     ui:
