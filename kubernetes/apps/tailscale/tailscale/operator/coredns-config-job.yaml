@@ -1,0 +1,61 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tailscale-dns-patcher
+  namespace: tailscale
+spec:
+  template:
+    spec:
+      serviceAccountName: tailscale-dns-patcher
+      containers:
+      - name: patcher
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for Tailscale DNS nameserver to be ready..."
+
+          # Wait for the nameserver service to be ready
+          kubectl wait --for=condition=ready pod -l app=nameserver -n tailscale --timeout=300s
+
+          # Get the ClusterIP of the Tailscale DNS service
+          TAILSCALE_DNS_IP=$(kubectl get service nameserver -n tailscale -o jsonpath='{.spec.clusterIP}')
+          echo "Found Tailscale DNS server at: $TAILSCALE_DNS_IP"
+
+          # Get the current CoreDNS Corefile
+          kubectl get configmap coredns -n kube-system -o jsonpath='{.data.Corefile}' > /tmp/current-corefile
+
+          # Check if ts.net section already exists and remove it
+          if grep -q "ts\.net" /tmp/current-corefile; then
+            echo "Removing existing ts.net section from CoreDNS configuration"
+            sed -i '/ts\.net:53/,/^}/d' /tmp/current-corefile
+          fi
+
+          # Ensure the file ends with a newline before appending
+          if [ -s /tmp/current-corefile ] && [ "$(tail -c1 /tmp/current-corefile)" != "" ]; then
+            echo "" >> /tmp/current-corefile
+          fi
+
+          # Append the ts.net section with proper formatting
+          cat >> /tmp/current-corefile << EOF
+          ts.net:53 {
+              errors
+              cache 30
+              forward . $TAILSCALE_DNS_IP
+          }
+          EOF
+
+          # Apply the updated configuration
+          ESCAPED_COREFILE=$(cat /tmp/current-corefile | jq -Rs .)
+          kubectl patch configmap coredns -n kube-system --type merge -p "{\"data\":{\"Corefile\":$ESCAPED_COREFILE}}"
+
+          echo "CoreDNS configured successfully with Tailscale DNS at $TAILSCALE_DNS_IP"
+
+          # Restart CoreDNS pods to pick up the new configuration
+          kubectl rollout restart deployment coredns -n kube-system
+          echo "CoreDNS deployment restarted"
+      restartPolicy: OnFailure
+  backoffLimit: 3

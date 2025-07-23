@@ -7,3 +7,5 @@ resources:
   - ./configmap.yaml
   - ./helmrelease.yaml
   - ./dnsconfig.yaml
+  - ./rbac-dns-patcher.yaml
+  - ./coredns-config-job.yaml
