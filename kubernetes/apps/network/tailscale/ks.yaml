@@ -49,4 +49,32 @@ spec:
   dependsOn:
     - name: tailscale-operator
       namespace: network
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app tailscale-coredns-patcher
+  namespace: &namespace network
+  labels:
+    substitution.flux.home.arpa/enabled: "true"
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  wait: true
+  prune: true
+  interval: 10m
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/tailscale/coredns-patcher
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: tailscale-configs
+      namespace: network
+  force: true
 
