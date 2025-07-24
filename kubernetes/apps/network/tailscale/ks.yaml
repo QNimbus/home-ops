@@ -4,44 +4,49 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app tailscale-operator
-  namespace: flux-system
+  namespace: &namespace network
   labels:
     substitution.flux.home.arpa/enabled: "true"
 spec:
-  path: ./kubernetes/apps/network/tailscale/operator
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  wait: true
   prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/tailscale/operator
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  interval: 30m
-  retryInterval: 1m
-  timeout: 3m
-  targetNamespace: network
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
----
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app tailscale-configs
-  namespace: flux-system
+  namespace: &namespace network
   labels:
     substitution.flux.home.arpa/enabled: "true"
 spec:
-  path: ./kubernetes/apps/network/tailscale/configs
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  wait: true
   prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/tailscale/configs
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  interval: 30m
-  retryInterval: 1m
-  timeout: 3m
-  targetNamespace: network
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: tailscale-operator
+      namespace: network
+

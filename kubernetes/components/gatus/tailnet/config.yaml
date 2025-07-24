@@ -7,6 +7,6 @@ endpoints:
       hide-hostname: false
       hide-url: false
     client:
-      dns-resolver: tcp://100.100.100.100:53
+      dns-resolver: tcp://10.43.0.10:53
     conditions:
       - "[STATUS] == ${GATUS_STATUS:=200}"

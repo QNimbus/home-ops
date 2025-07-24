@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./app-connector.yaml
   - ./exit-node.yaml
+  - ./dns.yaml
