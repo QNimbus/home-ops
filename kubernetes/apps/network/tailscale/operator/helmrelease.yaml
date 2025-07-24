@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: tailscale-operator
+  name: &app tailscale-operator
 spec:
   interval: 5m
   layerSelector:
@@ -15,7 +15,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: tailscale-operator
+  name: &app tailscale-operator
 spec:
   interval: 1h
   chartRef:
@@ -31,9 +31,11 @@ spec:
     remediation:
       retries: 3
   values:
+    fullnameOverride: *app
     oauthSecretVolume:
       secret:
         secretName: &secret tailscale-operator
     operatorConfig:
+      hostname: *app
       podAnnotations:
         secret.reloader.stakater.com/reload: *secret
