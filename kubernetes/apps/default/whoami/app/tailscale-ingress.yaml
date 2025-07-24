@@ -6,8 +6,14 @@ metadata:
   namespace: default
   annotations:
     tailscale.com/hostname: whoami
+    tailscale.com/experimental-forward-cluster-traffic-via-ingress: "true"
 spec:
   ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: whoami
+      port:
+        name: http
   tls:
     - hosts:
         - whoami.buri-ray.ts.net
