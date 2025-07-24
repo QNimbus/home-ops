@@ -5,3 +5,4 @@ resources:
   - ./app-connector.yaml
   - ./exit-node.yaml
   - ./magicdns.yaml
+  - ./coredns-patcher.yaml
