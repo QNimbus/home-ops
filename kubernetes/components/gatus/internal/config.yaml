@@ -1,6 +1,6 @@
 endpoints:
   - name: "${GATUS_NAME:=${APP}}"
-    group: "2. Internal Applications"
+    group: "Internal Applications"
     url: "${GATUS_URL_SCHEME:=https://}${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}:${GATUS_PORT:=443}${GATUS_PATH:=/}"
     interval: 1m
     ui:
