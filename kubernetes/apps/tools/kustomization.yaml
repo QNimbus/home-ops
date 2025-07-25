@@ -8,5 +8,4 @@ components:
 resources:
   - ./pgadmin/ks.yaml
   - ./it-tools/ks.yaml
-  # - ./paperless/storage/ks.yaml
-  # - ./paperless/ks.yaml
+  - ./persistence/ks.yaml
