@@ -22,6 +22,7 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Echo
+      GATUS_DOMAIN: "echo.proxii.nl"
   sourceRef:
     kind: GitRepository
     name: flux-system

@@ -22,6 +22,7 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: WhoAmI
+      GATUS_DOMAIN: "whoami.proxii.nl"
   sourceRef:
     kind: GitRepository
     name: flux-system
