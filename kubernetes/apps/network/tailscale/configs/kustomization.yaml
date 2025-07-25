@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
   - ./app-connector.yaml
   - ./exit-node.yaml
-  - ./magicdns.yaml
