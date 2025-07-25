@@ -4,7 +4,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app tailscale-operator
-  namespace: &namespace network
+  namespace: &namespace tailscale
   labels:
     substitution.flux.home.arpa/enabled: "true"
 spec:
@@ -17,7 +17,7 @@ spec:
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/network/tailscale/operator
+  path: ./kubernetes/apps/tailscale/tailscale/operator
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -28,7 +28,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app tailscale-configs
-  namespace: &namespace network
+  namespace: &namespace tailscale
   labels:
     substitution.flux.home.arpa/enabled: "true"
 spec:
@@ -41,11 +41,11 @@ spec:
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/network/tailscale/configs
+  path: ./kubernetes/apps/tailscale/tailscale/configs
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   dependsOn:
     - name: tailscale-operator
-      namespace: network
+      namespace: tailscale
