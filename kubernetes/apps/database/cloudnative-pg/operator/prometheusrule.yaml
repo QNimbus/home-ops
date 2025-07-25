@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.bykaj.io/monitoring.coreos.com/prometheusrule_v1.json
+# yaml-language-server: $schema=https://schemas.vwn.app/monitoring.coreos.com/prometheusrule_v1.json
 # PrometheusRule for CloudNative PostgreSQL monitoring
 # These rules provide alerts for various PostgreSQL performance and health metrics
 apiVersion: monitoring.coreos.com/v1

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://schemas.vwn.app/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -12,7 +12,7 @@ spec:
   commonName: "${DOMAIN_PROXII}"
   dnsNames: ["${DOMAIN_PROXII}", "*.${DOMAIN_PROXII}"]
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://schemas.vwn.app/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -25,7 +25,7 @@ spec:
   commonName: "${DOMAIN_ID}"
   dnsNames: ["${DOMAIN_ID}", "*.${DOMAIN_ID}"]
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://schemas.vwn.app/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -38,7 +38,7 @@ spec:
   commonName: "${DOMAIN_APP}"
   dnsNames: ["${DOMAIN_APP}", "*.${DOMAIN_APP}"]
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://schemas.vwn.app/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
