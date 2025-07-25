@@ -109,12 +109,11 @@ spec:
             - identifier: gatus
     route:
       app:
-        hostnames:
-          - "status.${DOMAIN_APP}"
+        hostnames: ["${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"]
         parentRefs:
           - name: internal
             namespace: kube-system
-            sectionName: https-app
+            sectionName: https
     serviceAccount:
       gatus: {}
     service:

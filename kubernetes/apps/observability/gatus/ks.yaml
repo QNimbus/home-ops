@@ -21,7 +21,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_DOMAIN: "status.${DOMAIN_APP}"
+      GATUS_DOMAIN: "status.proxii.nl"
       VOLSYNC_CLAIM: gatus-config
       VOLSYNC_CAPACITY: 256Mi
       VOLSYNC_CACHE_CAPACITY: 256Mi
