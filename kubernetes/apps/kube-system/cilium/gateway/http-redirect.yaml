@@ -8,12 +8,19 @@ spec:
   parentRefs:
     # Redirect for internal Gateway
     - name: internal
+      sectionName: http
+    # Redirect for services Gateway
+    - name: services
+      sectionName: http
+    # Redirect for internal Gateway
+    - name: internal
       sectionName: http-app
     # Redirect for services Gateway
     - name: services
       sectionName: http-app
   hostnames:
     - "*.${DOMAIN_APP}"
+    - "*.${DOMAIN_PROXII}"
   rules:
     - filters:
         - type: RequestRedirect
