@@ -24,6 +24,7 @@ spec:
       APP: *app
       GATUS_NAME: Paperless
       GATUS_SUBDOMAIN: archive
+      GATUS_PATH: /admin/
       VOLSYNC_CLAIM: paperless-config
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_CACHE_CAPACITY: 2Gi
