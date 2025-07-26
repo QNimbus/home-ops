@@ -40,7 +40,7 @@ spec:
               PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
               PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
               # Configure application
-              PAPERLESS_FILENAME_FORMAT: `{{ created }}-{{ correspondent }}-{{ title }}`
+              PAPERLESS_FILENAME_FORMAT: "{ created }-{ correspondent }-{ title }"
               PAPERLESS_PORT: &port 8000
               PAPERLESS_TASK_WORKERS: "2"
               PAPERLESS_TIME_ZONE: "${TIMEZONE}"
