@@ -124,7 +124,7 @@ spec:
         hostnames:
           - "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
         parentRefs:
-          - name: external
+          - name: internal
             namespace: kube-system
             sectionName: https-app
         rules:

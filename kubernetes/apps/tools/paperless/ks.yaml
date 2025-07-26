@@ -11,7 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/public
+    - ../../../../components/gatus/interal
     - ../../../../components/volsync
   wait: false
   prune: true
