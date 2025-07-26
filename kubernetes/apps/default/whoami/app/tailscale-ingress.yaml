@@ -1,5 +1,4 @@
 ---
-# yaml-language-server: $schema=https://schemas.vwn.app/gateway.networking.k8s.io/ingress_v1.json
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
