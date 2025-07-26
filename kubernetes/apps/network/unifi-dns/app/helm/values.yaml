@@ -248,7 +248,7 @@ provider:  # @schema type: [object, string];
       # -- (string) Image repository for the `webhook` container.
       repository: ghcr.io/kashalls/external-dns-unifi-webhook  # @schema type:[string, null]; default: null
       # -- (string) Image tag for the `webhook` container.
-      tag: v0.6.0@sha256:dd71adb88b64174b158481fb359dfe985d8bea1cad8cefba36209c8fc9eb03d3 # @schema type:[string, null]; default: null
+      tag: v0.6.1@sha256:3ab5a077769a01e91c0e59846a7fe3da46e12243320cc948f5ee3d33c7a08064 # @schema type:[string, null]; default: null
       # -- Image pull policy for the `webhook` container.
       pullPolicy: IfNotPresent
     # -- [Environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) for the `webhook` container.
