@@ -21,7 +21,7 @@ spec:
       hostname: "*.${DOMAIN_PROXII}"
       allowedRoutes:
         namespaces:
-          from: Same
+          from: All
     - name: https
       protocol: HTTPS
       port: 443
@@ -39,7 +39,7 @@ spec:
       hostname: "*.${DOMAIN_ID}"
       allowedRoutes:
         namespaces:
-          from: Same
+          from: All
     - name: https-id
       protocol: HTTPS
       port: 443
@@ -57,7 +57,7 @@ spec:
       hostname: "*.${DOMAIN_APP}"
       allowedRoutes:
         namespaces:
-          from: Same
+          from: All
     - name: https-app
       protocol: HTTPS
       port: 443

@@ -61,6 +61,10 @@ spec:
         ports:
           http:
             port: *port
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: http
     route:
       app:
         hostnames: ["${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"]

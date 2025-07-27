@@ -21,7 +21,7 @@ spec:
       hostname: "*.${DOMAIN_APP}"
       allowedRoutes:
         namespaces:
-          from: Same
+          from: All
     - name: https-app
       protocol: HTTPS
       port: 443
