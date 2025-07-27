@@ -5,7 +5,7 @@ kind: PersistentVolume
 metadata:
   annotations:
     pv.kubernetes.io/provisioned-by: smb.csi.k8s.io
-  name: tools-smb-archive
+  name: tools-smb-paperless-archive
 spec:
   capacity:
     storage: 2T
@@ -19,9 +19,9 @@ spec:
     driver: smb.csi.k8s.io
     # volumeHandle format: {smb-server-address}#{sub-dir-name}#{share-name}
     # make sure this value is unique for every share in the cluster
-    volumeHandle: tools-smb-archive
+    volumeHandle: tools-smb-paperless-archive
     volumeAttributes:
-      source: //${SMB_SERVER}/archive
+      source: //${SMB_SERVER}/paperless-archive
     nodeStageSecretRef:
       name: smb-credentials
       namespace: kube-system
@@ -30,12 +30,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: smb-archive
+  name: smb-paperless-archive
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 2T
-  volumeName: tools-smb-archive
+  volumeName: tools-smb-paperless-archive
   storageClassName: smb
