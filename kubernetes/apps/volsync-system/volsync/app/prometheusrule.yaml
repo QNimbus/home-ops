@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.vwn.app/monitoring.coreos.com/prometheusrule_v1.json
+# yaml-language-server: $schema=https://schemas.clustrs.dev/monitoring.coreos.com/prometheusrule_v1.json
 # PrometheusRule for VolSync monitoring
 # These rules monitor the health and status of the VolSync data replication system
 apiVersion: monitoring.coreos.com/v1
