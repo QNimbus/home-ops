@@ -43,7 +43,7 @@ spec:
           app:
             image:
               repository: docker.io/dpage/pgadmin4
-              tag: 9.4.0
+              tag: 9.6.0
             env:
               PGADMIN_LISTEN_PORT: &port 5050
               PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 20 # Debug (0, 10, 20, 30, 40, 50: NOTSET, DEBUG, INFO, SQL, WARNING, ERROR, CRITICAL)
