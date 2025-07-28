@@ -128,7 +128,17 @@ spec:
             namespace: kube-system
             sectionName: https-app
         rules:
-          - backendRefs:
+          - filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  add:
+                    - name: Cache-Control
+                      value: "no-cache, no-store, must-revalidate"
+                    - name: Pragma
+                      value: "no-cache"
+                    - name: Expires
+                      value: "0"
+            backendRefs:
               - identifier: *app
                 port: *port
     service:
