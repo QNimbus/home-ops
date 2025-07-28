@@ -19,6 +19,7 @@ spec:
   values:
     controllers:
       gotenberg:
+        strategy: RollingUpdate
         containers:
           gotenberg:
             image:
