@@ -9,6 +9,9 @@ spec:
   chartRef:
     kind: OCIRepository
     name: app-template
+  dependsOn:
+    - name: tika
+    - name: gotenberg
   install:
     remediation:
       retries: -1
@@ -55,6 +58,10 @@ spec:
               PAPERLESS_OCR_LANGUAGES: nld
               # Configure database
               PAPERLESS_DBHOST: "${DB_SERVER}"
+              # Configure Tika
+              PAPERLESS_TIKA_ENABLED: true
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+              PAPERLESS_TIKA_ENDPOINT: http://tika:9998
               # s6 overlay fixes
               # Ref: https://github.com/just-containers/s6-overlay/issues/600
               S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
