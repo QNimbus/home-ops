@@ -7,6 +7,7 @@ metadata:
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17.5-standard-bookworm
+  imagePullPolicy: Always
   primaryUpdateStrategy: unsupervised
   replicationSlots:
     highAvailability:
@@ -67,7 +68,7 @@ spec:
     # Comment this out when starting with a new cluster
     # Recovers from the latest S3 backup (after moving/renaming the 'currentCluster' folder to 'previousCluster' in the bucket!)
     recovery:
-      source: &previousCluster postgres-v17-backup
+      source: &previousCluster postgres-v17-20250728
 
   # Explicit external cluster configuration instead of using YAML anchors
   # to avoid confusion between serverNames during recovery operations
