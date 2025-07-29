@@ -18,42 +18,51 @@ spec:
       retries: 3
   values:
     controllers:
-      pgadmin:
+      *app :
         annotations:
           reloader.stakater.com/auto: "true"
-        replicas: 1
         strategy: Recreate
-        revisionHistoryLimit: 3
         initContainers:
-          fix-perms:
+          init-config:
             image:
-              repository: busybox
-              tag: 1.37.0
-            command:
-              - /bin/sh
-              - -c
+              repository: ghcr.io/home-operations/k8s-sidecar
+              tag: 1.30.7@sha256:3b6444d91c6e69a9e07c5e55419452d967d18c833d88b36277dc2021b708f621
+            command: ["/bin/bash", "-c"]
+            args:
               - |
-                cp /pgadmin4/pgpass /var/lib/pgadmin/pgpass
-                cp /pgadmin4/servers.json /var/lib/pgadmin/servers.json
-                chmod 0600 /var/lib/pgadmin/pgpass
-                chmod 0600 /var/lib/pgadmin/servers.json
-                chown 5050:5050 /var/lib/pgadmin/pgpass
-                chown 5050:5050 /var/lib/pgadmin/servers.json
+                export USER_FOLDER=$(echo "/var/lib/pgadmin/storage/$PGADMIN_DEFAULT_EMAIL" | sed 's/@/_/g')
+                echo "Creating user folder $USER_FOLDER.";
+                mkdir -p $USER_FOLDER;
+                cp /tmp/secrets/.pgpass $USER_FOLDER/.pgpass;
+                chown 5050:5050 $USER_FOLDER/.pgpass;
+                chmod 600 $USER_FOLDER/.pgpass;
+                echo "Done."
+            env:
+              PGADMIN_DEFAULT_EMAIL:
+                valueFrom:
+                  secretKeyRef:
+                    name: &secret pgadmin-secret
+                    key: PGADMIN_DEFAULT_EMAIL
         containers:
           app:
             image:
-              repository: docker.io/dpage/pgadmin4
-              tag: 9.6.0
+              repository: dpage/pgadmin4
+              tag: 9.6.0@sha256:2c7d73e13bd6c30b1d53e4c25d0d6d81adbd0799c4f4d6a09efc5d68fca5d16d
             env:
-              PGADMIN_LISTEN_PORT: &port 5050
-              PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 20 # Debug (0, 10, 20, 30, 40, 50: NOTSET, DEBUG, INFO, SQL, WARNING, ERROR, CRITICAL)
+              PGADMIN_CONFIG_AUTHENTICATION_SOURCES: "['oauth2' ]"
+              PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: "20"
               PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
-              PGADMIN_DISABLE_POSTFIX: "True"
-              PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/servers.json
+              PGADMIN_CONFIG_MAIL_PORT: "587"
+              PGADMIN_CONFIG_MAIL_USE_TLS: "True"
+              PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+              PGADMIN_CONFIG_OAUTH2_AUTO_CREATE_USER: "True"
               PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED: "False"
+              PGADMIN_DISABLE_POSTFIX: "True"
+              PGADMIN_LISTEN_PORT: &port 5050
+              PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
             envFrom:
               - secretRef:
-                  name: &secret pgadmin-secret
+                  name: *secret
             probes:
               liveness: &probes
                 enabled: true
@@ -62,7 +71,7 @@ spec:
                   httpGet:
                     path: /misc/ping
                     port: *port
-                  initialDelaySeconds: 5
+                  initialDelaySeconds: 20
                   periodSeconds: 10
                   timeoutSeconds: 1
                   failureThreshold: 3
@@ -70,9 +79,9 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 150Mi
+                memory: 256Mi
               limits:
-                memory: 384Mi
+                memory: 512Mi
     defaultPodOptions:
       securityContext:
         runAsUser: 5050
@@ -80,34 +89,40 @@ spec:
         fsGroup: 5050
         fsGroupChangePolicy: OnRootMismatch
     persistence:
-      pgpass:
+      config:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        globalMounts:
+          - path: /var/lib/pgadmin
+      secrets:
         type: secret
         name: *secret
-        globalMounts:
-          - path: /pgadmin4/pgpass
-            subPath: pgpass
-      config:
-        existingClaim: pgadmin-config
         advancedMounts:
-          pgadmin:
-            fix-perms:
-              - path: /var/lib/pgadmin
+          *app :
+            init-config:
+              - path: /tmp/secrets/.pgpass
+                subPath: pgpass
             app:
-              - path: /var/lib/pgadmin
-      servers-json-file:
-        type: configMap
-        name: servers.json
+              - path: /pgadmin4/servers.json
+                subPath: servers.json
+      backups:
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: /mnt/vault/cluster/backup
         globalMounts:
-          - path: /pgadmin4/servers.json
-            subPath: servers.json
-      config-py:
-        type: configMap
-        name: pgadmin-config-py
+          - path: /mnt/backups
+            subPath: apps/pgadmin
+      tmpfs:
+        type: emptyDir
         globalMounts:
-          - path: /pgadmin4/config.py
-            subPath: config.py
+          - path: /tmp
+            subPath: tmp
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Tools"
+          gethomepage.dev/name: "${GATUS_NAME}"
+          gethomepage.dev/icon: "sh-pgadmin.svg"
         hostnames:
           - "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
         parentRefs:
@@ -116,7 +131,7 @@ spec:
             sectionName: https-app
         rules:
           - backendRefs:
-              - identifier: app
+              - name: *app
                 port: *port
     service:
       app:

@@ -2,14 +2,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-configMapGenerator:
-  - name: servers.json
-    files:
-      - servers.json=../config/servers.json
-generatorOptions:
-  disableNameSuffixHash: true
-
 resources:
-  - ./helmrelease.yaml
   - ./externalsecret.yaml
-  - ./configmap.yaml
+  - ./helmrelease.yaml

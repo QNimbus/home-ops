@@ -23,8 +23,6 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: pgAdmin
-      VOLSYNC_UID: "5050"
-      VOLSYNC_GID: "5050"
       VOLSYNC_CLAIM: pgadmin-config
       VOLSYNC_CAPACITY: 2Gi
   sourceRef:
