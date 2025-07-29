@@ -1,0 +1,133 @@
+---
+# yaml-language-server: $schema=https://schemas.bykaj.io/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app n8n
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      n8n:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.5.0@sha256:e0c87ce7df39d06b93f27cf2cc6a056611f13faaa88cc07ab4dc8bf7a85d0b11
+            envFrom: &envFrom
+              - secretRef:
+                  name: n8n-secret
+        containers:
+          app:
+            image:
+              repository: ghcr.io/n8n-io/n8n
+              tag: 1.105.0@sha256:c3be2b39f594387959434536008d05477cdf00dc0d901b0980e40b4415a8e89c
+            env:
+              DB_POSTGRESDB_HOST: "${DB_SERVER}"
+              DB_TYPE: "postgresdb"
+              EXECUTIONS_DATA_MAX_AGE: "7"
+              EXECUTIONS_DATA_PRUNE_MAX_COUNT: "50000"
+              EXECUTIONS_DATA_PRUNE: "true"
+              GENERIC_TIMEZONE: "${TIMEZONE}"
+              N8N_DIAGNOSTICS_ENABLED: "false"
+              N8N_EMAIL_MODE: "smtp"
+              N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "false"
+              N8N_HIDE_USAGE_PAGE: "false"
+              N8N_HOST: "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+              N8N_LOG_LEVEL: "info"
+              N8N_LOG_OUTPUT: "console"
+              N8N_METRICS: "true"
+              N8N_PORT: &port 5678
+              N8N_PROTOCOL: "https"
+              N8N_PROXY_HOPS: "1"
+              N8N_RUNNERS_ENABLED: "true"
+              N8N_SMTP_PORT: "587"
+              WEBHOOK_URL: "https://${GATUS_SUBDOMAIN:=${APP}}-webhook.${DOMAIN_PROXII}/"
+            envFrom: *envFrom
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness:
+                <<: *probes
+                spec:
+                  httpGet:
+                    path: /healthz/readiness
+                    port: *port
+            resources:
+              requests:
+                cpu: 5m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+    persistence:
+      config:
+        existingClaim: n8n-config
+        globalMounts:
+          - path: /home/node/.n8n
+    route:
+      *app :
+        hostnames:
+          - "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https-app
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
+      webhook:
+        hostnames:
+          - "${GATUS_SUBDOMAIN:=${APP}}-webhook.${DOMAIN_PROXII}"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - matches:
+              - path:
+                  value: /webhook
+            backendRefs: [{}]
+    service:
+      *app :
+        controller: *app
+        ports:
+          http:
+            port: *port
+    serviceMonitor:
+      *app :
+        enabled: true
+        endpoints:
+          - scheme: http
+            targetPort: *port
+            path: /metrics
+            interval: 10s
+            honorLabels: true
