@@ -1,0 +1,8 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/cert-manager.io/issuer_v1.json
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: barman-cloud-selfsigned-issuer
+spec:
+  selfSigned: {}

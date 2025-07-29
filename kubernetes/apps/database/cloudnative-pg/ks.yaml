@@ -10,7 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  wait: true
+  wait: false
   prune: true
   interval: 1h
   timeout: 5m
@@ -21,7 +21,36 @@ spec:
     name: flux-system
     namespace: flux-system
   dependsOn: []
-  healthChecks: []
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app cloudnative-pg-barman-cloud
+  namespace: &namespace database
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: cert-manager
+      namespace: cert-manager
+    - name: cloudnative-pg-operator
+      namespace: *namespace
+  interval: 1h
+  path: ./kubernetes/apps/database/cloudnative-pg/barman-cloud
+  postBuild:
+    substitute:
+      APP: *app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
 ---
 # yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -34,12 +63,17 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  wait: true
+  wait: false
   prune: true
   interval: 1h
   timeout: 5m
   retryInterval: 2m
   path: ./kubernetes/apps/database/cloudnative-pg/cluster
+  postBuild:
+    substitute:
+      APP: *app
+      CNPG_CURRENT_CLUSTER: "postgres-v17-20250728"
+      CNPG_PREVIOUS_CLUSTER: "postgres-v17-20250717"
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -47,11 +81,12 @@ spec:
   dependsOn:
     - name: cloudnative-pg-operator
       namespace: *namespace
+    - name: cloudnative-pg-barman-cloud
+      namespace: *namespace
     - name: onepassword-store
       namespace: external-secrets
     - name: longhorn
       namespace: longhorn-system
-  healthChecks: []
 ---
 # yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -64,7 +99,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  wait: true
+  wait: false
   prune: true
   interval: 1h
   timeout: 5m
@@ -79,4 +114,3 @@ spec:
       namespace: database
     - name: onepassword-store
       namespace: external-secrets
-  healthChecks: []
