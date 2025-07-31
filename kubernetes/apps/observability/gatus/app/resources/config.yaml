@@ -41,3 +41,12 @@ endpoints:
       dns-resolver: tcp://1.1.1.1:53
     conditions:
       - "[STATUS] == 404"
+  - name: Gatus heartbeat
+    url: http://localhost:9999
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: custom
+        url: https://health.buri-ray.ts.net/ping/7bed020f-1278-44dd-b864-5729adf333be
+        method: GET
