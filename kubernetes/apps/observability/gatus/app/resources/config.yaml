@@ -42,7 +42,7 @@ endpoints:
     conditions:
       - "[STATUS] == 404"
   - name: Gatus heartbeat
-    url: http://localhost:9999
+    url: http://localhost
     interval: 1m
     conditions:
       - "[STATUS] == 200"
