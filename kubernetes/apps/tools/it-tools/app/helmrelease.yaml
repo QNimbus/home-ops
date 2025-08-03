@@ -48,10 +48,6 @@ spec:
         ports:
           http:
             port: &port 8080
-    serviceMonitor:
-      app:
-        endpoints:
-          - port: http
     persistence:
       tmpfs:
         type: emptyDir
