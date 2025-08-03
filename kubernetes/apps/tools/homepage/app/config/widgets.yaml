@@ -1,6 +1,6 @@
 ---
 - logo:
-    icon: https://raw.githubusercontent.com/bykaj/home-ops/refs/heads/main/assets/images/home-ops-logo.png
+    icon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
 - kubernetes:
     cluster:
       show: false
