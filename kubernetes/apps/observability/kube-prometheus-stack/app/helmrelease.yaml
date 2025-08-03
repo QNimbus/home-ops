@@ -178,17 +178,10 @@ spec:
       # ALERTMANAGER INSTANCE SPECIFICATION
       # ========================================================================
       alertmanagerSpec:
-        # COMMENTED OUT: Using default Alertmanager configuration for basic setup
-        # Configuration object reference for Alertmanager routing and notification rules
-        # This references an AlertmanagerConfiguration custom resource
-        # alertmanagerConfiguration:
-        #   name: alertmanager              # Name of the AlertmanagerConfiguration resource
-        #   global:
-        #     # How long to wait before marking an alert as resolved if no new instances arrive
-        #     resolveTimeout: 5m
-
-        # External URL where Alertmanager will be accessible
-        # Used for generating URLs in notifications and the web UI
+        alertmanagerConfiguration:
+          name: alertmanager
+          global:
+            resolve_timeout: 5m
         externalUrl: "https://alertmanager.${DOMAIN_APP}"
 
         # ====================================================================
