@@ -55,6 +55,12 @@ spec:
     enableHolmesGPT: true
     enabledManagedConfiguration: true
     holmes:
+      toolsets:
+        bash:
+          enabled: true
+          config:
+            kubectl:
+              allowed_images: []
       additionalEnvVars:
         - name: ROBUSTA_AI
           value: "true"
