@@ -52,10 +52,10 @@ spec:
           matchType: =
   receivers:
     - name: "null"
-    # - name: 'robusta'
-    #   webhookConfigs:
-    #     - url: "http://robusta-runner.observability.svc.cluster.local/api/alerts"
-    #       sendResolved: true
+    - name: 'robusta'
+      webhookConfigs:
+        - url: "http://robusta-runner.observability.svc.cluster.local/api/alerts"
+          sendResolved: true
     - name: heartbeat
       # webhookConfigs:
       #   - urlSecret:

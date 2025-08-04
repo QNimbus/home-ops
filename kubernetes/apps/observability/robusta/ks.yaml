@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app robusta
+  namespace: &namespace observability
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 10m
+  retryInterval: 2m
+  path: ./kubernetes/apps/observability/robusta/app
+  postBuild: {}
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
