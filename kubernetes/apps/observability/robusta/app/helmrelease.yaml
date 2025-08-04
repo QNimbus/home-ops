@@ -56,6 +56,8 @@ spec:
     enabledManagedConfiguration: true
     holmes:
       toolsets:
+        helm/core:
+          enabled: true
         bash:
           enabled: true
           config:
