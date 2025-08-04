@@ -56,6 +56,12 @@ spec:
     enabledManagedConfiguration: true
     holmes:
       toolsets:
+        kubernetes/kube-lineage-extras:
+          enabled: true
+        kubernetes/kube-prometheus-stack:
+          enabled: true
+        kubernetes/live-metrics:
+          enabled: true
         helm/core:
           enabled: true
         bash:
