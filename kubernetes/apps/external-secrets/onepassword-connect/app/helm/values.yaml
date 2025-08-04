@@ -19,10 +19,11 @@ connect:
     # The 1Password Connect API repository
     imageRepository: 1password/connect-api
     resources:
-      limits:
-        memory: 128Mi
       requests:
-        cpu: 0.2
+        cpu: 30m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
     httpPort: 8080
     httpsPort: 8443
     logLevel: info
@@ -50,7 +51,12 @@ connect:
   sync:
     name: connect-sync
     imageRepository: 1password/connect-sync
-    resources: {}
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
     httpPort: 8081
     logLevel: info
 
