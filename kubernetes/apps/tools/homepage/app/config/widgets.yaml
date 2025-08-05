@@ -7,9 +7,9 @@
       cpu: true
       memory: true
       showLabel: true
-      label: "cluster"
+      label: "home-ops"
     nodes:
-      show: true
+      show: false
       cpu: true
       memory: true
       showLabel: false

@@ -123,7 +123,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: "Tools"
           gethomepage.dev/name: "Paperless"
-          gethomepage.dev/icon: "sh.paperless-ngx-light"
+          gethomepage.dev/icon: "sh-paperless-ngx-light"
           gethomepage.dev/widget.type: "paperlessngx"
           gethomepage.dev/widget.url: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_API_KEY}}` }}"
