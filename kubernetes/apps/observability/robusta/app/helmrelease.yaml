@@ -32,7 +32,7 @@ spec:
       - robusta_sink:
           name: robusta_ui_sink
           token: "{{ env.SINK_TOKEN }}"
-    enablePrometheusStack: false
+    enablePrometheusStack: true
     enablePlatformPlaybooks: true
     runner:
       sendAdditionalTelemetry: true
