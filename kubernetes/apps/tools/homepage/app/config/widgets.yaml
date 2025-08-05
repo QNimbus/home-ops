@@ -3,13 +3,13 @@
     icon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
 - kubernetes:
     cluster:
-      show: false
+      show: true
       cpu: true
       memory: true
       showLabel: true
       label: "cluster"
     nodes:
-      show: false
+      show: true
       cpu: true
       memory: true
       showLabel: false
