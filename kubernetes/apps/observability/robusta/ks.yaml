@@ -6,6 +6,7 @@ metadata:
   name: &app robusta
   namespace: &namespace observability
 spec:
+  suspend: true
   targetNamespace: *namespace
   commonMetadata:
     labels:
