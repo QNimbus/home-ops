@@ -29,7 +29,7 @@ servers:
       - name: autopath
         parameters: "@kubernetes"
       - name: forward
-        parameters: ts.net tailscale-dns.tailscale.svc.cluster.local:53
+        parameters: ts.net 10.43.150.15:53
         configBlock: |-
           policy sequential
       - name: forward
