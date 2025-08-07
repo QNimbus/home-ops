@@ -6,3 +6,4 @@ resources:
   - ./app-connector.yaml
   - ./exit-node.yaml
   - ./magicdns.yaml
+  - ./tailscale-dns-service.yaml
