@@ -336,44 +336,44 @@ server:
   # -- Deployment strategy to be added to the authentik server Deployment
   # deploymentStrategy: {}
   # -- authentik server service configuration
-  # service:
-  #   annotations: {}
-  #   labels: {}
-  #   type: ClusterIP
-  #   nodePortHttp: 30080
-  #   nodePortHttps: 30443
-  #   servicePortHttp: 80
-  #   servicePortHttps: 443
-  #   servicePortHttpName: http
-  #   servicePortHttpsName: https
-  #   loadBalancerIP: ""
-  #   loadBalancerSourceRanges: []
-  #   externalIPs: []
-  #   externalTrafficPolicy: ""
-  #   sessionAffinity: ""
-  #   sessionAffinityConfig: {}
+  service:
+    annotations: {}
+    labels: {}
+    type: ClusterIP
+    nodePortHttp: 30080
+    nodePortHttps: 30443
+    servicePortHttp: 80
+    servicePortHttps: 443
+    servicePortHttpName: http
+    servicePortHttpsName: https
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    externalIPs: []
+    externalTrafficPolicy: ""
+    sessionAffinity: ""
+    sessionAffinityConfig: {}
   # -- authentik server metrics service configuration
-  # metrics:
-  #   enabled: false
-  #   service:
-  #     type: ClusterIP
-  #     clusterIP: ""
-  #     annotations: {}
-  #     labels: {}
-  #     servicePort: 9300
-  #     portName: metrics
-  #   serviceMonitor:
-  #     enabled: false
-  #     interval: 30s
-  #     scrapeTimeout: 3s
-  #     relabelings: []
-  #     metricRelabelings: []
-  #     selector: {}
-  #     scheme: ""
-  #     tlsConfig: {}
-  #     namespace: ""
-  #     labels: {}
-  #     annotations: {}
+  metrics:
+    enabled: true  # Enable metrics service
+    service:
+      type: ClusterIP
+      clusterIP: ""
+      annotations: {}
+      labels: {}
+      servicePort: 9300
+      portName: metrics
+    serviceMonitor:
+      enabled: true  # Enable ServiceMonitor resource
+      interval: 1m
+      scrapeTimeout: 3s
+      relabelings: []
+      metricRelabelings: []
+      selector: {}
+      scheme: ""
+      tlsConfig: {}
+      namespace: ""
+      labels: {}
+      annotations: {}
   # -- Ingress configuration
   # ingress:
   #   enabled: false
