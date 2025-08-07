@@ -29,7 +29,7 @@ servers:
       - name: autopath
         parameters: "@kubernetes"
       - name: forward
-        parameters: ts.net 10.43.0.53:53
+        parameters: ts.net 100.100.100.100:53
         configBlock: |-
           policy sequential
       - name: forward
