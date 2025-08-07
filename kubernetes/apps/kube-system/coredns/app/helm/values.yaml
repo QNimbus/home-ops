@@ -29,6 +29,10 @@ servers:
       - name: autopath
         parameters: "@kubernetes"
       - name: forward
+        parameters: ts.net tailscale-dns.tailscale.svc.cluster.local:53
+        configBlock: |-
+          policy sequential
+      - name: forward
         parameters: . /etc/resolv.conf
       - name: cache
         configBlock: |-
