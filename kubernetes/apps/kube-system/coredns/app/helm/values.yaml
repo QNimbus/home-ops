@@ -29,10 +29,6 @@ servers:
       - name: autopath
         parameters: "@kubernetes"
       - name: forward
-        parameters: ts.net 100.100.100.100:53
-        configBlock: |-
-          policy sequential
-      - name: forward
         parameters: . /etc/resolv.conf
       - name: cache
         configBlock: |-
