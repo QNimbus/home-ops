@@ -7,3 +7,4 @@ resources:
   - ./exit-node.yaml
   - ./magicdns.yaml
   - ./tailscale-dns-service.yaml
+  - ./uptime-kuma-egress.yaml

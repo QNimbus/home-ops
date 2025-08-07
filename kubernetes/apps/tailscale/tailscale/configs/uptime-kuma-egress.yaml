@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uptime-kuma-egress
+  namespace: tailscale
+  annotations:
+    tailscale.com/tailnet-fqdn: uptime-kuma.buri-ray.ts.net
+spec:
+  type: ExternalName
+  externalName: placeholder  # Will be overwritten by operator
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+    - name: https
+      port: 443
+      protocol: TCP
+    - name: uptime-kuma-api
+      port: 3001  # Default port for Uptime Kuma API
+      protocol: TCP
