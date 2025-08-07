@@ -1,0 +1,36 @@
+# Example: Add more external Tailnet services easily
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-egress
+  namespace: tailscale
+  annotations:
+    tailscale.com/tailnet-fqdn: grafana.buri-ray.ts.net  # If you have external Grafana
+    tailscale.com/proxy-group: tailnet-egress  # Uses same proxy group
+spec:
+  type: ExternalName
+  externalName: placeholder
+  ports:
+    - name: http
+      port: 3000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nas-egress
+  namespace: tailscale
+  annotations:
+    tailscale.com/tailnet-ip: 100.x.x.x  # If you have a NAS with static IP
+    tailscale.com/proxy-group: tailnet-egress  # Uses same proxy group
+spec:
+  type: ExternalName
+  externalName: placeholder
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+    - name: https
+      port: 443
+      protocol: TCP

@@ -5,6 +5,8 @@ kind: Kustomization
 resources:
   - ./app-connector.yaml
   - ./exit-node.yaml
-  - ./magicdns.yaml
-  - ./tailscale-dns-service.yaml
+  - ./tailnet-egress-proxygroup.yaml
   - ./uptime-kuma-egress.yaml
+  # Future services can be added here easily:
+  # - ./grafana-egress.yaml
+  # - ./nas-egress.yaml
