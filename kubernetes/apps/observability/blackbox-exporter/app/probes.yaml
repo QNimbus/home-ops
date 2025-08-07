@@ -1,0 +1,76 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: devices
+spec:
+  module: icmp
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - homeassistant.lan.home.${DOMAIN_IO}
+        - gw-sip.iot.home.${DOMAIN_IO}
+        # - gw-adam.home.${DOMAIN_NET}
+        # - gw-anna.home.${DOMAIN_NET}
+        # - gw-hue.home.${DOMAIN_NET}
+        # - dsmr-logger.home.${DOMAIN_NET}
+
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: nfs
+spec:
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - ${NAS_SERVER}:2049
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: smb
+spec:
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - ${NAS_SERVER}:445
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: postgres
+spec:
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - ${DB_SERVER}:5432
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: redis
+spec:
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - ${REDIS_SERVER}:6379
