@@ -6,7 +6,7 @@ metadata:
   namespace: tailscale
   annotations:
     tailscale.com/tailnet-fqdn: uptime-kuma.buri-ray.ts.net
-    # tailscale.com/proxy-group: tailnet-egress  # Temporarily commented to force cleanup
+    tailscale.com/proxy-group: tailnet-egress
 spec:
   type: ExternalName
   externalName: placeholder  # Will be overwritten by operator
