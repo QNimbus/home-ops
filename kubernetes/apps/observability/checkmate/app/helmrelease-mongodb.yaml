@@ -34,7 +34,7 @@ spec:
           app:
             image:
               repository: docker.io/library/mongo
-              tag: 6.0
+              tag: 8.0
               pullPolicy: IfNotPresent
             # Explicit env (avoid envFrom to keep schema minimal)
             env:
