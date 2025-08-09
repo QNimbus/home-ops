@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.clustrs.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+# Converted from Bitnami MongoDB chart to bjw-s app-template for simplicity and to remove Bitnami repo dependency
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -8,15 +8,9 @@ spec:
   interval: 1h
   driftDetection:
     mode: enabled
-  chart:
-    spec:
-      chart: mongodb
-      version: 16.x
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami
-        namespace: flux-system
-      interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
       retries: 3
@@ -30,35 +24,88 @@ spec:
     disableWait: false
     timeout: 15m
   values:
-    architecture: standalone
-    auth:
-      enabled: true
-      rootUser: root
-      existingSecret: checkmate-secret
-      rootPasswordKey: CM_DB_PASSWORD
-      database: checkmate
-      username: checkmate
-      passwordKey: CM_DB_PASSWORD
-    primary:
-      persistence:
+    controllers:
+      mongodb:
+        type: statefulset
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/library/mongo
+              tag: 6.0
+              pullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: checkmate-secret
+            env:
+              # Map secret keys to expected Mongo init env vars
+              - name: MONGO_INITDB_ROOT_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: CM_DB_USER
+              - name: MONGO_INITDB_ROOT_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: CM_DB_PASSWORD
+              - name: MONGO_INITDB_DATABASE
+                value: checkmate
+            resources:
+              requests:
+                cpu: 250m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - mongosh --eval 'db.adminCommand("ping")'
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - mongosh --eval 'db.adminCommand("ping")'
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+        pod:
+          securityContext:
+            fsGroup: 999
+            runAsUser: 999
+            runAsGroup: 999
+            runAsNonRoot: true
+    persistence:
+      data:
         enabled: true
+        type: persistentVolumeClaim
+        accessModes: ["ReadWriteOnce"]
         size: 8Gi
-        storageClass: "longhorn"
-      resources:
-        requests:
-          cpu: 250m
-          memory: 256Mi
-        limits:
-          cpu: 500m
-          memory: 512Mi
-    serviceAccount:
-      create: true
-    metrics:
+        storageClass: longhorn
+        globalMounts:
+          - path: /data/db
+    service:
+      mongodb:
+        controller: mongodb
+        ports:
+          mongo:
+            port: 27017
+    serviceMonitor:
       enabled: false
-    podSecurityContext:
-      enabled: true
-      fsGroup: 1001
-    containerSecurityContext:
-      enabled: true
-      runAsUser: 1001
-      runAsNonRoot: true

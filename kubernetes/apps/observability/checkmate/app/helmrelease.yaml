@@ -24,7 +24,6 @@ spec:
     disableWait: false
     timeout: 15m
   dependsOn:
-    - name: checkmate-mongodb
     - name: dragonfly-cluster
       namespace: database
   values:
