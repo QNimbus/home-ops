@@ -23,9 +23,6 @@ spec:
       retries: 3
     disableWait: false
     timeout: 15m
-  dependsOn:
-    - name: dragonfly-cluster
-      namespace: database
   values:
     controllers:
       client:
