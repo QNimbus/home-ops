@@ -32,8 +32,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/bluewave-labs/checkmate-client
-              tag: "2.1.4"
+              repository: ghcr.io/bluewave-labs/checkmate
+              tag: "frontend-dist"
               pullPolicy: IfNotPresent
             env:
               REACT_APP_SERVER_HOST: "https://checkmate-api.${DOMAIN_APP}"
@@ -70,8 +70,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/bluewave-labs/checkmate-server
-              tag: "2.1.4"
+              repository: ghcr.io/bluewave-labs/checkmate
+              tag: "backend-dist"
               pullPolicy: IfNotPresent
             env:
               CLIENT_HOST: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
