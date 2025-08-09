@@ -37,7 +37,7 @@ spec:
           app:
             image:
               repository: ghcr.io/bluewave-labs/checkmate-client
-              tag: "2.1.4"
+              tag: "v2.3.1"
               pullPolicy: IfNotPresent
             env:
               REACT_APP_SERVER_HOST: "https://checkmate-api.${DOMAIN_APP}"
