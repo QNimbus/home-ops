@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - ./backube.yaml
+  - ./bitnami.yaml
   - ./cloudnative-pg.yaml
   - ./csi-driver-smb.yaml
   - ./external-dns.yaml

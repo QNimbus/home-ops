@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/source.toolkit.fluxcd.io/helmrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: &namespace flux-system
+spec:
+  interval: 12h
+  timeout: 1m
+  url: https://charts.bitnami.com/bitnami

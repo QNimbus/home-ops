@@ -8,15 +8,9 @@ spec:
   interval: 1h
   driftDetection:
     mode: enabled
-  chart:
-    spec:
-      chart: charts/helm/checkmate
-      version: 2.3.x
-      sourceRef:
-        kind: GitRepository
-        name: checkmate
-        namespace: flux-system
-      interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
       retries: 3
@@ -29,6 +23,142 @@ spec:
       retries: 3
     disableWait: false
     timeout: 15m
-  valuesFrom:
-    - kind: ConfigMap
-      name: checkmate-helm-values
+  dependsOn:
+    - name: checkmate-mongodb
+    - name: dragonfly-cluster
+      namespace: database
+  values:
+    controllers:
+      client:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 2
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bluewave-labs/checkmate-client
+              tag: "2.1.4"
+              pullPolicy: IfNotPresent
+            env:
+              REACT_APP_SERVER_HOST: "https://checkmate-api.${DOMAIN_APP}"
+            probes:
+              liveness: &clientProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 3000
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *clientProbes
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+        pod:
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            fsGroup: 1001
+      server:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 2
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bluewave-labs/checkmate-server
+              tag: "2.1.4"
+              pullPolicy: IfNotPresent
+            env:
+              CLIENT_HOST: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+              DB_TYPE: "mongodb"
+              LOG_LEVEL: "warn"
+              NODE_ENV: "production"
+              PORT: "3001"
+              TOKEN_TTL: "3600"
+              REFRESH_TOKEN_TTL: "86400"
+            envFrom:
+              - secretRef:
+                  name: checkmate-secret
+            probes:
+              liveness: &serverProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 3001
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *serverProbes
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+        pod:
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            fsGroup: 1001
+    service:
+      client:
+        primary: true
+        controller: client
+        ports:
+          http:
+            port: &clientPort 3000
+      server:
+        controller: server
+        ports:
+          http:
+            port: &serverPort 3001
+    route:
+      client:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Observability"
+          gethomepage.dev/name: "Checkmate"
+          gethomepage.dev/icon: "https://raw.githubusercontent.com/bluewave-labs/checkmate/main/client/public/logo512.png"
+          nginx.ingress.kubernetes.io/auth-method: GET
+          nginx.ingress.kubernetes.io/auth-url: http://authelia.security.svc.cluster.local/api/verify
+          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
+          nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Email,Remote-Groups
+          nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
+        hostnames:
+          - "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https-app
+        rules:
+          - backendRefs:
+              - identifier: client
+                port: *clientPort
+      server:
+        annotations:
+          nginx.ingress.kubernetes.io/cors-allow-origin: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+          nginx.ingress.kubernetes.io/enable-cors: "true"
+        hostnames:
+          - "checkmate-api.${DOMAIN_APP}"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https-app
+        rules:
+          - backendRefs:
+              - identifier: server
+                port: *serverPort

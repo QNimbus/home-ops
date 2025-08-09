@@ -6,11 +6,4 @@ namespace: observability
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-configMapGenerator:
-  - name: checkmate-helm-values
-    files:
-      - values.yaml=./helm/values.yaml
-configurations:
-  - ./helm/kustomize-config.yaml
-generatorOptions:
-  disableNameSuffixHash: true
+  - ./helmrelease-mongodb.yaml

@@ -8,5 +8,5 @@ metadata:
 spec:
   interval: 10m
   ref:
-    tag: v2.3.1
+    branch: develop
   url: https://github.com/bluewave-labs/checkmate
