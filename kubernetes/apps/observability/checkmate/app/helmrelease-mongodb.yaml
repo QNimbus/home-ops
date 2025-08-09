@@ -35,11 +35,8 @@ spec:
               repository: docker.io/library/mongo
               tag: 6.0
               pullPolicy: IfNotPresent
-            envFrom:
-              - secretRef:
-                  name: checkmate-secret
+            # Explicit env (avoid envFrom to keep schema minimal)
             env:
-              # Map secret keys to expected Mongo init env vars
               - name: MONGO_INITDB_ROOT_USERNAME
                 valueFrom:
                   secretKeyRef:
@@ -107,5 +104,4 @@ spec:
         ports:
           mongo:
             port: 27017
-    serviceMonitor:
-      enabled: false
+            protocol: TCP
