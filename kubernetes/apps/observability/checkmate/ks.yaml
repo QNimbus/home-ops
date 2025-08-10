@@ -22,8 +22,6 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Checkmate
-      GATUS_DOMAIN: "checkmate.proxii.nl"
-      SECRET_DOMAIN: "proxii.nl"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
