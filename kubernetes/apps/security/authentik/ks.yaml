@@ -11,7 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/public
+    - ../../../../components/gatus/id
     - ../../../../components/volsync
   wait: false
   prune: true
@@ -23,7 +23,7 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Authentik
-      GATUS_DOMAIN: auth.vanwetten.id
+      GATUS_SUBDOMAIN: auth
       VOLSYNC_UID: "1000"
       VOLSYNC_GID: "1000"
       VOLSYNC_CLAIM: authentik-config
