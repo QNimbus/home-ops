@@ -167,6 +167,10 @@ spec:
             namespace: kube-system
             sectionName: https-app
         rules:
-          - backendRefs:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+            backendRefs:
               - identifier: server
                 port: *serverPort
