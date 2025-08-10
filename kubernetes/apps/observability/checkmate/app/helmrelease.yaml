@@ -64,6 +64,17 @@ spec:
             runAsGroup: 1001
             runAsNonRoot: true
             fsGroup: 1001
+        persistence:
+          nginx-cache:
+            enabled: true
+            type: emptyDir
+            globalMounts:
+              - path: /var/cache/nginx
+          nginx-run:
+            enabled: true
+            type: emptyDir
+            globalMounts:
+              - path: /var/run
       server:
         annotations:
           reloader.stakater.com/auto: "true"
@@ -111,15 +122,6 @@ spec:
             runAsGroup: 1001
             runAsNonRoot: true
             fsGroup: 1001
-    persistence:
-      nginx-cache:
-        type: emptyDir
-        globalMounts:
-          - path: /var/cache/nginx
-      nginx-run:
-        type: emptyDir
-        globalMounts:
-          - path: /var/run
     service:
       client:
         primary: true
