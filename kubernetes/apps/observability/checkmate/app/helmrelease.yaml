@@ -38,6 +38,7 @@ spec:
               pullPolicy: IfNotPresent
             env:
               REACT_APP_SERVER_HOST: "https://checkmate-api.${DOMAIN_APP}"
+              UPTIME_APP_API_BASE_URL: "https://checkmate-api.${DOMAIN_APP}/api"
             probes:
               liveness: &clientProbes
                 enabled: true
