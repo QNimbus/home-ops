@@ -42,8 +42,6 @@ spec:
               - |
                 # Copy files from the original location to writable volume
                 cp -r /usr/share/nginx/html/* /usr/share/nginx/html-writable/
-                # Set ownership for non-root user
-                chown -R 1001:1001 /usr/share/nginx/html-writable/
         containers:
           app:
             image:
