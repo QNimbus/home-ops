@@ -30,6 +30,20 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         replicas: 2
+        initContainers:
+          copy-files:
+            image:
+              repository: ghcr.io/bluewave-labs/checkmate
+              tag: "frontend-dist"
+              pullPolicy: IfNotPresent
+            command:
+              - /bin/sh
+              - -c
+              - |
+                # Copy files from the original location to writable volume
+                cp -r /usr/share/nginx/html/* /usr/share/nginx/html-writable/
+                # Set ownership for non-root user
+                chown -R 1001:1001 /usr/share/nginx/html-writable/
         containers:
           app:
             image:
@@ -39,6 +53,15 @@ spec:
             env:
               REACT_APP_SERVER_HOST: "https://checkmate-api.${DOMAIN_APP}"
               UPTIME_APP_API_BASE_URL: "https://checkmate-api.${DOMAIN_APP}/api"
+            command:
+              - /bin/sh
+              - -c
+              - |
+                # Create symlink to writable directory
+                rm -rf /usr/share/nginx/html
+                ln -s /usr/share/nginx/html-writable /usr/share/nginx/html
+                # Start nginx
+                nginx -g "daemon off;"
             probes:
               liveness: &clientProbes
                 enabled: true
@@ -123,6 +146,11 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /var/run
+      nginx-html:
+        enabled: true
+        type: emptyDir
+        globalMounts:
+          - path: /usr/share/nginx/html-writable
     service:
       client:
         primary: true
