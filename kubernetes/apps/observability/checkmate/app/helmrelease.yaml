@@ -55,9 +55,8 @@ spec:
               - /bin/sh
               - -c
               - |
-                # Create symlink to writable directory
-                rm -rf /usr/share/nginx/html
-                ln -s /usr/share/nginx/html-writable /usr/share/nginx/html
+                # Update nginx config to serve from writable directory
+                sed -i 's|/usr/share/nginx/html|/usr/share/nginx/html-writable|g' /etc/nginx/conf.d/default.conf
                 # Start nginx
                 nginx -g "daemon off;"
             probes:
