@@ -111,6 +111,15 @@ spec:
             runAsGroup: 1001
             runAsNonRoot: true
             fsGroup: 1001
+    persistence:
+      nginx-cache:
+        type: emptyDir
+        globalMounts:
+          - path: /var/cache/nginx
+      nginx-run:
+        type: emptyDir
+        globalMounts:
+          - path: /var/run
     service:
       client:
         primary: true
