@@ -85,6 +85,8 @@ spec:
     # Client (Frontend) Configuration
     client:
       enabled: true
+      # Use fullnameOverride to ensure unique names
+      fullnameOverride: checkmate-client
       controllers:
         main:
           type: deployment
@@ -113,6 +115,8 @@ spec:
     # Server (Backend) Configuration
     server:
       enabled: true
+      # Use fullnameOverride to ensure unique names
+      fullnameOverride: checkmate-server
       controllers:
         main:
           type: deployment
