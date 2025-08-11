@@ -85,9 +85,22 @@ spec:
     # Client (Frontend) Configuration
     client:
       enabled: true
-      image:
-        repository: ghcr.io/bluewave-labs/checkmate
-        tag: frontend-dist
+      controllers:
+        main:
+          type: deployment
+          annotations:
+            reloader.stakater.com/auto: "true"
+          containers:
+            main:
+              image:
+                repository: ghcr.io/bluewave-labs/checkmate
+                tag: frontend-dist
+              resources:
+                requests:
+                  cpu: 15m
+                  memory: 64M
+                limits:
+                  memory: 128M
       service:
         main:
           ports:
@@ -100,12 +113,25 @@ spec:
     # Server (Backend) Configuration
     server:
       enabled: true
-      image:
-        repository: ghcr.io/bluewave-labs/checkmate
-        tag: backend-dist
-      envFrom:
-        - secretRef:
-            name: checkmate-secrets
+      controllers:
+        main:
+          type: deployment
+          annotations:
+            reloader.stakater.com/auto: "true"
+          containers:
+            main:
+              image:
+                repository: ghcr.io/bluewave-labs/checkmate
+                tag: backend-dist
+              envFrom:
+                - secretRef:
+                    name: checkmate-secrets
+              resources:
+                requests:
+                  cpu: 15m
+                  memory: 128M
+                limits:
+                  memory: 256M
       service:
         main:
           ports:
