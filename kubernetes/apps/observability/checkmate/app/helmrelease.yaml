@@ -55,8 +55,21 @@ spec:
               - /bin/sh
               - -c
               - |
-                # Update nginx config to serve from writable directory
-                sed -i 's|/usr/share/nginx/html|/usr/share/nginx/html-writable|g' /etc/nginx/conf.d/default.conf
+                # Create custom nginx config serving from writable directory
+                cat > /etc/nginx/conf.d/default.conf << 'EOF'
+                server {
+                    listen       80;
+                    listen  [::]:80;
+                    server_name _;
+                    server_tokens off;
+                    
+                    location / {
+                        root   /usr/share/nginx/html-writable;
+                        index  index.html index.htm;
+                        try_files $uri $uri/ /index.html;
+                    }
+                }
+                EOF
                 # Start nginx
                 nginx -g "daemon off;"
             probes:
