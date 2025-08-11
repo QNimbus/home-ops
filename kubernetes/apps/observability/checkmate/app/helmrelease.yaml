@@ -31,7 +31,56 @@ spec:
   valuesFrom:
     - kind: Secret
       name: checkmate-secret
-      targetPath: secrets
+      targetPath: secrets.JWT_SECRET
+      valuesKey: JWT_SECRET
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REFRESH_TOKEN_SECRET
+      valuesKey: REFRESH_TOKEN_SECRET
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_ADDRESS
+      valuesKey: SYSTEM_EMAIL_ADDRESS
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_PASSWORD
+      valuesKey: SYSTEM_EMAIL_PASSWORD
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_HOST
+      valuesKey: SYSTEM_EMAIL_HOST
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_PORT
+      valuesKey: SYSTEM_EMAIL_PORT
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.PAGESPEED_API_KEY
+      valuesKey: PAGESPEED_API_KEY
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.DB_CONNECTION_STRING
+      valuesKey: DB_CONNECTION_STRING
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REDIS_HOST
+      valuesKey: REDIS_HOST
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REDIS_PORT
+      valuesKey: REDIS_PORT
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.DB_TYPE
+      valuesKey: DB_TYPE
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.TOKEN_TTL
+      valuesKey: TOKEN_TTL
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REFRESH_TOKEN_TTL
+      valuesKey: REFRESH_TOKEN_TTL
   values:
     # Client (Frontend) Configuration
     client:
