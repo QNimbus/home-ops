@@ -112,19 +112,12 @@ spec:
                   memory: 128M
       # Mount the nginx configuration
       persistence:
-        nginx-upstream:
+        nginx-config:
           type: configMap
           name: checkmate-client-nginx
           globalMounts:
-            - path: /etc/nginx/conf.d/upstream.conf
-              subPath: upstream.conf
-              readOnly: true
-        nginx-proxy:
-          type: configMap
-          name: checkmate-client-nginx
-          globalMounts:
-            - path: /etc/nginx/conf.d/proxy.conf
-              subPath: proxy.conf
+            - path: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
               readOnly: true
       service:
         main:
