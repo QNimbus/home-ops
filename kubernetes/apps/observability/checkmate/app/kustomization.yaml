@@ -6,4 +6,5 @@ namespace: observability
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./nginx-config.yaml
   - ./routes.yaml

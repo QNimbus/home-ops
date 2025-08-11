@@ -110,6 +110,22 @@ spec:
                   memory: 64M
                 limits:
                   memory: 128M
+      # Mount the nginx configuration
+      persistence:
+        nginx-upstream:
+          type: configMap
+          name: checkmate-client-nginx
+          globalMounts:
+            - path: /etc/nginx/conf.d/upstream.conf
+              subPath: upstream.conf
+              readOnly: true
+        nginx-proxy:
+          type: configMap
+          name: checkmate-client-nginx
+          globalMounts:
+            - path: /etc/nginx/conf.d/proxy.conf
+              subPath: proxy.conf
+              readOnly: true
       service:
         main:
           ports:
