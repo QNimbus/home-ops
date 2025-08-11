@@ -5,8 +5,8 @@ This directory contains the Checkmate website and API monitoring application dep
 ## Architecture Overview
 
 - **Application**: Combined frontend/backend Checkmate container using app-template
-- **Database**: Dedicated MongoDB instance using Bitnami chart
-- **Cache**: Dedicated Redis instance using Bitnami chart
+- **Database**: Dedicated MongoDB instance using standard Kubernetes manifests
+- **Cache**: Dedicated Redis instance using standard Kubernetes manifests
 - **Secrets**: External Secrets Operator with OnePassword integration
 - **Storage**: VolSync for configuration persistence
 
@@ -18,15 +18,15 @@ This directory contains the Checkmate website and API monitoring application dep
 - **Strategy**: Recreate (for persistent storage)
 - **Resources**: 256Mi request, 1Gi limit
 
-### 2. MongoDB (`helmrelease-mongodb.yaml`)
-- **Chart**: Bitnami MongoDB 16.5.40
-- **Configuration**: Standalone architecture
+### 2. MongoDB (`mongodb-deployment.yaml`)
+- **Image**: MongoDB 8.0.12 (official image)
+- **Configuration**: Standalone deployment
 - **Storage**: 8Gi Longhorn persistent volume
 - **Authentication**: Enabled with dedicated user/database
 
-### 3. Redis (`helmrelease-redis.yaml`)
-- **Chart**: Bitnami Redis 22.0.1
-- **Configuration**: Standalone architecture (no replica)
+### 3. Redis (`redis-deployment.yaml`)
+- **Image**: Redis 8.2.0-alpine (official image)
+- **Configuration**: Standalone deployment
 - **Storage**: 2Gi Longhorn persistent volume
 - **Authentication**: Enabled with password
 
@@ -67,7 +67,7 @@ To migrate to cluster-wide Redis (Dragonfly) and MongoDB:
    - Remove MongoDB and Redis specific secrets
 
 2. **Update kustomization.yaml**:
-   - Remove `helmrelease-mongodb.yaml` and `helmrelease-redis.yaml`
+   - Remove `mongodb-deployment.yaml` and `redis-deployment.yaml`
    - Add dependencies on cluster database operators
 
 3. **Update ks.yaml**:
@@ -75,7 +75,7 @@ To migrate to cluster-wide Redis (Dragonfly) and MongoDB:
    - Add `dependsOn` for your MongoDB operator when available
 
 4. **Update helmrelease.yaml**:
-   - Remove `dependsOn` for checkmate-mongodb and checkmate-redis
+   - Remove `dependsOn` for checkmate-mongodb and checkmate-redis (not needed with direct deployments)
    - Update resource requests if needed
 
 ## Troubleshooting
