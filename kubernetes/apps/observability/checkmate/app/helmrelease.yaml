@@ -79,10 +79,6 @@ spec:
       ingress:
         enabled: false  # We'll use Gateway API instead
 
-    # Disable built-in Redis since we're using Dragonfly
-    redis:
-      enabled: false
-
     # Use MongoDB - official chart will create checkmate-mongodb service
     mongodb:
       image: mongo:7.0
