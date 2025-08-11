@@ -7,3 +7,4 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./routes.yaml
+  - ./server-alias-service.yaml

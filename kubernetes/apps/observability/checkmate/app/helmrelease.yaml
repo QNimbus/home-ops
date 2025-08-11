@@ -141,6 +141,14 @@ spec:
           ports:
             http:
               port: 52345
+        # Add an additional service with the name "server" for client compatibility
+        server:
+          enabled: true
+          type: ClusterIP
+          controller: main
+          ports:
+            http:
+              port: 52345
       ingress:
         main:
           enabled: false  # We'll use Gateway API instead
