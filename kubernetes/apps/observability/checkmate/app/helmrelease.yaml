@@ -96,6 +96,7 @@ spec:
       ingress:
         main:
           enabled: false  # We'll use Gateway API instead
+          hosts: []       # Explicitly set empty hosts array
 
     # Server (Backend) Configuration
     server:
@@ -114,6 +115,7 @@ spec:
       ingress:
         main:
           enabled: false  # We'll use Gateway API instead
+          hosts: []       # Explicitly set empty hosts array
 
     # MongoDB Configuration (using Bitnami subchart)
     mongodb:
