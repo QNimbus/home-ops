@@ -10,7 +10,7 @@ metadata:
 data:
   default.conf: |
     upstream checkmate_backend {
-        server checkmate-server:52345;
+        server checkmate-server.observability.svc.cluster.local:52345;
     }
     
     server {
