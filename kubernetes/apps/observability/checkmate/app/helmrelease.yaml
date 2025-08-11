@@ -28,6 +28,43 @@ spec:
       retries: 3
     disableWait: false
     timeout: 15m
+  valuesFrom:
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.JWT_SECRET
+      valuesKey: JWT_SECRET
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REFRESH_TOKEN_SECRET
+      valuesKey: REFRESH_TOKEN_SECRET
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_ADDRESS
+      valuesKey: SYSTEM_EMAIL_ADDRESS
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_PASSWORD
+      valuesKey: SYSTEM_EMAIL_PASSWORD
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_HOST
+      valuesKey: SYSTEM_EMAIL_HOST
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.SYSTEM_EMAIL_PORT
+      valuesKey: SYSTEM_EMAIL_PORT
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.DB_CONNECTION_STRING
+      valuesKey: DB_CONNECTION_STRING
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REDIS_HOST
+      valuesKey: REDIS_HOST
+    - kind: Secret
+      name: checkmate-secret
+      targetPath: secrets.REDIS_PORT
+      valuesKey: REDIS_PORT
   values:
     client:
       image: ghcr.io/bluewave-labs/checkmate:frontend-dist
@@ -53,16 +90,7 @@ spec:
 
     # Provide secrets as values (the chart will use these to create its own secret)
     secrets:
-      JWT_SECRET: "${JWT_SECRET}"
-      REFRESH_TOKEN_SECRET: "${REFRESH_TOKEN_SECRET}"
-      SYSTEM_EMAIL_ADDRESS: "${SYSTEM_EMAIL_ADDRESS}"
-      SYSTEM_EMAIL_PASSWORD: "${SYSTEM_EMAIL_PASSWORD}"
-      SYSTEM_EMAIL_HOST: "${SYSTEM_EMAIL_HOST}"
-      SYSTEM_EMAIL_PORT: "${SYSTEM_EMAIL_PORT}"
       PAGESPEED_API_KEY: "change_me"  # TODO: Add to 1Password if needed
-      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING}"
-      REDIS_HOST: "${REDIS_HOST}"
-      REDIS_PORT: "${REDIS_PORT}"
       DB_TYPE: "MongoDB"
       TOKEN_TTL: "3600"
       REFRESH_TOKEN_TTL: "86400"
