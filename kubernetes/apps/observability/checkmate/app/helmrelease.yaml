@@ -97,6 +97,13 @@ spec:
               image:
                 repository: ghcr.io/bluewave-labs/checkmate
                 tag: frontend-dist
+              env:
+                # Set the API base URL for the frontend
+                REACT_APP_API_BASE_URL: "/api"
+                UPTIME_APP_API_BASE_URL: "/api"
+                # Alternative environment variables that might be used
+                VITE_API_BASE_URL: "/api"
+                NEXT_PUBLIC_API_BASE_URL: "/api"
               resources:
                 requests:
                   cpu: 15m
@@ -138,14 +145,6 @@ spec:
                   memory: 256M
       service:
         main:
-          ports:
-            http:
-              port: 52345
-        # Add an additional service with the name "server" for client compatibility
-        server:
-          enabled: true
-          type: ClusterIP
-          controller: main
           ports:
             http:
               port: 52345
