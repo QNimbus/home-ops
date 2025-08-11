@@ -31,60 +31,55 @@ spec:
   valuesFrom:
     - kind: Secret
       name: checkmate-secret
-      targetPath: secrets.JWT_SECRET
-      valuesKey: JWT_SECRET
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REFRESH_TOKEN_SECRET
-      valuesKey: REFRESH_TOKEN_SECRET
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_ADDRESS
-      valuesKey: SYSTEM_EMAIL_ADDRESS
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_PASSWORD
-      valuesKey: SYSTEM_EMAIL_PASSWORD
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_HOST
-      valuesKey: SYSTEM_EMAIL_HOST
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_PORT
-      valuesKey: SYSTEM_EMAIL_PORT
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.DB_CONNECTION_STRING
-      valuesKey: DB_CONNECTION_STRING
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REDIS_HOST
-      valuesKey: REDIS_HOST
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REDIS_PORT
-      valuesKey: REDIS_PORT
+      targetPath: secrets
   values:
+    # Client (Frontend) Configuration
     client:
-      image: ghcr.io/bluewave-labs/checkmate:frontend-dist
-      port: 80
+      enabled: true
+      image:
+        repository: ghcr.io/bluewave-labs/checkmate
+        tag: frontend-dist
+      service:
+        main:
+          ports:
+            http:
+              port: 80
       ingress:
-        enabled: false  # We'll use Gateway API instead
+        main:
+          enabled: false  # We'll use Gateway API instead
 
+    # Server (Backend) Configuration  
     server:
-      image: ghcr.io/bluewave-labs/checkmate:backend-dist
-      port: 52345
-      protocol: "https"
+      enabled: true
+      image:
+        repository: ghcr.io/bluewave-labs/checkmate
+        tag: backend-dist
+      envFrom:
+        - secretRef:
+            name: checkmate-secrets
+      service:
+        main:
+          ports:
+            http:
+              port: 52345
       ingress:
-        enabled: false  # We'll use Gateway API instead
+        main:
+          enabled: false  # We'll use Gateway API instead
 
-    # Provide secrets as values (the chart will use these to create its own secret)
-    secrets:
-      PAGESPEED_API_KEY: "change_me"  # TODO: Add to 1Password if needed
-      DB_TYPE: "MongoDB"
-      TOKEN_TTL: "3600"
-      REFRESH_TOKEN_TTL: "86400"
+    # MongoDB Configuration (using Bitnami subchart)
+    mongodb:
+      enabled: true
+      auth:
+        enabled: false  # Start with no auth, can enable later
+      persistence:
+        size: 5Gi
 
-    persistence:
-      mongodbSize: 5Gi
+    # Redis Configuration (using Bitnami subchart) 
+    redis:
+      enabled: true
+      architecture: standalone
+      auth:
+        enabled: false  # Start with no auth, can enable later  
+      master:
+        persistence:
+          size: 1Gi

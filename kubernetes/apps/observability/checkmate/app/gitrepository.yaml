@@ -1,5 +1,5 @@
 ---
-# GitRepository for the official Checkmate Helm charts
+# GitRepository for QNimbus's improved Checkmate Helm charts with subcharts
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -8,8 +8,8 @@ metadata:
 spec:
   interval: 30m
   ref:
-    branch: develop
-  url: https://github.com/bluewave-labs/Checkmate.git
+    branch: feat/2683-helm-subcharts
+  url: https://github.com/QNimbus/Checkmate.git
   ignore: |
     # Ignore everything except the charts directory
     /*
