@@ -14,7 +14,7 @@ spec:
       version: ">=0.1.0"
       sourceRef:
         kind: GitRepository
-        name: checkmate-charts
+        name: checkmate
         namespace: flux-system
   install:
     remediation:
@@ -97,7 +97,7 @@ spec:
         main:
           enabled: false  # We'll use Gateway API instead
 
-    # Server (Backend) Configuration  
+    # Server (Backend) Configuration
     server:
       enabled: true
       image:
@@ -123,12 +123,12 @@ spec:
       persistence:
         size: 5Gi
 
-    # Redis Configuration (using Bitnami subchart) 
+    # Redis Configuration (using Bitnami subchart)
     redis:
       enabled: true
       architecture: standalone
       auth:
-        enabled: false  # Start with no auth, can enable later  
+        enabled: false  # Start with no auth, can enable later
       master:
         persistence:
           size: 1Gi
