@@ -51,9 +51,21 @@ spec:
       image: mongo:7.0
       port: 27017
 
-    # Reference the secret created by ExternalSecret
-    secretsFrom:
-      - checkmate-secret
+    # Provide secrets as values (the chart will use these to create its own secret)
+    secrets:
+      JWT_SECRET: "${JWT_SECRET}"
+      REFRESH_TOKEN_SECRET: "${REFRESH_TOKEN_SECRET}"
+      SYSTEM_EMAIL_ADDRESS: "${SYSTEM_EMAIL_ADDRESS}"
+      SYSTEM_EMAIL_PASSWORD: "${SYSTEM_EMAIL_PASSWORD}"
+      SYSTEM_EMAIL_HOST: "${SYSTEM_EMAIL_HOST}"
+      SYSTEM_EMAIL_PORT: "${SYSTEM_EMAIL_PORT}"
+      PAGESPEED_API_KEY: "change_me"  # TODO: Add to 1Password if needed
+      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING}"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+      DB_TYPE: "MongoDB"
+      TOKEN_TTL: "3600"
+      REFRESH_TOKEN_TTL: "86400"
 
     persistence:
       mongodbSize: 5Gi
