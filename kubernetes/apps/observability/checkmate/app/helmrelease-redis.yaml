@@ -23,43 +23,43 @@ spec:
       retries: 3
   values:
     fullnameOverride: checkmate-redis
-    
+
     auth:
       enabled: true
       existingSecret: checkmate-secret
       existingSecretPasswordKey: REDIS_PASSWORD_SECRET
-      
+
     architecture: standalone
-    
+
     master:
       persistence:
         enabled: true
         storageClass: longhorn
         size: 2Gi
-        
+
       resources:
         requests:
           cpu: 50m
           memory: 128Mi
         limits:
           memory: 512Mi
-          
+
       podSecurityContext:
         enabled: true
         fsGroup: 1001
-        
+
       containerSecurityContext:
         enabled: true
         runAsUser: 1001
         runAsNonRoot: true
-        
+
     # Disable replica for simple deployment
     replica:
       replicaCount: 0
-      
-    # Disable sentinel 
+
+    # Disable sentinel
     sentinel:
       enabled: false
-      
+
     metrics:
       enabled: false

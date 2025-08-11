@@ -141,10 +141,10 @@ data:
     const dbName = 'uptime_db';
     const username = 'checkmate';
     const password = process.env.MONGODB_PASSWORD || 'checkmate';
-    
+
     // Switch to the database
     db = db.getSiblingDB(dbName);
-    
+
     // Create user with readWrite permissions
     db.createUser({
       user: username,
@@ -156,5 +156,5 @@ data:
         }
       ]
     });
-    
+
     print(`User ${username} created for database ${dbName}`);

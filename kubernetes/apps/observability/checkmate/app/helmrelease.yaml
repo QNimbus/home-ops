@@ -33,21 +33,21 @@ spec:
               # Server Configuration
               PORT: &port 52345
               NODE_ENV: production
-              
+
               # Database Configuration
               DB_CONNECTION_STRING:
                 valueFrom:
                   secretKeyRef:
                     name: checkmate-secret
                     key: DB_CONNECTION_STRING
-                    
+
               # Redis Configuration
               REDIS_URL:
                 valueFrom:
                   secretKeyRef:
                     name: checkmate-secret
                     key: REDIS_URL
-                    
+
               # Authentication Configuration
               JWT_SECRET:
                 valueFrom:
@@ -59,7 +59,7 @@ spec:
                   secretKeyRef:
                     name: checkmate-secret
                     key: TOKEN_TTL
-                    
+
               # Frontend Configuration (Combined FE/BE)
               UPTIME_APP_API_BASE_URL:
                 valueFrom:
@@ -81,7 +81,7 @@ spec:
                   secretKeyRef:
                     name: checkmate-secret
                     key: ORIGIN
-                    
+
               # Optional: Google PageSpeed API
               PAGESPEED_API_KEY:
                 valueFrom:
@@ -89,7 +89,7 @@ spec:
                     name: checkmate-secret
                     key: PAGESPEED_API_KEY
                     optional: true
-                    
+
             probes:
               liveness: &probes
                 enabled: true
@@ -114,14 +114,14 @@ spec:
                   periodSeconds: 5
                   timeoutSeconds: 3
                   failureThreshold: 30
-                  
+
             resources:
               requests:
                 cpu: 100m
                 memory: 256Mi
               limits:
                 memory: 1Gi
-                
+
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -129,7 +129,7 @@ spec:
         runAsGroup: 65534
         seccompProfile:
           type: RuntimeDefault
-          
+
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
@@ -145,14 +145,14 @@ spec:
         globalMounts:
           - path: /tmp
             subPath: tmp
-            
+
     service:
       app:
         controller: *app
         ports:
           http:
             port: *port
-            
+
     route:
       app:
         annotations:
