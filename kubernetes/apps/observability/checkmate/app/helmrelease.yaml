@@ -79,11 +79,6 @@ spec:
       ingress:
         enabled: false  # We'll use Gateway API instead
 
-    # Use MongoDB - official chart will create checkmate-mongodb service
-    mongodb:
-      image: mongo:7.0
-      port: 27017
-
     # Provide secrets as values (the chart will use these to create its own secret)
     secrets:
       PAGESPEED_API_KEY: "change_me"  # TODO: Add to 1Password if needed
