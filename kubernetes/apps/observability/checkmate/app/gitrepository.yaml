@@ -1,0 +1,20 @@
+---
+# GitRepository for the official Checkmate Helm charts
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: checkmate-charts
+  namespace: flux-system
+spec:
+  interval: 30m
+  ref:
+    branch: develop
+  url: https://github.com/bluewave-labs/Checkmate.git
+  ignore: |
+    # Ignore everything except the charts directory
+    /*
+    !/charts/
+    /charts/*
+    !/charts/helm/
+    /charts/helm/*
+    !/charts/helm/checkmate/
