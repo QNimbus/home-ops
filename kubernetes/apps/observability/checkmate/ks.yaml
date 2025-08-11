@@ -12,6 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/internal
+    - ../../../../components/volsync
   wait: false
   prune: true
   interval: 1h
@@ -22,13 +23,11 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Checkmate
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
-      - kind: Secret
-        name: checkmate-secret
+      GATUS_SUBDOMAIN: checkmate
+      GATUS_PATH: /
+      VOLSYNC_CLAIM: checkmate-config
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CACHE_CAPACITY: 1Gi
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -36,5 +35,5 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
-    - name: dragonfly-cluster
-      namespace: database
+    - name: volsync
+      namespace: volsync-system

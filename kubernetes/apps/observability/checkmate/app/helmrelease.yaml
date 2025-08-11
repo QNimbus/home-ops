@@ -6,175 +6,170 @@ metadata:
   name: &app checkmate
 spec:
   interval: 1h
-  driftDetection:
-    mode: enabled
-  chart:
-    spec:
-      chart: charts/helm/checkmate
-      version: ">=0.1.0"
-      sourceRef:
-        kind: GitRepository
-        name: checkmate
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  dependsOn:
+    - name: checkmate-mongodb
+    - name: checkmate-redis
   install:
     remediation:
-      retries: 3
-    disableWait: false
-    timeout: 15m
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
-      strategy: rollback
       retries: 3
-    disableWait: false
-    timeout: 15m
-  valuesFrom:
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.JWT_SECRET
-      valuesKey: JWT_SECRET
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REFRESH_TOKEN_SECRET
-      valuesKey: REFRESH_TOKEN_SECRET
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_ADDRESS
-      valuesKey: SYSTEM_EMAIL_ADDRESS
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_PASSWORD
-      valuesKey: SYSTEM_EMAIL_PASSWORD
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_HOST
-      valuesKey: SYSTEM_EMAIL_HOST
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.SYSTEM_EMAIL_PORT
-      valuesKey: SYSTEM_EMAIL_PORT
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.PAGESPEED_API_KEY
-      valuesKey: PAGESPEED_API_KEY
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.DB_CONNECTION_STRING
-      valuesKey: DB_CONNECTION_STRING
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REDIS_HOST
-      valuesKey: REDIS_HOST
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REDIS_PORT
-      valuesKey: REDIS_PORT
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.DB_TYPE
-      valuesKey: DB_TYPE
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.TOKEN_TTL
-      valuesKey: TOKEN_TTL
-    - kind: Secret
-      name: checkmate-secret
-      targetPath: secrets.REFRESH_TOKEN_TTL
-      valuesKey: REFRESH_TOKEN_TTL
   values:
-    # Client (Frontend) Configuration
-    client:
-      enabled: true
-      # Use fullnameOverride to ensure unique names
-      fullnameOverride: checkmate-client
-      controllers:
-        main:
-          type: deployment
-          annotations:
-            reloader.stakater.com/auto: "true"
-          containers:
-            main:
-              image:
-                repository: ghcr.io/bluewave-labs/checkmate
-                tag: frontend-dist
-              env:
-                # Set the API base URL for the frontend
-                REACT_APP_API_BASE_URL: "/api"
-                UPTIME_APP_API_BASE_URL: "/api"
-                # Alternative environment variables that might be used
-                VITE_API_BASE_URL: "/api"
-                NEXT_PUBLIC_API_BASE_URL: "/api"
-              resources:
-                requests:
-                  cpu: 15m
-                  memory: 64M
-                limits:
-                  memory: 128M
-      # Mount the nginx configuration
-      persistence:
-        nginx-config:
-          type: configMap
-          name: checkmate-client-nginx
-          globalMounts:
-            - path: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-              readOnly: true
-      service:
-        main:
-          ports:
-            http:
-              port: 80
-      ingress:
-        main:
-          enabled: false  # We'll use Gateway API instead
-
-    # Server (Backend) Configuration
-    server:
-      enabled: true
-      # Use fullnameOverride to ensure unique names
-      fullnameOverride: checkmate-server
-      controllers:
-        main:
-          type: deployment
-          annotations:
-            reloader.stakater.com/auto: "true"
-          containers:
-            main:
-              image:
-                repository: ghcr.io/bluewave-labs/checkmate
-                tag: backend-dist
-              envFrom:
-                - secretRef:
-                    name: checkmate-secrets
-              resources:
-                requests:
-                  cpu: 15m
-                  memory: 128M
-                limits:
-                  memory: 256M
-      service:
-        main:
-          ports:
-            http:
-              port: 52345
-      ingress:
-        main:
-          enabled: false  # We'll use Gateway API instead
-
-    # MongoDB Configuration (using Bitnami subchart)
-    mongodb:
-      enabled: true
-      auth:
-        enabled: false  # Start with no auth, can enable later
-      persistence:
-        size: 5Gi
-
-    # Redis Configuration (using Bitnami subchart)
-    redis:
-      enabled: true
-      architecture: standalone
-      auth:
-        enabled: false  # Start with no auth, can enable later
-      master:
-        persistence:
-          size: 1Gi
+    controllers:
+      checkmate:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bluewave-labs/checkmate-backend-mono
+              tag: "latest"
+              pullPolicy: Always
+            env:
+              # Server Configuration
+              PORT: &port 52345
+              NODE_ENV: production
+              
+              # Database Configuration
+              DB_CONNECTION_STRING:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: DB_CONNECTION_STRING
+                    
+              # Redis Configuration
+              REDIS_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: REDIS_URL
+                    
+              # Authentication Configuration
+              JWT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: JWT_SECRET
+              TOKEN_TTL:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: TOKEN_TTL
+                    
+              # Frontend Configuration (Combined FE/BE)
+              UPTIME_APP_API_BASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: UPTIME_APP_API_BASE_URL
+              UPTIME_APP_CLIENT_HOST:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: UPTIME_APP_CLIENT_HOST
+              CLIENT_HOST:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: CLIENT_HOST
+              ORIGIN:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: ORIGIN
+                    
+              # Optional: Google PageSpeed API
+              PAGESPEED_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: checkmate-secret
+                    key: PAGESPEED_API_KEY
+                    optional: true
+                    
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
+                  
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+                
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+          
+    persistence:
+      config:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        globalMounts:
+          - path: /app/data
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /app/logs
+            subPath: logs
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
+            
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+            
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Observability"
+          gethomepage.dev/name: "${GATUS_NAME}"
+          gethomepage.dev/icon: "checkmate"
+          gethomepage.dev/description: "Website & API monitoring with uptime tracking"
+        hostnames:
+          - "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https-app
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: *port
