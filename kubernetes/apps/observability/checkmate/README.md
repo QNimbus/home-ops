@@ -19,13 +19,13 @@ This directory contains the Checkmate website and API monitoring application dep
 - **Resources**: 256Mi request, 1Gi limit
 
 ### 2. MongoDB (`helmrelease-mongodb.yaml`)
-- **Chart**: Bitnami MongoDB 16.5.3
+- **Chart**: Bitnami MongoDB 16.5.40
 - **Configuration**: Standalone architecture
 - **Storage**: 8Gi Longhorn persistent volume
 - **Authentication**: Enabled with dedicated user/database
 
 ### 3. Redis (`helmrelease-redis.yaml`)
-- **Chart**: Bitnami Redis 20.6.0
+- **Chart**: Bitnami Redis 22.0.1
 - **Configuration**: Standalone architecture (no replica)
 - **Storage**: 2Gi Longhorn persistent volume
 - **Authentication**: Enabled with password
