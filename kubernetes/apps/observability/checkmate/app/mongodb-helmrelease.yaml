@@ -8,14 +8,10 @@ metadata:
   namespace: observability
 spec:
   interval: 1h
-  chart:
-    spec:
-      chart: mongodb
-      version: 16.5.40
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: bitnami-mongodb
+    namespace: flux-system
   install:
     remediation:
       retries: 3

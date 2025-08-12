@@ -8,14 +8,10 @@ metadata:
   namespace: observability
 spec:
   interval: 1h
-  chart:
-    spec:
-      chart: redis
-      version: 22.0.1
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: bitnami-charts
+    namespace: flux-system
   install:
     remediation:
       retries: 3
