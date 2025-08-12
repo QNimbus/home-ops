@@ -1,0 +1,31 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://schemas.clustrs.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: checkmate-redis
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: redis
+      version: 22.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    architecture: standalone
+    auth:
+      enabled: false
+    master:
+      persistence:
+        enabled: false

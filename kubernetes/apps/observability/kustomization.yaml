@@ -11,5 +11,6 @@ resources:
   - ./grafana/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./loki/ks.yaml
+  - ./checkmate/ks.yaml
   # - ./robusta/ks.yaml
   # - ./uptime-kuma-webhook-relay
