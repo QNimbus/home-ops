@@ -5,6 +5,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: checkmate-redis
+  namespace: observability
 spec:
   interval: 1h
   chart:
