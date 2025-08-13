@@ -7,3 +7,4 @@ resources:
   - ./redis-helmrelease.yaml
   - ./mongodb-helmrelease.yaml
   - ./helmrelease.yaml
+  - ./server-alias.yaml
