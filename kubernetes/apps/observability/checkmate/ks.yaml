@@ -20,8 +20,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      CLIENT_DOMAIN: "checkmate.proxii.nl"
-      SERVER_DOMAIN: "checkmate-api.proxii.nl"
+      CLIENT_DOMAIN: "checkmate.vwn.app"
+      SERVER_DOMAIN: "checkmate-api.vwn.app"
   sourceRef:
     kind: GitRepository
     name: flux-system

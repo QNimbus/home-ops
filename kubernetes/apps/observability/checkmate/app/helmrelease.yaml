@@ -36,32 +36,26 @@ spec:
               repository: ghcr.io/bluewave-labs/checkmate-client
               tag: v2.3
             env:
-              # Client hits the public/server URL for its own API base
               UPTIME_APP_API_BASE_URL: "https://${SERVER_DOMAIN}/api/v1"
 
-    # Create a DNS alias so "server" resolves to your real service
+    # Alias Service "server" -> selects same pods as checkmate-server
     extraDeploy:
       - apiVersion: v1
         kind: Service
         metadata:
           name: server
           namespace: observability
-          labels:
-            app.kubernetes.io/instance: checkmate
-            app.kubernetes.io/name: checkmate
         spec:
           type: ClusterIP
-          # 👇 IMPORTANT: selector must match your server pods
           selector:
+            app.kubernetes.io/controller: server
             app.kubernetes.io/instance: checkmate
-            app.kubernetes.io/component: server
+            app.kubernetes.io/name: checkmate
           ports:
             - name: http
               port: 52345
-              targetPort: http
+              targetPort: 52345
 
-
-    # Real Services produced by app-template (render as: checkmate-server, checkmate-client)
     service:
       server:
         controller: server
@@ -74,7 +68,6 @@ spec:
           http:
             port: 80
 
-    # Your Gateway API routes stay the same
     route:
       server:
         hostnames:
@@ -98,13 +91,3 @@ spec:
           - backendRefs:
               - identifier: client
                 port: 80
-
-    # Clean out previous nginx templating/mount hacks
-    persistence: {}
-    initContainers: {}
-
-    # defaultPodOptions:
-    #   securityContext:
-    #     runAsNonRoot: true
-    #     runAsUser: 65534
-    #     runAsGroup: 65534
