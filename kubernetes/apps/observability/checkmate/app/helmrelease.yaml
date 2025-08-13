@@ -30,6 +30,12 @@ spec:
                   name: checkmate-secret
 
       client:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 101
+            fsGroup: 101
         containers:
           app:
             image:
@@ -37,8 +43,13 @@ spec:
               tag: v2.3
             env:
               UPTIME_APP_API_BASE_URL: "https://${SERVER_DOMAIN}/api/v1"
+              NGINX_ENVSUBST_TEMPLATE_DIR: /etc/nginx/templates
+              NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx/conf.d
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
 
-    # Alias Service "server" -> selects same pods as checkmate-server
+    # Alias Service "server" so NGINX upstream resolves
     extraDeploy:
       - apiVersion: v1
         kind: Service
@@ -55,6 +66,15 @@ spec:
             - name: http
               port: 52345
               targetPort: 52345
+
+    persistence:
+      client-nginx-templates:
+        enabled: true
+        type: configMap
+        name: checkmate-client-nginx
+        globalMounts:
+          - path: /etc/nginx/templates
+            readOnly: true
 
     service:
       server:
