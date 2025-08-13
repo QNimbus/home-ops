@@ -46,9 +46,20 @@ spec:
         metadata:
           name: server
           namespace: observability
+          labels:
+            app.kubernetes.io/instance: checkmate
+            app.kubernetes.io/name: checkmate
         spec:
-          type: ExternalName
-          externalName: checkmate-server.observability.svc.cluster.local
+          type: ClusterIP
+          # 👇 IMPORTANT: selector must match your server pods
+          selector:
+            app.kubernetes.io/instance: checkmate
+            app.kubernetes.io/component: server
+          ports:
+            - name: http
+              port: 52345
+              targetPort: http
+
 
     # Real Services produced by app-template (render as: checkmate-server, checkmate-client)
     service:
