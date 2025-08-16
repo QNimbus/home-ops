@@ -11,7 +11,7 @@ spec:
   chart:
     spec:
       chart: redis
-      version: "18.6.0"  # Specify version for predictable deployments
+      version: "18.19.4"  # Specify version for predictable deployments
       sourceRef:
         kind: HelmRepository
         name: bitnami
