@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: mongodb
-      version: "16.5.40"  # Updated to latest available version
+      version: "16.5.44"  # Updated to latest available version
       sourceRef:
         kind: HelmRepository
         name: bitnami
