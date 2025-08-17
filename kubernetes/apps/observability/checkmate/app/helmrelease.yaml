@@ -67,6 +67,42 @@ spec:
               port: 52345
               targetPort: 52345
 
+    # Custom NGINX config for client
+    configmap:
+      checkmate-client-nginx:
+        enabled: true
+        data:
+          default.conf.template: |
+            server {
+              listen 80 default_server;
+              listen [::]:80 default_server;
+
+              # SPA
+              location / {
+                root /usr/share/nginx/html;
+                try_files $uri $uri/ /index.html;
+              }
+
+              # Token path from SPA build -> rewrite to /api/v1/
+              location /UPTIME_APP_API_BASE_URL/ {
+                rewrite ^/UPTIME_APP_API_BASE_URL/?(.*)$ /api/v1/$1 break;
+                proxy_pass http://server:52345;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              }
+
+              # Direct /api/ calls
+              location /api/ {
+                proxy_pass http://server:52345;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              }
+            }
+
     persistence:
       client-nginx-templates:
         enabled: true
