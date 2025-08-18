@@ -31,6 +31,5 @@ spec:
   postBuild:
     substitute:
       DOMAIN_APP: "${DOMAIN_APP}"
-  dependsOn:
-    - name: checkmate-preview
-      namespace: flux-system
+  # dependsOn removed: GitRepository is the sourceRef; a Kustomization dependency named
+  # 'checkmate-preview' did not exist which caused a reconcile error.
