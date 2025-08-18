@@ -1,0 +1,14 @@
+---
+# GitRepository pointing at this feature branch for previewing the checkmate app
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: checkmate-preview
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/QNimbus/home-ops.git
+  ref:
+    branch: test/checkmate-flux-preview
+  secretRef:
+    name: flux-system
