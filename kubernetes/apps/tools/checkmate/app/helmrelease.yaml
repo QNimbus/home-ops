@@ -1,0 +1,149 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app checkmate
+  namespace: tools
+spec:
+  interval: 1h
+  timeout: 10m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    disableWait: true
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      server:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bluewave-labs/checkmate-backend
+              tag: v2.3
+            envFrom:
+              - secretRef:
+                  name: checkmate-secret
+
+      client:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 101
+            fsGroup: 101
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bluewave-labs/checkmate-client
+              tag: v2.3
+            env:
+              UPTIME_APP_API_BASE_URL: "https://${SERVER_DOMAIN}/api/v1"
+              NGINX_ENVSUBST_TEMPLATE_DIR: /etc/nginx/templates
+              NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx/conf.d
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+
+    extraDeploy:
+      - apiVersion: v1
+        kind: Service
+        metadata:
+          name: server
+          namespace: tools
+        spec:
+          type: ClusterIP
+          selector:
+            app.kubernetes.io/controller: server
+            app.kubernetes.io/instance: checkmate
+            app.kubernetes.io/name: checkmate
+          ports:
+            - name: http
+              port: 52345
+              targetPort: 52345
+
+    configmap:
+      checkmate-client-nginx:
+        enabled: true
+        data:
+          default.conf.template: |
+            server {
+              listen 80 default_server;
+              listen [::]:80 default_server;
+
+              # SPA
+              location / {
+                root /usr/share/nginx/html;
+                try_files $uri $uri/ /index.html;
+              }
+
+              # Token path from SPA build -> rewrite to /api/v1/
+              location /UPTIME_APP_API_BASE_URL/ {
+                rewrite ^/UPTIME_APP_API_BASE_URL/?(.*)$ /api/v1/$1 break;
+                proxy_pass http://server:52345;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              }
+
+              # Direct /api/ calls
+              location /api/ {
+                proxy_pass http://server:52345;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              }
+            }
+
+    persistence:
+      client-nginx-templates:
+        enabled: true
+        type: configMap
+        name: checkmate-client-nginx
+        globalMounts:
+          - path: /etc/nginx/templates
+            readOnly: true
+
+    service:
+      server:
+        controller: server
+        ports:
+          http:
+            port: 52345
+      client:
+        controller: client
+        ports:
+          http:
+            port: 80
+
+    route:
+      server:
+        hostnames:
+          - "${SERVER_DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: server
+                port: 52345
+      client:
+        hostnames:
+          - "${CLIENT_DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: client
+                port: 80
