@@ -30,6 +30,8 @@ spec:
   targetNamespace: tools
   postBuild:
     substitute:
-      DOMAIN_APP: "${DOMAIN_APP}"
+  DOMAIN_APP: "${DOMAIN_APP}"
+  CLIENT_DOMAIN: "checkmate.${DOMAIN_APP}"
+  SERVER_DOMAIN: "checkmate-api.${DOMAIN_APP}"
   # dependsOn removed: GitRepository is the sourceRef; a Kustomization dependency named
   # 'checkmate-preview' did not exist which caused a reconcile error.
