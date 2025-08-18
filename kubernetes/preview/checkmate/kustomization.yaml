@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 # Kustomization that makes flux apply the checkmate manifests from the preview branch
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -7,7 +8,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  path: ./
+  path: ./kubernetes/apps/tools/checkmate
   prune: true
   wait: true
   sourceRef:
