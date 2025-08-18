@@ -23,3 +23,22 @@ Thumbs.db
 .Trash*/
 1password-credentials.json
 __pycache__
+aws
+
+# Temporary ignore files
+docs/*
+scripts/*
+talos/clusterconfig/kubernetes-talos-k8s-node-2.yaml.disabled
+awscliv2.zip
+CHECKMATE_FORK_INSTRUCTIONS.md
+generate-dependencies.sh
+generate-flux-dependencies.py
+test-certificate.yaml
+test-coredns-job.yaml
+test-coredns-patch.sh
+test-coredns-update.sh
+test-tailnet-curl.yaml
+update-cloudflare-tunnel-config.sh
+update-cloudflare-tunnel.sh
+uplink
+.github/copilot-instructions.md
