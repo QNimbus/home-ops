@@ -1,7 +1,7 @@
 ---
 # Preview resources for Checkmate: GitRepository + Kustomization
 # Apply these to your cluster to have Flux reconcile the checkmate app from the feature branch.
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: checkmate-preview
@@ -11,8 +11,6 @@ spec:
   url: https://github.com/QNimbus/home-ops.git
   ref:
     branch: test/checkmate-flux-preview
-  secretRef:
-    name: flux-system
 ---
 # Kustomization that applies only the checkmate app path from the preview branch
 apiVersion: kustomize.toolkit.fluxcd.io/v1
