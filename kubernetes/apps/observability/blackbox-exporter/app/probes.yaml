@@ -10,9 +10,9 @@ spec:
     url: blackbox-exporter.observability.svc.cluster.local:9115
   targets:
     staticConfig:
-      static:
-        - homeassistant.lan.home.${DOMAIN_IO}
-        - gw-sip.iot.home.${DOMAIN_IO}
+      static: []
+        # - homeassistant.lan.home.${DOMAIN_IO}
+        # - gw-sip.iot.home.${DOMAIN_IO}
         # - gw-adam.home.${DOMAIN_NET}
         # - gw-anna.home.${DOMAIN_NET}
         # - gw-hue.home.${DOMAIN_NET}
