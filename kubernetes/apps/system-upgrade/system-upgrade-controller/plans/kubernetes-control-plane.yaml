@@ -3,7 +3,7 @@
 apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:
-  name: kubernetes
+  name: kubernetes-control-plane
 spec:
   version: ${KUBERNETES_VERSION}
   concurrency: 1
