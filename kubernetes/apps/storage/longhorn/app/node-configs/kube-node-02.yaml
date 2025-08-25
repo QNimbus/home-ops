@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Node
 metadata:
-  name: talos-k8s-node-4
+  name: kube-node-02
   labels:
     node.longhorn.io/create-default-disk: 'config'
   annotations:

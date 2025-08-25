@@ -12,9 +12,9 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
-  - ./additional-storageclasses.yaml
-  - ./node-configs/talos-k8s-node-1.yaml
-  # - ./node-configs/talos-k8s-node-2.yaml
-  - ./node-configs/talos-k8s-node-3.yaml
-  - ./node-configs/talos-k8s-node-4.yaml
+  - ./node-configs/kube-node-01.yaml
+  - ./node-configs/kube-node-02.yaml
+  - ./node-configs/kube-node-03.yaml
+  # - ./node-configs/kube-node-04.yaml
+  # - ./additional-storageclasses.yaml
   # - ./recurring-jobs.yaml
