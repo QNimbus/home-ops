@@ -59,7 +59,7 @@ spec:
         kubernetes/kube-lineage-extras:
           enabled: true
         kubernetes/kube-prometheus-stack:
-          enabled: true
+          enabled: false
         kubernetes/live-metrics:
           enabled: true
         helm/core:
