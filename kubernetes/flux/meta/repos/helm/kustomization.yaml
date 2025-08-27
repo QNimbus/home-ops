@@ -10,6 +10,7 @@ resources:
   - ./csi-driver-smb.yaml
   - ./external-dns.yaml
   - ./external-secrets.yaml
+  - ./fairwinds.yaml
   - ./goauthentik.yaml
   - ./longhorn.yaml
   - ./metrics-server.yaml
