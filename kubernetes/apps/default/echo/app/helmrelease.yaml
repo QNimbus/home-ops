@@ -38,20 +38,33 @@ spec:
                   httpGet:
                     path: /healthz
                     port: *port
-                  initialDelaySeconds: 0
+                  initialDelaySeconds: 10
                   periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
+                  timeoutSeconds: 5
+                  failureThreshold: 5
               readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  # Allow up to ~10 minutes for first-time startup
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 60
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
             resources:
               requests:
-                cpu: 10m
+                cpu: 11m
+                memory: 50M
               limits:
-                memory: 64Mi
+                cpu: 11m
+                memory: 50M
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
