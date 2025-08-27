@@ -60,10 +60,10 @@ spec:
               capabilities: { drop: ["ALL"] }
             resources:
               requests:
-                cpu: 11m
+                cpu: 20m
                 memory: 50M
               limits:
-                cpu: 11m
+                cpu: 20m
                 memory: 50M
     defaultPodOptions:
       securityContext:
