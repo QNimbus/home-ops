@@ -9,12 +9,11 @@ spec:
   chart:
     spec:
       chart: robusta
-      version: 0.27.0
+      version: 0.28.0
       reconcileStrategy: ChartVersion
       sourceRef:
         kind: HelmRepository
         name: robusta
-        namespace: flux-system
   install:
     remediation:
       retries: -1
@@ -25,7 +24,7 @@ spec:
   driftDetection:
     mode: enabled
   values:
-    clusterName: home-ops
+    clusterName: homelab
     globalConfig:
       signing_key: "{{ env.SIGNING_KEY }}"
       account_id: "{{ env.ACCOUNT_ID }}"
@@ -33,7 +32,7 @@ spec:
       - robusta_sink:
           name: robusta_ui_sink
           token: "{{ env.SINK_TOKEN }}"
-    enablePrometheusStack: true
+    enablePrometheusStack: false
     enablePlatformPlaybooks: true
     runner:
       sendAdditionalTelemetry: true
