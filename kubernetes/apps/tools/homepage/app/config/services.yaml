@@ -16,7 +16,7 @@
           accountid: {{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
           tunnelid: {{HOMEPAGE_VAR_CLOUDFLARE_TUNNEL_ID}}
           key: {{HOMEPAGE_VAR_CLOUDFLARE_API_TOKEN}}
-- Monitoring:
+- Observability:
     - Alertmanager:
         href: https://alertmanager.${DOMAIN_APP}
         icon: alertmanager.png
@@ -56,3 +56,16 @@
         href: https://scrutiny.${DOMAIN_APP}
         icon: scrutiny.png
         description: Provides storage drive S.M.A.R.T monitoring, historic trends, and real-world failure thresholds
+- KVM:
+    - pve 1:
+        href: https://pve1.kvm.${DOMAIN_APP}
+        icon: jetkvm.png
+        description: JetKVM console for Proxmox VE 1
+    - pve 2:
+        href: https://pve2.kvm.${DOMAIN_APP}
+        icon: jetkvm.png
+        description: JetKVM console for Proxmox VE 2
+    - pve 4:
+        href: https://pve4.kvm.${DOMAIN_APP}
+        icon: jetkvm.png
+        description: JetKVM console for Proxmox VE 4
