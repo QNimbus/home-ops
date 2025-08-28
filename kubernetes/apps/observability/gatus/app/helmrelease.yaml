@@ -109,6 +109,11 @@ spec:
             - identifier: gatus
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Observability"
+          gethomepage.dev/name: "Gatus"
+          gethomepage.dev/icon: "gatus.png"
         hostnames: ["${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"]
         parentRefs:
           - name: internal
