@@ -78,6 +78,11 @@ spec:
           - path: /var/lib/microbin
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Tools"
+          gethomepage.dev/name: "Microbin"
+          gethomepage.dev/icon: "microbin.png"
         hostnames:
           - "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
         parentRefs:
