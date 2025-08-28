@@ -71,17 +71,29 @@ spec:
                   httpGet:
                     path: /misc/ping
                     port: *port
-                  initialDelaySeconds: 20
+                  initialDelaySeconds: 0  # No delay needed with startup probe
                   periodSeconds: 10
-                  timeoutSeconds: 1
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
-            resources:
-              requests:
-                cpu: 10m
-                memory: 256Mi
-              limits:
-                memory: 512Mi
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /misc/ping
+                    port: *port
+                  initialDelaySeconds: 10  # Small initial delay for container startup
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30     # Allow up to 5 minutes instead of 10
+            # No resource limits - BestEffort QoS - First pods to be killed on resource contention
+            # resources:
+            #   requests:
+            #     cpu: 10m
+            #     memory: 256Mi
+            #   limits:
+            #     memory: 512Mi
     defaultPodOptions:
       securityContext:
         runAsUser: 5050
@@ -91,8 +103,10 @@ spec:
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
-        globalMounts:
-          - path: /var/lib/pgadmin
+        advancedMounts:
+          *app :
+            app:
+              - path: /var/lib/pgadmin
       secrets:
         type: secret
         name: *secret
@@ -108,14 +122,18 @@ spec:
         type: nfs
         server: "${NFS_SERVER}"
         path: /mnt/vault/cluster/backup
-        globalMounts:
-          - path: /mnt/backups
-            subPath: apps/pgadmin
+        advancedMounts:
+          *app :
+            app:
+              - path: /mnt/backups
+                subPath: apps/pgadmin
       tmpfs:
         type: emptyDir
-        globalMounts:
-          - path: /tmp
-            subPath: tmp
+        advancedMounts:
+          *app :
+            app:
+              - path: /tmp
+                subPath: tmp
     route:
       app:
         annotations:
