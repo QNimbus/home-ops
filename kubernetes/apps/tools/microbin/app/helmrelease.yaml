@@ -43,18 +43,19 @@ spec:
             envFrom:
               - secretRef:
                   name: microbin-secret
-            resources:
-              requests:
-                cpu: 10m
-                memory: 10Mi
-              limits:
-                memory: 80Mi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities:
                 drop:
                   - ALL
+            # No resource limits - BestEffort QoS - First pods to be killed on resource contention
+            # resources:
+            #   requests:
+            #     cpu: 10m
+            #     memory: 10Mi
+            #   limits:
+            #     memory: 80Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true

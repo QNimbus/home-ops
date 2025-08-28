@@ -34,12 +34,13 @@ spec:
             envFrom:
               - secretRef:
                   name: &secret homepage-secret
-            resources:
-              requests:
-                cpu: 20m
-                memory: 128M
-              limits:
-                memory: 256M
+            # No resource limits - BestEffort QoS - First pods to be killed on resource contention
+            # resources:
+            #   requests:
+            #     cpu: 20m
+            #     memory: 128M
+            #   limits:
+            #     memory: 256M
         serviceAccount:
           identifier: *app
 
