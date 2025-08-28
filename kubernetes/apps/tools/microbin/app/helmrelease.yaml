@@ -26,15 +26,12 @@ spec:
               repository: ghcr.io/vaskozl/microbin-bin
               tag: 2.0.4@sha256:a12e470a11bb131e64ccad93bb4f449659459db149afe0cc0c3f210bb9742bdb
             env:
+              # Defaults, can be overridden by setting values in microbin-secret
               MICROBIN_DATA_DIR: /var/lib/microbin
               MICROBIN_PORT: &port 8080
               MICROBIN_PUBLIC_PATH: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
               MICROBIN_SHORT_PATH: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
               MICROBIN_READONLY: "true"
-              MICROBIN_HIDE_HEADER: "true"
-              MICROBIN_HIDE_FOOTER: "true"
-              MICROBIN_HIDE_LOGO: "true"
-              MICROBIN_NO_LISTING: "true"
               MICROBIN_ENABLE_BURN_AFTER: "true"
               MICROBIN_WIDE: "true"
               MICROBIN_ETERNAL_PASTA: "true"
