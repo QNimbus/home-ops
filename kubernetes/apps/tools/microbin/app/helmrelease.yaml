@@ -19,7 +19,7 @@ spec:
   values:
     controllers:
       microbin:
-        strategy: RollingUpdate
+        strategy: Recreate
         containers:
           app:
             image:
@@ -69,8 +69,8 @@ spec:
           http:
             port: *port
     persistence:
-      data:
-        type: emptyDir
+      config:
+        existingClaim: "${VOLSYNC_CLAIM}"
         globalMounts:
           - path: /var/lib/microbin
     route:
