@@ -19,7 +19,7 @@ spec:
   values:
     controllers:
       it-tools:
-        strategy: RollingUpdate
+        strategy: Recreate
         containers:
           app:
             image:
@@ -31,12 +31,13 @@ spec:
               capabilities:
                 drop:
                   - ALL
-            resources:
-              requests:
-                cpu: 5m
-                memory: 32Mi
-              limits:
-                memory: 256Mi
+            # No resource limits - BestEffort QoS - First pods to be killed on resource contention
+            # resources:
+            #   requests:
+            #     cpu: 5m
+            #     memory: 32Mi
+            #   limits:
+            #     memory: 256Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
