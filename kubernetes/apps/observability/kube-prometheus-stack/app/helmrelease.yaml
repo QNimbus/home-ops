@@ -301,7 +301,7 @@ spec:
     # COMMENTED OUT: Custom rules not essential for basic setup
     # Additional PrometheusRule resources to be created alongside the default rules
     # These define custom alerting rules for application-specific monitoring
-    # additionalPrometheusRulesMap:
+    additionalPrometheusRulesMap:
 
     #   # ========================================================================
     #   # DOCKER HUB RATE LIMITING ALERTS
@@ -320,22 +320,22 @@ spec:
     #             labels:
     #               severity: critical
 
-    #   # ========================================================================
-    #   # OUT OF MEMORY (OOM) KILL ALERTS
-    #   # ========================================================================
-    #   # Monitors for containers being killed due to memory pressure
-    #   oom-rules:
-    #     groups:
-    #       - name: oom
-    #         rules:
-    #           - alert: OomKilled
-    #             annotations:
-    #               summary: Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has been OOMKilled {{ $value }} times in the last 10 minutes.
-    #             # Alert when a container has been OOM killed (restarted due to memory pressure)
-    #             # Compares restart count now vs 10 minutes ago and checks termination reason
-    #             expr: (kube_pod_container_status_restarts_total - kube_pod_container_status_restarts_total offset 10m >= 1) and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}[10m]) == 1
-    #             labels:
-    #               severity: critical
+      # ========================================================================
+      # OUT OF MEMORY (OOM) KILL ALERTS
+      # ========================================================================
+      # Monitors for containers being killed due to memory pressure
+      oom-rules:
+        groups:
+          - name: oom
+            rules:
+              - alert: OomKilled
+                annotations:
+                  summary: Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has been OOMKilled {{ $value }} times in the last 10 minutes.
+                # Alert when a container has been OOM killed (restarted due to memory pressure)
+                # Compares restart count now vs 10 minutes ago and checks termination reason
+                expr: (kube_pod_container_status_restarts_total - kube_pod_container_status_restarts_total offset 10m >= 1) and ignoring (reason) min_over_time(kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}[10m]) == 1
+                labels:
+                  severity: critical
 
     #   # ========================================================================
     #   # ZFS STORAGE ALERTS
