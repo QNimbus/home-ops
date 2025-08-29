@@ -1,0 +1,40 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app privatebin
+  namespace: &namespace tools
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/internal
+    - ../../../../components/volsync
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 10m
+  retryInterval: 2m
+  path: ./kubernetes/apps/tools/privatebin/app
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_NAME: PrivateBin
+      GATUS_SUBDOMAIN: pb
+      VOLSYNC_UID: "568"
+      VOLSYNC_GID: "568"
+      VOLSYNC_CLAIM: privatebin-data
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CACHE_CAPACITY: 1Gi
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
+    - name: volsync
+      namespace: volsync-system

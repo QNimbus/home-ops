@@ -10,5 +10,6 @@ resources:
   - ./it-tools/ks.yaml
   - ./n8n/ks.yaml
   - ./paperless/ks.yaml
-  - ./persistence/ks.yaml
   - ./pgadmin/ks.yaml
+  - ./privatebin/ks.yaml
+  - ./persistence/ks.yaml
