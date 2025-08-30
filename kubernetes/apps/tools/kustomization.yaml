@@ -12,4 +12,5 @@ resources:
   - ./paperless/ks.yaml
   - ./pgadmin/ks.yaml
   - ./privatebin/ks.yaml
+  - ./searxng/ks.yaml
   - ./persistence/ks.yaml
