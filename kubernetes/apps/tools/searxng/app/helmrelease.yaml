@@ -24,7 +24,7 @@ spec:
           app:
             image:
               repository: ghcr.io/searxng/searxng
-              tag: 2025.7.19-b95a3e9@sha256:58d27a0d0827343de2b4403ff5240823833b01bf9580ca6ed2ee8cf441e1d14a
+              tag: 2025.7.19-b95a3e9@sha256:8f1196f03960ebae2292ba7b6d3e074c643abded31ad5bb0d0e971e20670156c
             env:
               TZ: "${TIMEZONE}"
               SEARXNG_BASE_URL: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
