@@ -6,10 +6,12 @@ namespace: flux-system
 resources:
   - ./backube.yaml
   - ./cloudnative-pg.yaml
+  - ./coder.yaml
   - ./csi-driver-smb.yaml
   - ./external-dns.yaml
   - ./external-secrets.yaml
   - ./goauthentik.yaml
   - ./longhorn.yaml
   - ./onepassword.yaml
+  - ./robusta.yaml
   - ./tailscale.yaml
