@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkmate
+  labels:
+    app: checkmate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkmate
+  template:
+    metadata:
+      labels:
+        app: checkmate
+    spec:
+      containers:
+        - name: checkmate
+          # upstream image from the Checkmate repo - pin to a released tag in production
+          image: ghcr.io/bluewave-labs/checkmate:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 20
