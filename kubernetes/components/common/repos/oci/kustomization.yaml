@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - ./app-template.yaml
+  - ./coder.yaml
   - ./csi-driver-nfs.yaml
   - ./keda.yaml
   - ./openebs.yaml
