@@ -62,6 +62,7 @@ spec:
       config:
         type: configMap
         name: searxng-config
+        defaultMode: 0444
         globalMounts:
           - path: /etc/searxng/settings.yml
             subPath: settings.yml
