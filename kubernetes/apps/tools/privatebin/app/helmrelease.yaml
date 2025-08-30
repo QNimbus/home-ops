@@ -63,6 +63,14 @@ spec:
             subPath: data
           - path: /srv/cfg
             subPath: configs
+      config:
+        type: secret
+        name: privatebin-config
+        defaultMode: 0444
+        globalMounts:
+          - path: /cfg/conf.php
+            subPath: conf.php
+            readOnly: true
     route:
       app:
         annotations:
