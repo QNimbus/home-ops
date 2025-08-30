@@ -20,12 +20,104 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  # Default values
+  # Ref: https://github.com/coder/coder/blob/main/helm/coder/values.yaml
   values:
-    coder:
-      image:
-        tag: v2.25.1
-      env:
-        - name: CODER_ACCESS_URL
-          value: "https://${APP}.${DOMAIN_APP}"
-    service:
-      type: ClusterIP
+    controllers:
+      coder:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "2112"
+        strategy: Recreate
+        resources:
+          requests:
+            cpu: 20m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          readOnlyRootFilesystem: null
+          seccompProfile:
+            type: RuntimeDefault
+        service:
+          type: LoadBalancer
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: "*.coder.${DOMAIN_DEV}"
+            io.cilium/lb-ipam-ips: ${LB_IP_CODER}
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.5.0@sha256:e0c87ce7df39d06b93f27cf2cc6a056611f13faaa88cc07ab4dc8bf7a85d0b11
+            envFrom: &envFrom
+              - secretRef:
+                  name: coder-secret
+        env:
+          - name: CODER_ACCESS_URL
+            value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+          - name: CODER_BLOCK_DIRECT
+            value: "true"
+          - name: CODER_DISABLE_PASSWORD_AUTH
+            value: "true"
+          - name: CODER_DERP_SERVER_STUN_ADDRESSES
+            value: "disable"
+          - name: CODER_EMAIL_TLS_STARTTLS
+            value: "true"
+          - name: CODER_LOGGING_HUMAN
+            value: "/dev/stderr"
+          - name: CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE
+            value: "false"
+          - name: CODER_OIDC_GROUP_AUTO_CREATE
+            value: "true"
+          - name: CODER_OIDC_GROUP_FIELD
+            value: "groups"
+          - name: CODER_OIDC_GROUP_MAPPING
+            value: |
+              {"Administrators": "CoderAdmins"}
+          - name: CODER_OIDC_ROLE_FIELD
+            value: "groups"
+          - name: CODER_OIDC_SCOPES
+            value: "openid,profile,email,groups,offline_access"
+          - name: CODER_OIDC_USER_ROLE_MAPPING
+            value: |
+              {"Administrators": ["owner"]}
+          - name: CODER_PROMETHEUS_ENABLE
+            value: "true"
+          - name: CODER_PROMETHEUS_COLLECT_AGENT_STATS
+            value: "true"
+          - name: CODER_TELEMETRY_ENABLE
+            value: "false"
+          - name: CODER_WILDCARD_ACCESS_URL
+            value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
+          - name: CODER_UPDATE_CHECK
+            value: "false"
+        envFrom: &envFrom
+          - secretRef:
+              name: coder-secret
+        ingress:
+          enable: false
+      service:
+        type: ClusterIP
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Service
+              name: *app
+            patch: |
+              - op: add
+                path: /spec/ports/-
+                value:
+                  name: prom-http
+                  port: 2112
+                  protocol: TCP
+                  targetPort: 2112
