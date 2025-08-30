@@ -60,8 +60,8 @@ spec:
             port: *port
     persistence:
       config:
-        type: configMap
-        name: searxng-config
+        type: secret
+        name: searxng-secret
         defaultMode: 0444
         globalMounts:
           - path: /etc/searxng/settings.yml

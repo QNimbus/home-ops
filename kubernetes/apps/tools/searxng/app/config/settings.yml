@@ -1,8 +1,0 @@
-use_default_settings: true
-general:
-  instance_name: "SearXNG"
-server:
-  port: 8080
-  bind_address: 0.0.0.0
-ui:
-  static_use_hash: true
