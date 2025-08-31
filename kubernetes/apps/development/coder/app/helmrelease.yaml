@@ -30,13 +30,25 @@ spec:
     coder:
       strategy: Recreate
       env:
-        - name: CODER_LOG_FILTER # Debugging only
-          value: ".*got oidc claims.*"
+        # --- GENERAL SETTINGS ---
         - name: CODER_ACCESS_URL
           value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
-        - name: CODER_BLOCK_DIRECT
-          value: "true"
+        - name: CODER_WILDCARD_ACCESS_URL
+          value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
         - name: CODER_DISABLE_PASSWORD_AUTH
+          value: "false"
+
+        # --- OIDC AUTHENTICATION SETTINGS ---
+        # This is not working as expected - maybe because IdP Sync is a premium feature (see: https://coder.com/docs/@v2.25.1/admin/users/idp-sync)
+        - name: CODER_OIDC_USER_ROLE_FIELD
+          value: "groups"
+        - name: CODER_OIDC_USER_ROLE_MAPPING
+          value: '{"Administrators":["owner"]}'
+        - name: CODER_OIDC_SCOPES
+          value: "openid,profile,email,groups,offline_access"
+
+        # --- Other Settings from your config ---
+        - name: CODER_BLOCK_DIRECT
           value: "true"
         - name: CODER_DERP_SERVER_STUN_ADDRESSES
           value: "disable"
@@ -47,33 +59,24 @@ spec:
         - name: CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE
           value: "false"
         - name: CODER_OIDC_GROUP_AUTO_CREATE
+          value: "false"
+        - name: CODER_OIDC_IGNORE_USERINFO
           value: "true"
-        # - name: CODER_OIDC_GROUP_FIELD
-        #   value: "groups"
-        # - name: CODER_OIDC_GROUP_MAPPING
-        #   value: |
-        #     {"CoderAdmins":["site_admin"]}
-        # - name: CODER_OIDC_ROLE_FIELD
-        #   value: "groups"
-        # - name: CODER_OIDC_USER_ROLE_MAPPING
-        #   value: |
-        #     {"CoderAdmins": ["owner"]}
-        - name: CODER_OIDC_USER_ROLE_FIELD
-          value: "groups"
-        - name: CODER_OIDC_USER_ROLE_MAPPING
-          value: '{"CoderAdmins":["site_admin"]}' # Use site_admin for full access
-        - name: CODER_OIDC_SCOPES
-          value: "openid,profile,email,groups,offline_access"
+
         - name: CODER_PROMETHEUS_ENABLE
           value: "true"
         - name: CODER_PROMETHEUS_COLLECT_AGENT_STATS
           value: "true"
         - name: CODER_TELEMETRY_ENABLE
           value: "false"
-        - name: CODER_WILDCARD_ACCESS_URL
-          value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
         - name: CODER_UPDATE_CHECK
           value: "false"
+        #  # For debugging if needed
+        # - name: CODER_VERBOSE
+        #   value: "true"
+        # - name: CODER_LOG_FILTER
+        #   value: ".*got oidc claims.*|.*userauth.*|.*groups returned.*|.*oidc.*"
+
       envFrom: &envFrom
         - secretRef:
             name: coder-secret
