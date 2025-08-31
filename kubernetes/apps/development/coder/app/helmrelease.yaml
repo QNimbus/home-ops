@@ -30,6 +30,8 @@ spec:
     coder:
       strategy: Recreate
       env:
+        - name: CODER_LOG_FILTER # Debugging only
+          value: ".*got oidc claims.*"
         - name: CODER_ACCESS_URL
           value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
         - name: CODER_BLOCK_DIRECT
