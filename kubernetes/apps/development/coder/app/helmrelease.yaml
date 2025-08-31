@@ -48,18 +48,22 @@ spec:
           value: "false"
         - name: CODER_OIDC_GROUP_AUTO_CREATE
           value: "true"
-        - name: CODER_OIDC_GROUP_FIELD
+        # - name: CODER_OIDC_GROUP_FIELD
+        #   value: "groups"
+        # - name: CODER_OIDC_GROUP_MAPPING
+        #   value: |
+        #     {"CoderAdmins":["site_admin"]}
+        # - name: CODER_OIDC_ROLE_FIELD
+        #   value: "groups"
+        # - name: CODER_OIDC_USER_ROLE_MAPPING
+        #   value: |
+        #     {"CoderAdmins": ["owner"]}
+        - name: CODER_OIDC_USER_ROLE_FIELD
           value: "groups"
-        - name: CODER_OIDC_GROUP_MAPPING
-          value: |
-            {"Administrators": "CoderAdmins"}
-        - name: CODER_OIDC_ROLE_FIELD
-          value: "groups"
+        - name: CODER_OIDC_USER_ROLE_MAPPING
+          value: '{"CoderAdmins":["site_admin"]}' # Use site_admin for full access
         - name: CODER_OIDC_SCOPES
           value: "openid,profile,email,groups,offline_access"
-        - name: CODER_OIDC_USER_ROLE_MAPPING
-          value: |
-            {"Administrators": ["owner"]}
         - name: CODER_PROMETHEUS_ENABLE
           value: "true"
         - name: CODER_PROMETHEUS_COLLECT_AGENT_STATS
@@ -109,10 +113,7 @@ spec:
           enabled: true
           custom: true
           spec:
-            httpGet:
-              path: /healthz
-              port: &port 80
-            initialDelaySeconds: 0  # No delay needed with startup probe
+            initialDelaySeconds: 10  # No delay needed with startup probe
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -121,9 +122,6 @@ spec:
           enabled: true
           custom: true
           spec:
-            httpGet:
-              path: /healthz
-              port: *port
             initialDelaySeconds: 10  # Small initial delay for container startup
             periodSeconds: 10
             timeoutSeconds: 5
