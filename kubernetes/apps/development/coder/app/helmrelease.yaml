@@ -36,7 +36,7 @@ spec:
         - name: CODER_WILDCARD_ACCESS_URL
           value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
         - name: CODER_DISABLE_PASSWORD_AUTH
-          value: "false"
+          value: "true"
 
         # --- OIDC AUTHENTICATION SETTINGS ---
         # This is not working as expected - maybe because IdP Sync is a premium feature (see: https://coder.com/docs/@v2.25.1/admin/users/idp-sync)
@@ -114,7 +114,7 @@ spec:
       probes:
         liveness: &probes
           enabled: true
-          custom: true
+          # custom: true
           spec:
             initialDelaySeconds: 10  # No delay needed with startup probe
             periodSeconds: 10
@@ -123,7 +123,7 @@ spec:
         readiness: *probes
         startup:
           enabled: true
-          custom: true
+          # custom: true
           spec:
             initialDelaySeconds: 10  # Small initial delay for container startup
             periodSeconds: 10
