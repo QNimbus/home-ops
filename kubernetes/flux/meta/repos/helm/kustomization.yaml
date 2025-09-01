@@ -10,6 +10,7 @@ resources:
   - ./csi-driver-smb.yaml
   - ./external-dns.yaml
   - ./external-secrets.yaml
+  - ./ext-postgres-operator.yaml
   - ./fairwinds.yaml
   - ./goauthentik.yaml
   - ./longhorn.yaml
