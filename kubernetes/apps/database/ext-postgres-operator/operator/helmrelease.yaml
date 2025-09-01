@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ext-postgres-operator
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: ext-postgres-operator
+      sourceRef:
+        kind: HelmRepository
+        name: ext-postgres-operator
+        namespace: flux-system
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+    crds: Create
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+    crds: CreateReplace
+  uninstall:
+    keepHistory: false
+  values:
+    replicaCount: 1
+    
+    env:
+      # Configuration will be loaded from the ext-postgres-operator secret
+      envFrom:
+        - secretRef:
+            name: ext-postgres-operator
