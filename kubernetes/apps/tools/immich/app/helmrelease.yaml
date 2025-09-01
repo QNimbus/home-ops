@@ -29,6 +29,22 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: immich-secret
+            env:
+              # --- Start of Corrected Block ---
+              # The command to execute as the superuser.
+              - name: INIT_POSTGRES_DB_CMDS
+                value: "CREATE EXTENSION IF NOT EXISTS vector;"
+              # The following variables tell the init-script how to connect.
+              # We use variable substitution to reference the correct keys
+              # that are already loaded into the environment from the immich-secret.
+              - name: PGHOST
+                value: "$(INIT_POSTGRES_HOST)"
+              - name: PGDATABASE
+                value: "$(INIT_POSTGRES_DBNAME)"
+              - name: PGUSER
+                value: "$(INIT_POSTGRES_SUPER_USER)"
+              - name: PGPASSWORD
+                value: "$(INIT_POSTGRES_SUPER_PASS)"
         containers:
           app:
             image:
