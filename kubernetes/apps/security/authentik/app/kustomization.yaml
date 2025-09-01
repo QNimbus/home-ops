@@ -5,6 +5,8 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./resources/postgres.yaml
+  - ./resources/postgresuser.yaml
 configMapGenerator:
   - name: authentik-custom-assets
     files:

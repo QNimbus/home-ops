@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/movetokube/postgres-operator/master/charts/ext-postgres-operator/crds/postgres.yaml
+apiVersion: db.movetokube.com/v1alpha1
+kind: Postgres
+metadata:
+  name: authentik-db
+  namespace: security
+spec:
+  database: authentik  # Name of database created in PostgreSQL
+  dropOnDelete: false  # Don't drop database when this CR is deleted
+  schemas: []  # No custom schemas needed for Authentik
+  extensions: []  # No extensions needed for Authentik

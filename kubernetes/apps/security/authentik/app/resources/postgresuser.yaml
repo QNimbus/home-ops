@@ -1,0 +1,26 @@
+---
+apiVersion: db.movetokube.com/v1alpha1
+kind: PostgresUser
+metadata:
+  name: authentik-user
+  namespace: security
+spec:
+  role: authentik-user  # This will be prefixed with a hash by the operator
+  database: authentik-db  # This references the Postgres CR
+  secretName: authentik-db-secret  # Name of the secret to create
+  privileges: OWNER  # Give full privileges to the database
+  annotations:
+    # Annotations to be propagated to the secrets metadata section
+    app.kubernetes.io/name: authentik
+    app.kubernetes.io/component: database
+  labels:
+    # Labels to be propagated to the secrets metadata section
+    app.kubernetes.io/name: authentik
+    app.kubernetes.io/component: database
+  secretTemplate:
+    # Custom secret template to match what Authentik expects
+    AUTHENTIK_POSTGRESQL__HOST: "{{.Host}}"
+    AUTHENTIK_POSTGRESQL__NAME: "{{.Database}}"
+    AUTHENTIK_POSTGRESQL__USER: "{{.Role}}"
+    AUTHENTIK_POSTGRESQL__PASSWORD: "{{.Password}}"
+    AUTHENTIK_POSTGRESQL__PORT: "{{.Port}}"

@@ -77,6 +77,8 @@ global:
   envFrom:
     - secretRef:
         name: *secret
+    - secretRef:
+        name: authentik-db-secret  # Secret created by ext-postgres-operator
 
   # -- Additional volumes to all deployed Deployments.
   volumes: &volumes
@@ -207,12 +209,7 @@ server:
   # -- Additional containers to be added to the authentik server pod
   # extraContainers: []
   # -- Init containers to add to the authentik server pod
-  initContainers:
-    - name: init-db
-      image: ghcr.io/home-operations/postgres-init:17.5.0@sha256:e0c87ce7df39d06b93f27cf2cc6a056611f13faaa88cc07ab4dc8bf7a85d0b11
-      envFrom:
-        - secretRef:
-            name: *secret
+  # initContainers: []
   # -- Additional volumeMounts to the authentik server main container
   volumeMounts:
     - name: custom-assets
