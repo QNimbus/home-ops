@@ -78,7 +78,7 @@ global:
     - secretRef:
         name: *secret
     - secretRef:
-        name: authentik-db-secret  # Secret created by ext-postgres-operator
+        name: secret-authentik-db-user
 
   # -- Additional volumes to all deployed Deployments.
   volumes: &volumes
