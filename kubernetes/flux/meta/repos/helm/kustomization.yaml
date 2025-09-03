@@ -13,6 +13,7 @@ resources:
   - ./ext-postgres-operator.yaml
   - ./fairwinds.yaml
   - ./goauthentik.yaml
+  - ./immich.yaml
   - ./longhorn.yaml
   - ./metrics-server.yaml
   - ./onepassword.yaml
