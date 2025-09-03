@@ -30,18 +30,30 @@ spec:
             command: ["/bin/bash", "-c"]
             args:
               - |
-                export USER_FOLDER=$(echo "/var/lib/pgadmin/storage/$PGADMIN_DEFAULT_EMAIL" | sed 's/@/_/g')
-                export ADDITIONAL_USER_FOLDER=$(echo "/var/lib/pgadmin/storage/$PGADMIN_ADDITIONAL_EMAIL" | sed 's/@/_/g')
-                echo "Creating user folder $USER_FOLDER.";
-                mkdir -p $USER_FOLDER;
-                echo "Creating user folder $ADDITIONAL_USER_FOLDER.";
-                mkdir -p $ADDITIONAL_USER_FOLDER;
-                cp /tmp/secrets/pgpass $USER_FOLDER/.pgpass;
-                cp /tmp/secrets/pgpass $ADDITIONAL_USER_FOLDER/.pgpass;
-                chown 5050:5050 $USER_FOLDER/.pgpass;
-                chown 5050:5050 $ADDITIONAL_USER_FOLDER/.pgpass;
-                chmod 600 $USER_FOLDER/.pgpass;
-                chmod 600 $ADDITIONAL_USER_FOLDER/.pgpass;
+                # Function to process a pgAdmin user email
+                process_user() {
+                  local email=$1
+                  if [ -n "$email" ]; then
+                    local user_folder=$(echo "/var/lib/pgadmin/storage/$email" | sed 's/@/_/g')
+                    echo "Creating user folder $user_folder"
+                    mkdir -p "$user_folder"
+
+                    if [ -f /tmp/secrets/pgpass ]; then
+                      echo "Copying /tmp/secrets/pgpass file to $user_folder/.pgpass"
+                      cp /tmp/secrets/pgpass "$user_folder/.pgpass"
+                      echo "Setting permissions on .pgpass file"
+                      chown 5050:5050 "$user_folder/.pgpass"
+                      chmod 600 "$user_folder/.pgpass"
+                    else
+                      echo "Warning: pgpass file not found at /tmp/secrets/pgpass"
+                    fi
+                  fi
+                }
+
+                # Process default and additional users
+                process_user "$PGADMIN_DEFAULT_EMAIL"
+                process_user "$PGADMIN_ADDITIONAL_EMAIL"
+
                 echo "Done."
             env:
               PGADMIN_DEFAULT_EMAIL:
