@@ -4,7 +4,7 @@ apiVersion: db.movetokube.com/v1alpha1
 kind: Postgres
 metadata:
   name: immich
-  namespace: https://schemas.clustrs.dev/source.toolkit.fluxcd.io/helmrepository_v1.json
+  namespace: tools
 spec:
   database: immich    # Name of database created in PostgreSQL
   dropOnDelete: false # Don't drop database when this CR is deleted

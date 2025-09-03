@@ -1,0 +1,31 @@
+---
+# ML Cache PVC using OpenEBS LocalPV
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-machine-learning-cache
+  namespace: tools
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: openebs-hostpath
+  resources:
+    requests:
+      storage: 10Gi  # Adjust based on your model cache needs
+---
+# Optional: Pin ML workload to GPU-capable nodes for future GPU usage
+# Add this to your Immich HelmRelease values
+# values:
+#   machine-learning:
+#     nodeSelector:
+#       intel.feature.node.kubernetes.io/gpu: "true"
+#     # OR use nodeAffinity for more flexibility:
+#     affinity:
+#       nodeAffinity:
+#         preferredDuringSchedulingIgnoredDuringExecution:
+#         - weight: 100
+#           preference:
+#             matchExpressions:
+#             - key: intel.feature.node.kubernetes.io/gpu
+#               operator: In
+#               values: ["true"]
