@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/db.movetokube.com/postgresuser_v1alpha1.json
+apiVersion: db.movetokube.com/v1alpha1
+kind: PostgresUser
+metadata:
+  name: immich-db-user
+  namespace: security
+spec:
+  role: immich-user  # This will be prefixed with a hash by the operator
+  database: immich   # This references the Postgres CR
+  secretName: secret    # Name of the secret to create
+  privileges: OWNER     # Give full privileges to the database
+  annotations:
+    # Annotations to be propagated to the secrets metadata section
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/component: database
+  labels:
+    # Labels to be propagated to the secrets metadata section
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/component: database
+  secretTemplate:       # Output secrets can be customized using standard Go templates
+    PQ_URL: "host={{.Host}} user={{.Role}} password={{.Password}} dbname={{.Database}}"
