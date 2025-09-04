@@ -26,9 +26,6 @@ spec:
       APP: *app
       GATUS_NAME: Immich
       GATUS_SUBDOMAIN: photos
-      # Removed VolSync substitutions - using direct SMB storage
-      # VOLSYNC_CLAIM: immich-library
-      # VOLSYNC_CAPACITY: 50Gi
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -36,6 +33,3 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
-    # Removed VolSync dependency - using direct SMB storage
-    # - name: volsync
-    #   namespace: volsync-system
