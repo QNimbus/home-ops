@@ -8,12 +8,12 @@ metadata:
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: "Tools"
-    gethomepage.dev/name: "Immich"
+    gethomepage.dev/name: "Photos"
     gethomepage.dev/icon: "immich.svg"
-    gethomepage.dev/href: "https://photos.${DOMAIN_APP}"
-    gethomepage.dev/widget.type: "immich"
-    gethomepage.dev/widget.url: "https://photos.${DOMAIN_APP}"
-    gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
+    gethomepage.dev/href: "https://photos.vwn.app"
+    # gethomepage.dev/widget.type: "immich"
+    # gethomepage.dev/widget.url: "https://photos.${DOMAIN_APP}"
+    # gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
 spec:
   hostnames: ["photos.${DOMAIN_APP}"]
   parentRefs:
