@@ -25,6 +25,7 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Immich
+      GATUS_SUBDOMAIN: photos
       # Removed VolSync substitutions - using direct SMB storage
       # VOLSYNC_CLAIM: immich-library
       # VOLSYNC_CAPACITY: 50Gi
