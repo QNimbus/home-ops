@@ -5,6 +5,11 @@ kind: HTTPRoute
 metadata:
   name: immich
   namespace: tools
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: "Tools"
+    gethomepage.dev/name: "Immich"
+    gethomepage.dev/icon: "immich.svg"
 spec:
   hostnames: ["photos.${DOMAIN_APP}"]
   parentRefs:
