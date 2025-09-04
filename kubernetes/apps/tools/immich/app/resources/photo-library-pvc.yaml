@@ -22,7 +22,7 @@ spec:
     # make sure this value is unique for every share in the cluster
     volumeHandle: tools-smb-photo-library
     volumeAttributes:
-      source: //truenas.lan.home.vwn.io/photos
+      source: //${SMB_SERVER}/photos  # Adjust path as needed
     nodeStageSecretRef:
       name: smb-credentials
       namespace: kube-system
