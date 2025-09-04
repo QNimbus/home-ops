@@ -9,5 +9,7 @@ spec:
   database: immich    # Name of database created in PostgreSQL
   dropOnDelete: false # Don't drop database when this CR is deleted
   schemas: []         # No custom schemas needed for Immich
-  extensions:         # pgvector extension required for Immich
-    - vector
+  extensions:         # Extensions required for Immich
+    - vector          # For AI/ML similarity search
+    - earthdistance   # For geospatial queries
+    - cube            # Required by earthdistance
