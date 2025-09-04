@@ -13,7 +13,8 @@ spec:
   components:
     - ../../../../components/common
     - ../../../../components/gatus/internal
-    - ../../../../components/volsync
+    # Disabled VolSync to use direct SMB photo library
+    # - ../../../../components/volsync
   wait: false
   prune: true
   interval: 1h
@@ -24,8 +25,9 @@ spec:
     substitute:
       APP: *app
       GATUS_NAME: Immich
-      VOLSYNC_CLAIM: immich-library
-      VOLSYNC_CAPACITY: 50Gi
+      # Removed VolSync substitutions - using direct SMB storage
+      # VOLSYNC_CLAIM: immich-library
+      # VOLSYNC_CAPACITY: 50Gi
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -33,5 +35,6 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
-    - name: volsync
-      namespace: volsync-system
+    # Removed VolSync dependency - using direct SMB storage
+    # - name: volsync
+    #   namespace: volsync-system
