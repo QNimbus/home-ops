@@ -11,6 +11,7 @@ metadata:
     gethomepage.dev/name: "Photos"
     gethomepage.dev/icon: "immich.svg"
     gethomepage.dev/href: "https://photos.vwn.app"
+    gethomepage.dev/ping: "https://photos.vwn.app/api/server-info"
     # gethomepage.dev/widget.type: "immich"
     # gethomepage.dev/widget.url: "https://photos.${DOMAIN_APP}"
     # gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
