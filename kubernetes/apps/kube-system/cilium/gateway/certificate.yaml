@@ -50,3 +50,16 @@ spec:
     kind: ClusterIssuer
   commonName: "kvm.${DOMAIN_APP}"
   dnsNames: ["kvm.${DOMAIN_APP}", "*.kvm.${DOMAIN_APP}"]
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "${DOMAIN_CASA/./-}"
+spec:
+  secretName: "${DOMAIN_CASA/./-}-tls"
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "${DOMAIN_CASA}"
+  dnsNames: ["${DOMAIN_CASA}", "*.${DOMAIN_CASA}"]

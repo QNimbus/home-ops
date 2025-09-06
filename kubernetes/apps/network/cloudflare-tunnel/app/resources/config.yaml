@@ -14,5 +14,8 @@ ingress:
   - hostname: "${DOMAIN_APP}"
     service: *svc
   - hostname: "*.${DOMAIN_APP}"
+  - hostname: "${DOMAIN_CASA}"
+    service: *svc
+  - hostname: "*.${DOMAIN_CASA}"
     service: *svc
   - service: http_status:404

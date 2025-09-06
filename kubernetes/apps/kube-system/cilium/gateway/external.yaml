@@ -69,3 +69,21 @@ spec:
         certificateRefs:
           - kind: Secret
             name: ${DOMAIN_APP/./-}-tls
+    - name: http-casa
+      protocol: HTTP
+      port: 80
+      hostname: "*.${DOMAIN_CASA}"
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https-casa
+      protocol: HTTPS
+      port: 443
+      hostname: "*.${DOMAIN_CASA}"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: ${DOMAIN_CASA/./-}-tls
