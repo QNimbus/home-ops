@@ -132,7 +132,7 @@ spec:
       app:
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: "Tools"
+          gethomepage.dev/group: "Files Management"
           gethomepage.dev/name: "Paperless"
           gethomepage.dev/icon: "sh-paperless-ngx-light"
           gethomepage.dev/widget.type: "paperlessngx"

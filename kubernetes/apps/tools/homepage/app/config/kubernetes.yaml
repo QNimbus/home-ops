@@ -1,4 +1,5 @@
 ---
+# Ref: # https://gethomepage.dev/configs/kubernetes/
 mode: cluster
 ingress: false # default, enable ingress
 traefik: false # enable traefik ingressRoute

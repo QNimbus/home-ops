@@ -5,7 +5,7 @@
 
 - greeting:
     text_size: 4xl
-    text: vwn::casa
+    text: vwn/casa
 
 - resources:
     expanded: false
@@ -31,27 +31,27 @@
     text_size: 4xl
     text: —
 
-- resources:
-    label: ARRAY
-    expanded: true
-    disk:
-     - /array
+# - resources:
+#     label: ARRAY
+#     expanded: true
+#     disk:
+#      - /array
 
-- resources:
-    label: CACHE
-    expanded: true
-    disk:
-     - /cache
+# - resources:
+#     label: CACHE
+#     expanded: true
+#     disk:
+#      - /cache
 
-- resources:
-    label: DEPOT
-    expanded: true
-    disk:
-     - /depot
+# - resources:
+#     label: DEPOT
+#     expanded: true
+#     disk:
+#      - /depot
 
-- greeting:
-    text_size: 4xl
-    text: —
+# - greeting:
+#     text_size: 4xl
+#     text: —
 
 - resources:
     expanded: false

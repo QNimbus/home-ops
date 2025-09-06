@@ -4,7 +4,7 @@ title: vwn/casa
 language: en
 theme: dark
 color: zinc
-target: _self
+target: _blank
 headerStyle: boxed
 statusStyle: "dot"
 hideVersion: true
@@ -26,8 +26,8 @@ quicklaunch:
   showSearchSuggestions: true
   hideVisitURL: true
   provider: custom
-  url: https://kagi.com/search?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
-  suggestionUrl: https://kagi.com/api/autosuggest?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
+  url: https://search.vwn.app/search?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
+  suggestionUrl: https://search.vwn.app/api/autosuggest?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
   target: _blank
 
 # Layout Configuration
@@ -65,7 +65,7 @@ layout:
       style: column
       tab: HOME
       icon: mdi-share-all
-  Tools Collection:
+  Tools:
       style: column
       tab: HOME
       icon: mdi-tools
