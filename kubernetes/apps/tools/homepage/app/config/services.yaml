@@ -1,7 +1,5 @@
 ---
-- Tools: []
-- Media: []
-- Downloads: []
+########################################################################################################################################################################################################
 - Infrastructure:
     - UniFi:
         href: https://udm.${DOMAIN_APP}
@@ -16,28 +14,9 @@
           accountid: {{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
           tunnelid: {{HOMEPAGE_VAR_CLOUDFLARE_TUNNEL_ID}}
           key: {{HOMEPAGE_VAR_CLOUDFLARE_API_TOKEN}}
-- Observability:
-    - Alertmanager:
-        href: https://alertmanager.${DOMAIN_APP}
-        icon: alertmanager.png
-        description: Alertmanager Dashboard
-    - Grafana:
-        href: https://grafana.${DOMAIN_APP}
-        icon: grafana.png
-        # description: This is my service
-    - Goldilocks:
-        href: https://goldilocks.${DOMAIN_APP}
-        icon: https://raw.githubusercontent.com/FairwindsOps/goldilocks/master/img/goldilocks.svg
-        description: Helps identify a starting point for resource requests and limits
-    - Prometheus:
-        href: https://prometheus.${DOMAIN_APP}
-        icon: prometheus.png
-        # description: This is my service
-    - Crowdsec:
-        href: https://app.crowdsec.net/
-        icon: crowdsec.png
-        description: Crowd-based cyber security threat detection & mitigation
-- Storage:
+
+########################################################################################################################################################################################################
+- Files Management:
     - TrueNAS:
         href: https://${NAS_SERVER}
         icon: truenas-scale.png
@@ -48,14 +27,155 @@
             # username:
             # password:
             key: {{HOMEPAGE_VAR_TRUENAS_API_KEY}}
-    - Rook-Ceph:
-        href: https://rook.${DOMAIN_APP}
-        icon: ceph.png
-        # description: This is my service
+
+    - Immich:
+        icon: immich.png
+        href: https://photos.vwn.app
+        container: immich
+        description: Photo backup library
+        widget:
+            type: immich
+            url: https://photos.vwn.app
+            key: {{HOMEPAGE_VAR_IMMICH_API_KEY}}
+            version: 2
+            fields: ["photos", "videos", "storage"]
+
+########################################################################################################################################################################################################
+- Media Processing:
+    - Jellyseerr:
+        icon: jellyseerr.png
+        href: https://jellyseerr.example.com
+        container: jellyseerr
+        description: Request new library media
+        widget:
+            type: jellyseerr
+            url: https://jellyseerr.example.com
+            key: [REDACTED-KEY]
+            fields: ["pending", "approved", "available"]
+
+    - SabNZBD:
+        icon: sabnzbd.png
+        href: https://sab.example.com
+        container: sabnzbd
+        description: Usenet download processor
+        widget:
+            type: sabnzbd
+            url: https://sab.example.com
+            key: [REDACTED-KEY]
+            fields: ["rate", "queue", "timeleft"]
+
+    - Deluge:
+        icon: deluge.png
+        href: https://deluge.example.com
+        container: deluge
+        description: Torrent download automation
+        widget:
+            type: deluge
+            url: https://deluge.example.com
+            password: [REDACTED-PASSWORD]
+            fields: ["leech", "download", "seed"]
+
+    - Prowlarr:
+        icon: /icons/services/prowlarr.png
+        href: https://prowlarr.example.com
+        container: prowlarr
+        description: Indexer integration for downloads
+        widget:
+            type: prowlarr
+            url: https://prowlarr.example.com
+            key: [REDACTED-KEY]
+            fields: ["numberOfGrabs", "numberOfQueries"]
+
+########################################################################################################################################################################################################
+- Media Management:
+    - Radarr:
+        icon: /icons/services/radarr.png
+        href: https://radarr.example.com
+        container: radarr
+        description: Automate downloading movies
+        widget:
+            type: radarr
+            url: https://radarr.example.com
+            key: [REDACTED-KEY]
+            fields: ["wanted", "queued", "movies"]
+
+    - Sonarr:
+        icon: sonarr.png
+        href: https://sonarr.example.com
+        container: sonarr
+        description: Automate downloading series
+        widget:
+            type: sonarr
+            url: https://sonarr.example.com
+            key: [REDACTED-KEY]
+            fields: ["wanted", "queued", "series"]
+
+    - Tdarr:
+        icon: tdarr.png
+        href: https://tdarr.example.com
+        container: tdarr
+        description: Automate media transcoding
+        widget:
+            type: tdarr
+            url: https://tdarr.example.com
+            key: [REDACTED-KEY]
+            fields: ["queue", "processed", "saved"]
+
+    - Bazarr:
+        icon: bazarr.png
+        href: https://bazarr.example.com
+        container: bazarr
+        description: Media subtitles management
+        widget:
+            type: bazarr
+            url: https://bazarr.example.com
+            key: [REDACTED-KEY]
+            fields: ["missingEpisodes", "missingMovies"]
+
+########################################################################################################################################################################################################
+- Observability:
     - Scrutiny:
-        href: https://scrutiny.${DOMAIN_APP}
-        icon: scrutiny.png
-        description: Provides storage drive S.M.A.R.T monitoring, historic trends, and real-world failure thresholds
+        icon: /icons/services/scrutiny.png
+        href: https://scrutiny.example.com
+        container: scrutiny
+        description: Monitor hard drive health
+        widget:
+            type: scrutiny
+            url: https://scrutiny.example.com
+            fields: ["passed", "failed", "unknown"]
+
+    - Speedtest:
+        icon: speedtest-tracker.png
+        href: http://0.0.0.0
+        container: speedtest
+        description: Network speed tracker
+        widget:
+            type: speedtest
+            url: http://0.0.0.0
+            bitratePrecision: 0
+            fields: ["download", "upload", "ping"]
+
+    - Prometheus:
+        href: https://prometheus.${DOMAIN_APP}
+        icon: prometheus.png
+        # description: This is my service
+
+    - Grafana:
+        href: https://grafana.${DOMAIN_APP}
+        icon: grafana.png
+        # description: This is my service
+
+    - Alertmanager:
+        href: https://alertmanager.${DOMAIN_APP}
+        icon: alertmanager.png
+        description: Alertmanager Dashboard
+
+    - Goldilocks:
+        href: https://goldilocks.${DOMAIN_APP}
+        icon: https://raw.githubusercontent.com/FairwindsOps/goldilocks/master/img/goldilocks.svg
+        description: Helps identify a starting point for resource requests and limits
+
+########################################################################################################################################################################################################
 - KVM:
     - pve 1:
         href: https://pve1.kvm.${DOMAIN_APP}
@@ -69,3 +189,285 @@
         href: https://pve4.kvm.${DOMAIN_APP}
         icon: jetkvm.png
         description: JetKVM console for Proxmox VE 4
+
+########################################################################################################################################################################################################
+- Cloud Services:
+    - Vaultwarden:
+        icon: /icons/services/vaultwarden.png
+        href: https://vault.example.com
+        container: vaultwarden
+        description: Password management
+
+    - Jellystat:
+        icon: /icons/services/jellystat.png
+        href: https://jellystat.example.com
+        container: jellystat
+        description: Media library statistics
+
+    - Wallos:
+        icon: wallos.png
+        href: https://costs.example.com
+        container: wallos
+        description: Subcription cost tracker
+
+########################################################################################################################################################################################################
+- Discord Bots:
+    - SiennaGuard:
+        icon: /icons/services/siennaguard.png
+        href: https://discord.com/developers/applications/000000000000000000/information
+        container: guardbot
+        description: Modular moderation bot
+
+    - SiennaTunes:
+        icon: /icons/services/siennatunes.png
+        href: https://discord.com/developers/applications/000000000000000000/information
+        container: tunesbot
+        description: Jellyfin music player bot
+
+    - SiennaPulse:
+        icon: /icons/services/siennapulse.png
+        href: https://discord.com/developers/applications/000000000000000000/information
+        container: pulsebot
+        description: Game server status bot
+
+########################################################################################################################################################################################################
+- Tools Collection:
+    - Adminer:
+        icon: /icons/services/adminer.png
+        href: http://0.0.0.0/
+        container: adminer
+        description: Database management
+
+    - Netdata:
+        icon: /icons/services/netdata.png
+        href: http://0.0.0.0
+        container: netdata
+        description: Network monitoring utility
+
+    - Dozzle:
+        icon: /icons/services/dozzle.png
+        href: https://dozzle.example.com
+        container: dozzle
+        description: Docker container logs
+
+########################################################################################################################################################################################################
+- Sharing Platforms:
+    - Pairdrop:
+        icon: pairdrop.png
+        href: https://pairdrop.example.com
+        container: pairdrop
+        description: Simple file transfer tool
+
+    - Pastey:
+        icon: pastey.png
+        href: https://pastey.example.com
+        container: pastey
+        description: Encrypted pasting tool
+
+########################################################################################################################################################################################################
+- Movies Library:
+   - _hidden:
+       href: https://jellyfin.example.com
+       widget:
+         type: customapi
+         url: https://home.example.com/static/stats.json
+         refreshInterval: 300000
+         display: grid
+         mappings:
+           - field:
+               jellyfin:
+                 movies:
+                   count
+             label: "Movies"
+             format: number
+           - field:
+               jellyfin:
+                 movies:
+                   storage
+             label: "Storage"
+             format: text
+           - field:
+               jellyfin:
+                 movies:
+                   plays
+             label: "Plays"
+             format: number
+           - field:
+               jellyfin:
+                 movies:
+                   runtime
+             label: "Runtime"
+             format: text
+
+########################################################################################################################################################################################################
+- Series Library:
+   - _hidden:
+       href: https://jellyfin.example.com
+       widget:
+         type: customapi
+         url: https://home.example.com/static/stats.json
+         refreshInterval: 300000
+         display: grid
+         mappings:
+           - field:
+               jellyfin:
+                 series:
+                   count
+             label: "Episodes"
+             format: number
+           - field:
+               jellyfin:
+                 series:
+                   storage
+             label: "Storage"
+             format: text
+           - field:
+               jellyfin:
+                 series:
+                   plays
+             label: "Plays"
+             format: number
+           - field:
+               jellyfin:
+                 series:
+                   runtime
+             label: "Runtime"
+             format: text
+
+########################################################################################################################################################################################################
+- Clips Library:
+   - _hidden:
+       href: https://clips.example.com
+       widget:
+           type: customapi
+           url: https://home.example.com/static/stats.json
+           refreshInterval: 300000
+           display: grid
+           mappings:
+               - field:
+                    clips:
+                      files
+                 label: "Clips"
+                 format: number
+               - field:
+                    clips:
+                      size
+                 label: "Storage"
+                 format: bytes
+               - field:
+                   clips:
+                     game_count
+                 label: "Games"
+                 format: number
+               - field:
+                   clips:
+                     runtime
+                 label: "Runtime"
+                 format: text
+
+########################################################################################################################################################################################################
+- Watch Time:
+    - _hidden:
+        href: https://jellyfin.example.com
+        widget:
+          type: customapi
+          url: https://home.example.com/static/stats.json
+          refreshInterval: 300000
+          display: grid
+          mappings:
+            - field:
+                jellyfin:
+                  watch_time:
+                    garnet
+              label: "Garnet"
+              format: text
+            - field:
+                jellyfin:
+                  watch_time:
+                    rasta
+              label: "Rasta"
+              format: text
+            - field:
+                jellyfin:
+                  watch_time:
+                    che
+              label: "Che"
+              format: text
+            - field:
+                jellyfin:
+                  watch_time:
+                    feather
+              label: "Feather"
+              format: text
+
+########################################################################################################################################################################################################
+- Popular Clients:
+    - _hidden:
+        href: https://jellyfin.example.com
+        widget:
+          type: customapi
+          url: https://home.example.com/static/stats.json
+          refreshInterval: 300000
+          display: grid
+          mappings:
+            - field:
+                jellyfin:
+                  popular_clients:
+                    first
+              label: "First"
+              format: text
+            - field:
+                jellyfin:
+                  popular_clients:
+                    second
+              label: "Second"
+              format: text
+            - field:
+                jellyfin:
+                  popular_clients:
+                    third
+              label: "Third"
+              format: text
+            - field:
+                jellyfin:
+                  popular_clients:
+                    fourth
+              label: "Fourth"
+              format: text
+
+########################################################################################################################################################################################################
+- Release Calendar:
+  - ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ LEGEND:⠀⠀🟢=Series ⠀⠀🔵=Movie:
+          href: https://jellyfin.example.com
+          widget:
+              type: calendar
+              firstDayInWeek: monday
+              view: monthly
+              maxEvents: 10
+              showTime: true
+              timezone: America/Denver
+              integrations:
+                - type: sonarr
+                  service_group: Media Management
+                  service_name: Sonarr
+                  color: green
+                  params:
+                    unmonitored: false
+                - type: radarr
+                  service_group: Media Management
+                  service_name: Radarr
+                  color: blue
+                  params:
+                    unmonitored: false
+
+########################################################################################################################################################################################################
+- Homepage Configuration:
+  - Official Docs:
+      icon: /icons/services/homepage-docs.png
+      href: https://gethomepage.dev/
+      description: documentation for configuring this dashboard
+  - CSS Styler:
+        icon: /icons/services/homepage-styler.png
+        href: https://gethomepage.dev/
+        description: script to style custom.css for this dashboard
+########################################################################################################################################################################################################

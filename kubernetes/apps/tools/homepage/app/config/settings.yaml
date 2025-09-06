@@ -1,6 +1,6 @@
 ---
 # Basic Site Settings
-title: vwn::casa
+title: vwn/casa
 language: en
 theme: dark
 color: zinc
@@ -12,11 +12,10 @@ disableCollapse: true
 
 # Site Assets
 base: https://vwn.casa
-favicon: /icons/favicon-small.png
+favicon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
 background:
     image: /images/background.png
 
-# favicon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
 # useEqualHeights: true
 # background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
 # background: https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2560&q=80
@@ -34,6 +33,10 @@ quicklaunch:
 # Layout Configuration
 layout:
   # HOME Tab Items
+  Infrastructure:
+      style: column
+      tab: HOME
+      icon: mdi-file-multiple
   Files Management:
       style: column
       tab: HOME
@@ -46,10 +49,14 @@ layout:
       style: column
       tab: HOME
       icon: mdi-expansion-card
-  System Monitoring:
+  Observability:
       style: column
       tab: HOME
       icon: mdi-server
+  KVM:
+      style: column
+      tab: HOME
+      icon: mdi-google-cloud
   Cloud Services:
       style: column
       tab: HOME

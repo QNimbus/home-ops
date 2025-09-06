@@ -1,25 +1,83 @@
 ---
+
 - logo:
     icon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
-- kubernetes:
-    cluster:
-      show: true
-      cpu: true
-      memory: true
-      showLabel: true
-      label: "home-ops"
-    nodes:
-      show: false
-      cpu: true
-      memory: true
-      showLabel: false
+
+- greeting:
+    text_size: 4xl
+    text: vwn::casa
+
+- resources:
+    expanded: false
+    cpu: true
+    cputemp: true
+    memory: true
+    refresh: 1000
+
+# - kubernetes:
+#     cluster:
+#       show: true
+#       cpu: true
+#       memory: true
+#       showLabel: true
+#       label: "home-ops"
+#     nodes:
+#       show: false
+#       cpu: true
+#       memory: true
+#       showLabel: false
+
+- greeting:
+    text_size: 4xl
+    text: —
+
+- resources:
+    label: ARRAY
+    expanded: true
+    disk:
+     - /array
+
+- resources:
+    label: CACHE
+    expanded: true
+    disk:
+     - /cache
+
+- resources:
+    label: DEPOT
+    expanded: true
+    disk:
+     - /depot
+
+- greeting:
+    text_size: 4xl
+    text: —
+
+- resources:
+    expanded: false
+    uptime: true
+    refresh: 1000
+
+- datetime:
+    text_size: 4xl
+    format:
+        timeStyle: short
+        hour12: false
+
+- datetime:
+    text_size: md
+    format:
+        dateStyle: long
+        hour12: false
+
 - search:
     provider: custom
     showSearchSuggestions: true
-    url: https://kagi.com/search?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
-    suggestionUrl: https://kagi.com/api/autosuggest?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
+    url: https://search.vwn.app/search?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
+    suggestionUrl: https://search.vwn.app/api/autosuggest?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
     target: _blank
-    # focus: true # Optional, will set focus to the search bar on page load
+    focus: true # Optional, will set focus to the search bar on page load
+
 - openmeteo:
     label: Home
     latitude: {{HOMEPAGE_VAR_LATITUDE}}
