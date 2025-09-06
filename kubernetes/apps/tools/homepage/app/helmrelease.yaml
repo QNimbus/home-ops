@@ -30,7 +30,7 @@ spec:
             env:
               TZ: "${TIMEZONE}"
               LOG_LEVEL: "info"
-              HOMEPAGE_ALLOWED_HOSTS: "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+              HOMEPAGE_ALLOWED_HOSTS: "${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}},${DOMAIN_CASA}"
             envFrom:
               - secretRef:
                   name: &secret homepage-secret
@@ -122,6 +122,16 @@ spec:
           - name: internal
             namespace: kube-system
             sectionName: https-app
+        rules:
+          - backendRefs:
+              - identifier: *app
+                port: &port 3000
+      casa:
+        hostnames: ["${DOMAIN_CASA}"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https-casa-apex
         rules:
           - backendRefs:
               - identifier: *app
