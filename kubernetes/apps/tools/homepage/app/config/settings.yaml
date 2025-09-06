@@ -1,42 +1,25 @@
 ---
-title: Dashboard
-favicon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
-color: slate
-useEqualHeights: true
-background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
-statusStyle: dot
-layout:
-  Tools:
-    tab: Applications
-    icon: mdi-tools
-    style: row
-    columns: 4
-  Media:
-    tab: Applications
-    icon: mdi-multimedia
-    style: row
-    columns: 4
-  Downloads:
-    tab: Applications
-    icon: mdi-cloud-download
-    style: row
-    columns: 4
-  Apps & Services:
-    tab: Applications
-    style: row
-    columns: 4
-  Infrastructure:
-    tab: Observability
-    style: row
-    columns: 4
-  Monitoring:
-    tab: Observability
-    style: row
-    columns: 4
-  Storage:
-    tab: Observability
-    style: row
-    columns: 4
+# Basic Site Settings
+title: vwn::casa
+language: en
+theme: dark
+color: zinc
+target: _self
+headerStyle: boxed
+statusStyle: "dot"
+hideVersion: true
+disableCollapse: true
+
+# Site Assets
+base: https://vwn.casa
+favicon: /icons/favicon-small.png
+background:
+    image: /images/background.png
+
+# favicon: https://raw.githubusercontent.com/qnimbus/home-ops/refs/heads/main/assets/images/home-ops-logo.png
+# useEqualHeights: true
+# background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+# background: https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2560&q=80
 
 quicklaunch:
   searchDescriptions: true
@@ -47,3 +30,143 @@ quicklaunch:
   url: https://kagi.com/search?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
   suggestionUrl: https://kagi.com/api/autosuggest?token={{HOMEPAGE_VAR_KAGI_SESSION_TOKEN}}&q=
   target: _blank
+
+# Layout Configuration
+layout:
+  # HOME Tab Items
+  Files Management:
+      style: column
+      tab: HOME
+      icon: mdi-file-multiple
+  Media Processing:
+      style: column
+      tab: HOME
+      icon: mdi-multimedia
+  Media Management:
+      style: column
+      tab: HOME
+      icon: mdi-expansion-card
+  System Monitoring:
+      style: column
+      tab: HOME
+      icon: mdi-server
+  Cloud Services:
+      style: column
+      tab: HOME
+      icon: mdi-google-cloud
+  Sharing Platforms:
+      style: column
+      tab: HOME
+      icon: mdi-share-all
+  Tools Collection:
+      style: column
+      tab: HOME
+      icon: mdi-tools
+  Discord Bots:
+      style: column
+      tab: HOME
+      icon: mdi-robot
+  Game Servers:
+      style: column
+      tab: HOME
+      icon: mdi-gamepad-variant
+  _hidden0:
+      style: column
+      tab: HOME
+  _hidden1:
+      style: column
+      tab: HOME
+  # STAT Tab Items
+  Document Directories:
+      style: column
+      tab: STAT
+      icon: mdi-file-document-outline
+  Camera Galleries:
+      style: column
+      tab: STAT
+      icon: mdi-camera-outline
+  Music Libraries:
+      style: column
+      tab: STAT
+      icon: mdi-music-box-outline
+  Movies Library:
+      style: column
+      tab: STAT
+      icon: mdi-movie-roll
+  Series Library:
+      style: column
+      tab: STAT
+      icon: mdi-television-classic
+  Clips Library:
+      style: column
+      tab: STAT
+      icon: mdi-movie-outline
+  Watch Time:
+      style: column
+      tab: STAT
+      icon: mdi-account-group-outline
+  Popular Clients:
+      style: column
+      tab: STAT
+      icon: mdi-cellphone-link
+  Release Calendar:
+      style: column
+      tab: STAT
+      icon: mdi-calendar
+  # DEPS Tab Items
+  Databases:
+      style: column
+      tab: DEPS
+      icon: mdi-database
+  ⠀:
+      style: column
+      tab: DEPS
+  ⠀⠀:
+      style: column
+      tab: DEPS
+  ⠀⠀⠀:
+      style: column
+      tab: DEPS
+  ⠀⠀⠀⠀:
+      style: column
+      tab: DEPS
+  ⠀⠀⠀⠀⠀:
+      style: column
+      tab: DEPS
+  Homepage Configuration:
+      style: column
+      tab: DEPS
+      icon: mdi-home
+
+# layout:
+#   Tools:
+#     tab: Applications
+#     icon: mdi-tools
+#     style: row
+#     columns: 4
+#   Media:
+#     tab: Applications
+#     icon: mdi-multimedia
+#     style: row
+#     columns: 4
+#   Downloads:
+#     tab: Applications
+#     icon: mdi-cloud-download
+#     style: row
+#     columns: 4
+#   Apps & Services:
+#     tab: Applications
+#     style: row
+#     columns: 4
+#   Infrastructure:
+#     tab: Observability
+#     style: row
+#     columns: 4
+#   Monitoring:
+#     tab: Observability
+#     style: row
+#     columns: 4
+#   Storage:
+#     tab: Observability
+#     style: row
+#     columns: 4
