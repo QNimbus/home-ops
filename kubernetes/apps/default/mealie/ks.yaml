@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app mealie
+  namespace: &namespace default
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/internal
+    - ../../../../components/volsync
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 10m
+  retryInterval: 2m
+  path: ./kubernetes/apps/default/mealie/app
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_NAME: Mealie
+      VOLSYNC_CLAIM: mealie-config
+      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_CACHE_CAPACITY: 2Gi
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: cloudnative-pg-cluster
+      namespace: database
+    - name: volsync
+      namespace: volsync-system
+    - name: ext-postgres-operator
+      namespace: database

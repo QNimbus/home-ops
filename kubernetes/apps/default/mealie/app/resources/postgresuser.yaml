@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/db.movetokube.com/postgresuser_v1alpha1.json
+apiVersion: db.movetokube.com/v1alpha1
+kind: PostgresUser
+metadata:
+  name: mealie-db-user
+  namespace: default
+spec:
+  role: mealie-user
+  database: mealie
+  secretName: secret
+  privileges: OWNER
+  annotations:
+    app.kubernetes.io/name: mealie
+    app.kubernetes.io/component: database
+  labels:
+    app.kubernetes.io/name: mealie
+    app.kubernetes.io/component: database
+  secretTemplate:
+    PQ_URL: "host={{.Host}} user={{.Role}} password={{.Password}} dbname={{.Database}}"
+    POSTGRES_SERVER: "{{.Host}}"
+    # POSTGRES_PORT: "{{.Port}}"
+    POSTGRES_DB: "{{.Database}}"
+    POSTGRES_USER: "{{.Role}}"
+    POSTGRES_PASSWORD: "{{.Password}}"
