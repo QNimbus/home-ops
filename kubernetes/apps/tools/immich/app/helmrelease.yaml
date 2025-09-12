@@ -26,6 +26,7 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+    timeout: 15m
   values:
     postgres:
       enabled: false
@@ -41,7 +42,28 @@ spec:
           existingClaim: photo-library
 
     env:
-      MACHINE_LEARNING_PRELOAD__CLIP: "ViT-H-14-378-quickgelu__dfn5b"
+      OAUTH_ENABLED: "true"
+      OAUTH_SCOPE: "openid profile email"
+      OAUTH_ISSUER_URL:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: OAUTH_ISSUER_URL
+      OAUTH_CLIENT_ID:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: OAUTH_CLIENT_ID
+      OAUTH_CLIENT_SECRET:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: OAUTH_CLIENT_SECRET
+      OAUTH_BUTTON_TEXT:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: OAUTH_BUTTON_TEXT
       DB_HOSTNAME:
         valueFrom:
           secretKeyRef:
@@ -62,8 +84,9 @@ spec:
           secretKeyRef:
             name: secret-immich-db-user
             key: DATABASE_NAME
-      LOG_LEVEL: verbose
+      LOG_LEVEL: info
       TZ: Europe/Amsterdam
+      MACHINE_LEARNING_PRELOAD__CLIP: "ViT-H-14-378-quickgelu__dfn5b"
 
     image:
       # renovate: datasource=github-releases depName=immich-app/immich
