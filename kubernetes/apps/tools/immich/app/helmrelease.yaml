@@ -95,8 +95,11 @@ spec:
     server:
       resources:
         requests:
-          cpu: 1500m
+          cpu: 500m
           memory: 2048M
+        limits:
+          cpu: 4096m
+          memory: 4096M
       ingress:
         main:
           enabled: false
@@ -106,6 +109,9 @@ spec:
         requests:
           cpu: 500m
           memory: 4096M
+        limits:
+          cpu: 3000m
+          memory: 6144M
       persistence:
         cache:
           type: pvc
