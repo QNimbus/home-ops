@@ -48,8 +48,11 @@ jobs:
       - name: Install Python Dependencies
         run: uv pip install pyyaml
 
+      - name: Download openapi2jsonschema.py
+        run: curl -fsSL https://raw.githubusercontent.com/yannh/kubeconform/6ae8c45bc156ceeb1d421e9b217cfc0c7ba5828d/scripts/openapi2jsonschema.py -o openapi2jsonschema.py
+
       - name: Run crd-extractor
-        run: curl -fsSL https://raw.githubusercontent.com/datreeio/CRDs-catalog/43e4407642d4c37683c88711f37caa6c9c20ca40/Utilities/crd-extractor.sh | bash
+        run: curl -fsSL https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/Utilities/crd-extractor.sh | bash
 
       - name: Publish Schemas
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
