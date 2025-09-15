@@ -5,7 +5,6 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-  - ./httproute.yaml
   - ./resources/hpa.yaml
   - ./resources/ml-cache-pvc.yaml
   - ./resources/photo-library-pvc.yaml
