@@ -62,11 +62,7 @@ spec:
           secretKeyRef:
             name: secret-immich-db-user
             key: DATABASE_NAME
-      REDIS_HOSTNAME:
-        valueFrom:
-          secretKeyRef:
-            name: immich-secret
-            key: REDIS_HOSTNAME
+      REDIS_HOSTNAME: dragonfly.database.svc.cluster.local
       REDIS_PASSWORD:
         valueFrom:
           secretKeyRef:
