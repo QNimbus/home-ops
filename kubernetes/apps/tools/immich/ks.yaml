@@ -11,10 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/common
     - ../../../../components/gatus/internal
-    # Disabled VolSync to use direct SMB photo library
-    # - ../../../../components/volsync
   wait: false
   prune: true
   interval: 1h
@@ -33,3 +30,5 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
+    - name: dragonfly-cluster
+      namespace: database
