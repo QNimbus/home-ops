@@ -6,9 +6,10 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
-  - ./resources/postgres.yaml
-  - ./resources/postgresuser.yaml
+  - ./resources/hpa.yaml
   - ./resources/ml-cache-pvc.yaml
   - ./resources/photo-library-pvc.yaml
+  - ./resources/postgres.yaml
+  - ./resources/postgresuser.yaml
 generatorOptions:
   disableNameSuffixHash: true
