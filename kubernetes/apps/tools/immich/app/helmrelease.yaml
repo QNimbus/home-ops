@@ -86,6 +86,16 @@ spec:
         limits:
           cpu: "4"
           memory: 4096Mi
+      # Add startup probe to allow more time for Redis connection
+      startupProbe:
+        httpGet:
+          path: /api/server-info/ping
+          port: 2283
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 12  # 2 minutes total (12 * 10s)
+        successThreshold: 1
       ingress:
         main:
           enabled: false
