@@ -72,6 +72,8 @@ spec:
           secretKeyRef:
             name: immich-secret
             key: REDIS_PASSWORD
+      REDIS_DBINDEX: 0
+      REDIS_BULL_PREFIX: '{immich-queue}'
       LOG_LEVEL: info
       TZ: Europe/Amsterdam
       MACHINE_LEARNING_PRELOAD__CLIP: "ViT-H-14-378-quickgelu__dfn5b"
