@@ -93,6 +93,11 @@ spec:
       tag: v1.142.0
 
     server:
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 3
+        targetCPUUtilizationPercentage: 60
       resources:
         requests:
           cpu: 500m
@@ -112,6 +117,11 @@ spec:
         limits:
           cpu: 3000m
           memory: 6144M
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 3
+        targetCPUUtilizationPercentage: 60
       persistence:
         cache:
           type: pvc
