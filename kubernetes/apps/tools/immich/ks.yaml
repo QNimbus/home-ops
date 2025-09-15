@@ -30,5 +30,3 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
-    - name: dragonfly-cluster
-      namespace: database
