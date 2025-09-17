@@ -5,8 +5,20 @@ kind: Kustomization
 namespace: &namespace flux-system
 resources:
   - ./app-template.yaml
+  - ./blackbox-exporter.yaml
+  - ./cert-manager.yaml
+  - ./coredns.yaml
   - ./csi-driver-nfs.yaml
+  - ./gha-runner-scale-set-controller.yaml
+  - ./gha-runner-scale-set.yaml
+  - ./grafana.yaml
+  - ./k8s-gateway.yaml
   - ./keda.yaml
+  - ./kube-prometheus-stack.yaml
+  - ./loki.yaml
   - ./openebs.yaml
-  - ./volsync.yaml
+  - ./reloader.yaml
   - ./snapshot-controller.yaml
+  - ./spegel.yaml
+  - ./tailscale-operator.yaml
+  - ./volsync.yaml

@@ -1,0 +1,11 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: k8s-gateway
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: oci://ghcr.io/k8s-gateway/charts/k8s-gateway
+  ref:
+    semver: ">=2.0.0"
