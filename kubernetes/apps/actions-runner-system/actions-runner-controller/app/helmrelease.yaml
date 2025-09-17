@@ -23,6 +23,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: gha-runner-scale-set-controller
+    namespace: flux-system
   install:
     crds: CreateReplace
     remediation:

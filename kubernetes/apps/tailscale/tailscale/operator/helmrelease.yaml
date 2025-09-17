@@ -23,6 +23,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: tailscale-operator
+    namespace: flux-system
   install:
     crds: CreateReplace
     remediation:

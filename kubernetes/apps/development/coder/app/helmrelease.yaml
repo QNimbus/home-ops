@@ -13,6 +13,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: coder
+        namespace: flux-system
   install:
     remediation:
       retries: -1

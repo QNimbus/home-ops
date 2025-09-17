@@ -9,6 +9,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: loki
+    namespace: flux-system
   install:
     crds: Skip
     remediation:
