@@ -3,13 +3,15 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: snapshot-controller
-  namespace: flux-system
+  name: csi-driver-nfs
+  namespace: &namespace flux-system
 spec:
   interval: 1h
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 4.1.0
-  url: oci://ghcr.io/piraeusdatastore/helm-charts/snapshot-controller
+    tag: 4.11.0
+  url: oci://ghcr.io/home-operations/charts-mirror/csi-driver-nfs
+  verify:
+    provider: cosign
