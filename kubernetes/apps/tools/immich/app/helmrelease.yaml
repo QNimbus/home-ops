@@ -70,7 +70,6 @@ spec:
           name: immich-secret
 
     image:
-      # renovate: datasource=github-releases depName=immich-app/immich
       tag: v1.142.0
 
     server:
