@@ -8,7 +8,6 @@ spec:
   interval: 1h
   chart:
     spec:
-      # renovate: registryUrl=https://charts.fairwinds.com/stable
       chart: goldilocks
       version: 10.1.0
       reconcileStrategy: ChartVersion
