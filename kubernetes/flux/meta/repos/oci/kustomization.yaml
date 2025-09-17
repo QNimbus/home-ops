@@ -6,7 +6,6 @@ namespace: &namespace flux-system
 resources:
   - ./app-template.yaml
   - ./blackbox-exporter.yaml
-  - ./cert-manager.yaml
   - ./coredns.yaml
   - ./csi-driver-nfs.yaml
   - ./gha-runner-scale-set-controller.yaml

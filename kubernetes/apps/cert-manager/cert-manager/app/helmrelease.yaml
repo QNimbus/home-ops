@@ -23,7 +23,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: cert-manager
-    namespace: flux-system
   install:
     remediation:
       retries: -1
