@@ -15,6 +15,7 @@ resources:
   - ./fairwinds.yaml
   - ./goauthentik.yaml
   - ./immich.yaml
+  - ./jetstack.yaml
   - ./longhorn.yaml
   - ./metrics-server.yaml
   - ./onepassword.yaml
