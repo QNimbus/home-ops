@@ -6,8 +6,8 @@
 # 1. Copy this file and rename it (e.g., restore-job-YYYYMMDD.yaml)
 # 2. Update the following fields:
 #    - metadata.name: Change to unique job name
-#    - Backup filename in the command section
-#    - Optionally change the target database if needed
+#    - BACKUP_FILE: Set the backup filename to restore from
+#    - SINGLE_DATABASE: Set to a database name to restore only that database, or leave empty for full cluster restore
 # 3. Apply with: kubectl apply -f restore-job-YYYYMMDD.yaml
 # 4. Monitor with: kubectl logs -f job/JOB_NAME -n database
 #
@@ -34,7 +34,14 @@ spec:
         - -c
         - |
           set -e
-          BACKUP_FILE="daily/postgres-YYYYMMDD.sql.gz"  # UPDATE THIS
+
+          # Configuration - UPDATE THESE VALUES
+          BACKUP_FILE="daily/postgres-YYYYMMDD.sql.gz"  # UPDATE THIS: Path to backup file
+          SINGLE_DATABASE=""                            # UPDATE THIS: Set to database name for single DB restore, empty for full restore
+
+          # Set PostgreSQL password environment variable for authentication
+          export PGPASSWORD="$POSTGRES_PASSWORD"
+
           echo "Starting PostgreSQL restore from backup: $BACKUP_FILE"
           echo "Full path: /mnt/backups/$BACKUP_FILE"
 
@@ -55,8 +62,37 @@ spec:
           echo "PostgreSQL is ready, starting restore..."
           echo "This will overwrite all data in the target database!"
 
-          # Extract and restore the backup (let backup handle database switching)
-          gunzip -c "/mnt/backups/$BACKUP_FILE" | psql -h postgres-v17-rw.database.svc.cluster.local -U $POSTGRES_USER
+          # Determine restore method based on SINGLE_DATABASE setting
+          if [ -n "$SINGLE_DATABASE" ]; then
+            echo "=== SINGLE DATABASE RESTORE MODE ==="
+            echo "Restoring only database: $SINGLE_DATABASE"
+            echo ""
+
+            # Check if target database exists
+            DB_EXISTS=$(psql -h postgres-v17-rw.database.svc.cluster.local -p 5432 -U $POSTGRES_USER -d postgres -t -c "SELECT 1 FROM pg_database WHERE datname='$SINGLE_DATABASE';" | xargs)
+
+            if [ "$DB_EXISTS" != "1" ]; then
+              echo "Target database '$SINGLE_DATABASE' does not exist. Creating it..."
+              psql -h postgres-v17-rw.database.svc.cluster.local -p 5432 -U $POSTGRES_USER -d postgres -c "CREATE DATABASE \"$SINGLE_DATABASE\";"
+            else
+              echo "Target database '$SINGLE_DATABASE' exists, will be overwritten."
+            fi
+
+            echo "Extracting and filtering backup for database: $SINGLE_DATABASE"
+            # Extract full backup and filter for specific database, then restore
+            gunzip -c "/mnt/backups/$BACKUP_FILE" | \
+            sed -n "/\\\\connect $SINGLE_DATABASE/,/\\\\connect [^$SINGLE_DATABASE]/p" | \
+            sed '$d' | \
+            psql -h postgres-v17-rw.database.svc.cluster.local -p 5432 -U $POSTGRES_USER -d "$SINGLE_DATABASE"
+
+          else
+            echo "=== FULL CLUSTER RESTORE MODE ==="
+            echo "Restoring entire cluster from backup"
+            echo ""
+
+            # Extract and restore the full backup (pg_dumpall handles all databases)
+            gunzip -c "/mnt/backups/$BACKUP_FILE" | psql -h postgres-v17-rw.database.svc.cluster.local -p 5432 -U $POSTGRES_USER -d postgres
+          fi
 
           echo "Restore completed successfully!"
         envFrom:

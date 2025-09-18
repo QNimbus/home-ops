@@ -46,12 +46,12 @@ spec:
             command: ["/backup.sh"]
             env:
               BACKUP_DIR: "/mnt/backups"
-              BACKUP_KEEP_DAYS: "7"
+              BACKUP_KEEP_DAYS: "10"
               BACKUP_KEEP_MINS: "7200"
               BACKUP_KEEP_MONTHS: "6"
               BACKUP_KEEP_WEEKS: "4"
               BACKUP_LATEST_TYPE: "symlink"
-              POSTGRES_EXTRA_OPTS: "-b -C -c -Z6"
+              POSTGRES_EXTRA_OPTS: "-c"
               POSTGRES_CLUSTER: "TRUE"
               POSTGRES_HOST: "${DB_SERVER}"
               SCHEDULE: *cronSchedule # e.g. "@daily" - not strictly required since we run the backup.sh script manually
