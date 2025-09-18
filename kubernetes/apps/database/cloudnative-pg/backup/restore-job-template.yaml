@@ -1,0 +1,75 @@
+---
+# PostgreSQL Restore Job Template
+# This is a reusable template for restoring PostgreSQL backups
+#
+# Instructions:
+# 1. Copy this file and rename it (e.g., restore-job-YYYYMMDD.yaml)
+# 2. Update the following fields:
+#    - metadata.name: Change to unique job name
+#    - Backup filename in the command section
+#    - Optionally change the target database if needed
+# 3. Apply with: kubectl apply -f restore-job-YYYYMMDD.yaml
+# 4. Monitor with: kubectl logs -f job/JOB_NAME -n database
+#
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-restore-YYYYMMDD  # UPDATE THIS
+  namespace: database
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 4000
+        runAsGroup: 4000
+        runAsNonRoot: true
+        fsGroup: 4000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+      - name: postgres-restore
+        image: postgres:17
+        command: ["/bin/bash"]
+        args:
+        - -c
+        - |
+          set -e
+          BACKUP_FILE="daily/postgres-YYYYMMDD.sql.gz"  # UPDATE THIS
+          echo "Starting PostgreSQL restore from backup: $BACKUP_FILE"
+          echo "Full path: /mnt/backups/$BACKUP_FILE"
+
+          # Verify backup file exists
+          if [ ! -f "/mnt/backups/$BACKUP_FILE" ]; then
+            echo "ERROR: Backup file not found: /mnt/backups/$BACKUP_FILE"
+            echo "Available daily backups:"
+            ls -la /mnt/backups/daily/
+            exit 1
+          fi
+
+          # Wait for PostgreSQL to be ready
+          until pg_isready -h postgres-v17-rw.database.svc.cluster.local -p 5432 -U $POSTGRES_USER; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 5
+          done
+
+          echo "PostgreSQL is ready, starting restore..."
+          echo "This will overwrite all data in the target database!"
+
+          # Extract and restore the backup (let backup handle database switching)
+          gunzip -c "/mnt/backups/$BACKUP_FILE" | psql -h postgres-v17-rw.database.svc.cluster.local -U $POSTGRES_USER
+
+          echo "Restore completed successfully!"
+        envFrom:
+        - secretRef:
+            name: cloudnative-pg-backup-secret
+        volumeMounts:
+        - name: backups
+          mountPath: /mnt/backups
+          subPath: Database
+      volumes:
+      - name: backups
+        nfs:
+          server: truenas.lan.home.vwn.io
+          path: /mnt/vault/cluster/cloudnative-pg
+      activeDeadlineSeconds: 1800  # 30 minutes timeout
+  backoffLimit: 3
