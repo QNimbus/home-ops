@@ -146,15 +146,15 @@ function auto_scale_workloads() {
 
                     if kubectl scale "${deployment}" -n "${target_namespace}" --replicas="${min_replicas}"; then
                         log info "Deployment scaled successfully" "name=${deployment_name}" "replicas=${min_replicas}"
-
-                        # Remove the original-replicas annotation after successful scaling
-                        kubectl annotate "${deployment}" -n "${target_namespace}" "app.vwn/original-replicas-" || true
                     else
                         log warn "Failed to scale deployment" "name=${deployment_name}"
                     fi
                 else
                     log info "Deployment already scaled" "name=${deployment_name}" "replicas=${current_replicas}"
                 fi
+
+                # Always remove the original-replicas annotation when auto-scaling runs
+                kubectl annotate "${deployment}" -n "${target_namespace}" "app.vwn/original-replicas-" 2>/dev/null || true
             fi
         done <<< "${deployments}"
     fi
@@ -178,15 +178,15 @@ function auto_scale_workloads() {
 
                     if kubectl scale "${statefulset}" -n "${target_namespace}" --replicas="${min_replicas}"; then
                         log info "StatefulSet scaled successfully" "name=${sts_name}" "replicas=${min_replicas}"
-
-                        # Remove the original-replicas annotation after successful scaling
-                        kubectl annotate "${statefulset}" -n "${target_namespace}" "app.vwn/original-replicas-" || true
                     else
                         log warn "Failed to scale statefulset" "name=${sts_name}"
                     fi
                 else
                     log info "StatefulSet already scaled" "name=${sts_name}" "replicas=${current_replicas}"
                 fi
+
+                # Always remove the original-replicas annotation when auto-scaling runs
+                kubectl annotate "${statefulset}" -n "${target_namespace}" "app.vwn/original-replicas-" 2>/dev/null || true
             fi
         done <<< "${statefulsets}"
     fi
