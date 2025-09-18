@@ -37,6 +37,8 @@ spec:
       namespace: external-secrets
     - name: cloudnative-pg-cluster
       namespace: database
+    - name: ext-postgres-operator
+      namespace: database
     - name: volsync
       namespace: volsync-system
     - name: persistence-smb-volumes
