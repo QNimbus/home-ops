@@ -7,7 +7,6 @@ metadata:
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:17.5-standard-bookworm
-  imagePullPolicy: Always
   primaryUpdateStrategy: unsupervised
   replicationSlots:
     highAvailability:
@@ -54,7 +53,7 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: &barmanObjectName cloudnative-pg-storj
-        serverName: *clusterName
+        serverName: "${CNPG_CURRENT_CLUSTER}"
 
   ## --- DISASTER RECOVERY & INITIAL BOOTSTRAP CONFIGURATION ---
   ## This section controls how the cluster is created. There are two mutually exclusive options:
@@ -89,8 +88,10 @@ spec:
     #     name: cloudnative-pg-bootstrap-secret
 
     # --- Option 2: Recover from an existing S3 backup (use for disaster recovery) ---
+    # Recovers from the latest S3 backup (after changing `serverName` in `ks.yaml`)
     # recovery:
     #   source: &previousCluster postgres-v17-backup # Internal reference, matches 'externalClusters.name'
+
 
   # externalClusters:
   #   - name: *previousCluster # Internal reference, matches 'bootstrap.recovery.source'
@@ -99,4 +100,4 @@ spec:
   #       parameters:
   #         barmanObjectName: *barmanObjectName
   #         # This MUST point to the S3 directory containing the backups.
-  #         serverName: *clusterName
+  #         serverName: "${CNPG_PREVIOUS_CLUSTER}"
