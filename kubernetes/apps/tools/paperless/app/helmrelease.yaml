@@ -25,20 +25,33 @@ spec:
       paperless:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/home-operations/postgres-init
-              tag: 17.5.0@sha256:e0c87ce7df39d06b93f27cf2cc6a056611f13faaa88cc07ab4dc8bf7a85d0b11
-            envFrom: &envFrom
-              - secretRef:
-                  name: paperless-secret
         containers:
           app:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
               tag: 2.18.3@sha256:6dbe57d8198fa117158ba9e867e2d45280b65e9c37ea54c1df7b34c4085a564c
             env:
+              # Database configuration from ext-postgres-operator generated secret
+              PAPERLESS_DBHOST:
+                valueFrom:
+                  secretKeyRef:
+                    name: secret-paperless-db-user
+                    key: HOST
+              PAPERLESS_DBUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: secret-paperless-db-user
+                    key: LOGIN
+              PAPERLESS_DBPASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: secret-paperless-db-user
+                    key: PASSWORD
+              PAPERLESS_DBNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: secret-paperless-db-user
+                    key: DATABASE_NAME
               # OIDC integration
               PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
               PAPERLESS_DISABLE_REGULAR_LOGIN: "false"
@@ -57,8 +70,6 @@ spec:
               # Configure OCR
               PAPERLESS_OCR_LANGUAGE: nld+eng
               PAPERLESS_OCR_LANGUAGES: nld
-              # Configure database
-              PAPERLESS_DBHOST: "${DB_SERVER}"
               # Configure Tika
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
@@ -68,7 +79,9 @@ spec:
               S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
               S6_READ_ONLY_ROOT: "1"
               S6_VERBOSITY: "2"
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: paperless-secret
             probes:
               liveness: &probes
                 enabled: true

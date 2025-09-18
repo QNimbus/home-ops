@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/db.movetokube.com/postgres_v1alpha1.json
+apiVersion: db.movetokube.com/v1alpha1
+kind: Postgres
+metadata:
+  name: paperless
+  namespace: tools
+spec:
+  database: paperless  # Name of database created in PostgreSQL
+  dropOnDelete: false  # Don't drop database when this CR is deleted
+  schemas: []          # No custom schemas needed for Paperless
+  extensions: []       # No special extensions required for Paperless

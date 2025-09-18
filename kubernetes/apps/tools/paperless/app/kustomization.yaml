@@ -8,3 +8,5 @@ resources:
   - ./helmrelease-tika.yaml
   - ./helmrelease.yaml
   - ./tailscale-ingress.yaml
+  - ./resources/postgres.yaml
+  - ./resources/postgresuser.yaml
