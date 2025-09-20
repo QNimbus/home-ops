@@ -85,15 +85,23 @@ global:
     - name: config
       persistentVolumeClaim:
         claimName: authentik-config
+    - name: custom-assets
+      configMap:
+        name: authentik-custom-assets
+    - name: custom-templates
+      configMap:
+        name: authentik-custom-templates
 
   # -- Additional volumeMounts to all deployed Deployments.
   volumeMounts: &volumeMounts
     - name: config
       mountPath: /media
       subPath: media
-    - name: config
-      mountPath: /templates
-      subPath: templates
+    - name: custom-assets
+      mountPath: /web/dist/custom.css
+      subPath: custom.css
+    - name: custom-templates
+      mountPath: /template
 
 # -- Authentik configuration
 authentik:
@@ -211,15 +219,9 @@ server:
   # -- Init containers to add to the authentik server pod
   # initContainers: []
   # -- Additional volumeMounts to the authentik server main container
-  volumeMounts:
-    - name: custom-assets
-      mountPath: /web/dist/custom.css
-      subPath: custom.css
+  volumeMounts: []
   # -- Additional volumes to the authentik server pod
-  volumes:
-    - name: custom-assets
-      configMap:
-        name: authentik-custom-assets
+  volumes: []
   # -- Annotations to be added to the authentik server Deployment
   # deploymentAnnotations: {}
   # -- Annotations to be added to the authentik server pods
@@ -428,9 +430,9 @@ worker:
   # -- Init containers to add to the authentik worker pod
   # initContainers: []
   # -- Additional volumeMounts to the authentik worker main container
-  # volumeMounts: []
+  volumeMounts: []
   # -- Additional volumes to the authentik worker pod
-  # volumes: []
+  volumes: []
   # -- Annotations to be added to the authentik worker Deployment
   # deploymentAnnotations: {}
   # -- Annotations to be added to the authentik worker pods
@@ -627,6 +629,8 @@ geoip:
 
   # -- Additional volumeMounts to the GeoIP containers.
   volumeMounts: []
+  # -- Additional volumes to the GeoIP containers.
+  volumes: []
 
   # -- Resource limits and requests for GeoIP containers
   resources: {}

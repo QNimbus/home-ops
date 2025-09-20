@@ -8,12 +8,15 @@ resources:
   - ./resources/postgres.yaml
   - ./resources/postgresuser.yaml
 configMapGenerator:
-  - name: authentik-custom-assets
-    files:
-      - custom.css=./resources/custom.css
   - name: authentik-helm-values
     files:
       - values.yaml=./helm/values.yaml
+  - name: authentik-custom-assets
+    files:
+      - custom.css=./resources/assets/custom.css
+  - name: authentik-custom-templates
+    files:
+      - password-reset.html=./resources/templates/password-reset.html
 configurations:
   - ./helm/kustomize-config.yaml
 generatorOptions:
