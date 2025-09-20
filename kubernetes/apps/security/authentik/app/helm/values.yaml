@@ -91,6 +91,9 @@ global:
     - name: custom-templates
       configMap:
         name: authentik-custom-templates
+    - name: media-smb
+      persistentVolumeClaim:
+        claimName: authentik-media-smb
 
   # -- Additional volumeMounts to all deployed Deployments.
   volumeMounts: &volumeMounts
@@ -102,6 +105,8 @@ global:
       subPath: custom.css
     - name: custom-templates
       mountPath: /template
+    - name: media-smb
+      mountPath: /tmp
 
 # -- Authentik configuration
 authentik:

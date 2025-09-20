@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/master/persistentvolume.json
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: smb.csi.k8s.io
+  name: security-smb-authentik-media
+spec:
+  capacity:
+    storage: 10Gi  # Adjust based on your media files size
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: smb
+  mountOptions:
+    - noperm
+    - cache=strict
+  csi:
+    driver: smb.csi.k8s.io
+    # volumeHandle format: {smb-server-address}#{sub-dir-name}#{share-name}
+    # make sure this value is unique for every share in the cluster
+    volumeHandle: security-smb-authentik-media
+    volumeAttributes:
+      source: //${SMB_SERVER}/media/authentik  # Adjust path as needed
+    nodeStageSecretRef:
+      name: smb-credentials
+      namespace: kube-system
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/master/persistentvolumeclaim.json
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: authentik-media-smb
+  namespace: security
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: security-smb-authentik-media
+  storageClassName: smb
