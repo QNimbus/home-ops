@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup-inspector-20250916
+  namespace: database
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: inspector
+        image: alpine:latest
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "Installing gzip..."
+          apk add --no-cache gzip
+
+          echo "=== Backup file info for September 16th ==="
+          ls -la /mnt/backups/daily/postgres-20250916.sql.gz
+
+          echo "=== First 100 lines of September 16th backup ==="
+          gunzip -c /mnt/backups/daily/postgres-20250916.sql.gz | head -100
+
+          echo "=== Searching for CREATE DATABASE statements ==="
+          gunzip -c /mnt/backups/daily/postgres-20250916.sql.gz | grep -i "CREATE DATABASE" || echo "No CREATE DATABASE statements found"
+
+          echo "=== Searching for database connections ==="
+          gunzip -c /mnt/backups/daily/postgres-20250916.sql.gz | grep -i -E "(\\\\connect|\\\\c )" | head -10 || echo "No database connection commands found"
+
+          echo "=== Searching for database names in comments ==="
+          gunzip -c /mnt/backups/daily/postgres-20250916.sql.gz | grep -i -E "(database|schema)" | head -20 || echo "No database references found"
+        volumeMounts:
+        - name: backups
+          mountPath: /mnt/backups
+          subPath: Database
+      volumes:
+      - name: backups
+        nfs:
+          server: truenas.lan.home.vwn.io
+          path: /mnt/vault/cluster/cloudnative-pg
+      activeDeadlineSeconds: 300
+  backoffLimit: 1

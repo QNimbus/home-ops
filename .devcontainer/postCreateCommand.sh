@@ -23,6 +23,10 @@ sudo apt update && sudo apt install -y 1password-cli
 # Download and extract jujutsu
 curl -L https://github.com/jj-vcs/jj/releases/download/v0.29.0/jj-v0.29.0-x86_64-unknown-linux-musl.tar.gz | sudo tar xz -C /usr/local/bin
 
+# Download and install k8sgpt
+curl -LO https://github.com/k8sgpt-ai/k8sgpt/releases/download/v0.4.23/k8sgpt_amd64.deb
+sudo dpkg -i k8sgpt_amd64.deb
+
 # Install AWS CLI v2
 curl -L https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && unzip awscliv2.zip && sudo ./aws/install
 
@@ -45,3 +49,5 @@ source ~/.bashrc
 mise trust
 pip install pipx
 mise install
+
+mise activate

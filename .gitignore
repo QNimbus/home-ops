@@ -23,3 +23,4 @@ Thumbs.db
 .Trash*/
 1password-credentials.json
 __pycache__
+aws/*

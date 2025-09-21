@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 ---
-clusterName: kubernetes
+clusterName: &clusterName homelab
 
 talosVersion: "${talosVersion}"
 kubernetesVersion: "${kubernetesVersion}"
 
 endpoint: https://10.60.0.2:6443
 additionalApiServerCertSans: &sans
-  - "127.0.0.1"
-  - "10.60.0.2"
+  - 127.0.0.1
+  - kube-vip.talos.vwn.io
 additionalMachineCertSans: *sans
 
 clusterPodNets: ["10.42.0.0/16"]
@@ -19,12 +19,16 @@ cniConfig:
   name: none
 
 nodes:
-  - hostname: "talos-k8s-node-1"
-    ipAddress: "10.60.0.201"
-    installDisk: "/dev/sda"
+  - hostname: kube-node-01
+    ipAddress: 10.60.0.201
+    installDisk: /dev/sda
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
+    nodeLabels:
+      topology.kubernetes.io/zone: &zone home
+      topology.kubernetes.io/region: &region eu-west
+      intel.feature.node.kubernetes.io/gpu: "true"
     controlPlane: true
     userVolumes:
       - name: longhorn-storage
@@ -38,44 +42,54 @@ nodes:
           hardwareAddr: "bc:24:11:38:f7:2e"
         dhcp: false
         addresses:
-          - "10.60.0.201/24"
+          - 10.60.0.201/24
         routes:
-          - network: "0.0.0.0/0"
-            gateway: "10.60.0.1"
+          - network: 0.0.0.0/0
+            gateway: 10.60.0.1
         mtu: 1500
-  # - hostname: "talos-k8s-node-2"
-  #   ipAddress: "10.60.0.202"
-  #   installDisk: "/dev/sda"
-  #   machineSpec:
-  #     secureboot: false
-  #   talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
-  #   controlPlane: true
-  #   userVolumes:
-  #     - name: longhorn-storage
-  #       provisioning:
-  #         diskSelector:
-  #           match: disk.dev_path == '/dev/sdb'
-  #         minSize: 10GB
-  #         grow: true
-  #   networkInterfaces:
-  #     - deviceSelector:
-  #         hardwareAddr: "bc:24:11:17:e5:8f"
-  #       dhcp: false
-  #       addresses:
-  #         - "10.60.0.202/24"
-  #       routes:
-  #         - network: "0.0.0.0/0"
-  #           gateway: "10.60.0.1"
-  #       mtu: 1500
-  #       vip:
-  #         ip: "10.60.0.2"
-  - hostname: "talos-k8s-node-3"
-    ipAddress: "10.60.0.203"
-    installDisk: "/dev/sda"
+        vip:
+          ip: &controlplaneVip 10.60.0.2
+  - hostname: kube-node-02
+    ipAddress: 10.60.0.202
+    installDisk: /dev/sda
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
+    nodeLabels:
+      topology.kubernetes.io/zone: *zone
+      topology.kubernetes.io/region: *region
+      intel.feature.node.kubernetes.io/gpu: "true"
+    controlPlane: true
+    userVolumes:
+      - name: longhorn-storage
+        provisioning:
+          diskSelector:
+            match: disk.dev_path == '/dev/sdb'
+          minSize: 10GB
+          grow: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:17:e5:8f"
+        dhcp: false
+        addresses:
+          - 10.60.0.202/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.60.0.1
+        mtu: 1500
+        vip:
+          ip: *controlplaneVip
+  - hostname: kube-node-03
+    ipAddress: 10.60.0.203
+    installDisk: /dev/sda
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
     controlPlane: true
+    nodeLabels:
+      topology.kubernetes.io/zone: *zone
+      topology.kubernetes.io/region: *region
+      intel.feature.node.kubernetes.io/gpu: "false"
     userVolumes:
       - name: longhorn-storage
         provisioning:
@@ -88,39 +102,43 @@ nodes:
           hardwareAddr: "bc:24:11:9b:78:e8"
         dhcp: false
         addresses:
-          - "10.60.0.203/24"
+          - 10.60.0.203/24
         routes:
-          - network: "0.0.0.0/0"
-            gateway: "10.60.0.1"
+          - network: 0.0.0.0/0
+            gateway: 10.60.0.1
         mtu: 1500
         vip:
-          ip: "10.60.0.2"
-  - hostname: "talos-k8s-node-4"
-    ipAddress: "10.60.0.204"
-    installDisk: "/dev/sda"
-    machineSpec:
-      secureboot: false
-    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
-    controlPlane: true
-    userVolumes:
-      - name: longhorn-storage
-        provisioning:
-          diskSelector:
-            match: disk.dev_path == '/dev/sdb'
-          minSize: 10GB
-          grow: true
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:e6:54:fa"
-        dhcp: false
-        addresses:
-          - "10.60.0.204/24"
-        routes:
-          - network: "0.0.0.0/0"
-            gateway: "10.60.0.1"
-        mtu: 1500
-        vip:
-          ip: "10.60.0.2"
+          ip: *controlplaneVip
+  # - hostname: kube-node-04
+  #   ipAddress: 10.60.0.204
+  #   installDisk: /dev/sda
+  #   machineSpec:
+  #     secureboot: false
+  #   talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
+  #   controlPlane: true
+  #   nodeLabels:
+  #      topology.kubernetes.io/zone: *zone
+  #      topology.kubernetes.io/region: *region
+  #      intel.feature.node.kubernetes.io/gpu: "false"
+  #   userVolumes:
+  #     - name: longhorn-storage
+  #       provisioning:
+  #         diskSelector:
+  #           match: disk.dev_path == '/dev/sdb'
+  #         minSize: 10GB
+  #         grow: true
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "bc:24:11:e6:54:fa"
+  #       dhcp: false
+  #       addresses:
+  #         - 10.60.0.204/24
+  #       routes:
+  #         - network: 0.0.0.0/0
+  #           gateway: 10.60.0.1
+  #       mtu: 1500
+  #       vip:
+  #         ip: *controlplaneVip
 
 # Global patches
 patches:
@@ -134,7 +152,7 @@ patches:
 # Controller patches
 controlPlane:
   patches:
-    - "@./patches/controller/machine-features.yaml"
     - "@./patches/controller/admission-controller-patch.yaml"
+    - "@./patches/controller/machine-features.yaml"
     - "@./patches/controller/cluster.yaml"
 

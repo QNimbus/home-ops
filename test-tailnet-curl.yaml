@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-tailnet-curl
+  namespace: default
+  labels:
+    app: test-tailnet-curl
+spec:
+  restartPolicy: Never
+  hostAliases:
+  - ip: "100.86.111.29"
+    hostnames:
+    - "echo.buri-ray.ts.net"
+  containers:
+  - name: curl
+    image: curlimages/curl:latest
+    command: ["/bin/sh"]
+    args:
+      - -c
+      - |
+        echo "Testing Tailnet subrouting to 100.86.111.29"
+        echo "Host alias: echo.buri-ray.ts.net -> 100.86.111.29"
+        echo "===========================================\n"
+
+        echo "1. Testing HTTP connection to IP:"
+        curl -v -m 5 http://100.86.111.29 || echo "HTTP connection to IP failed"
+
+        echo -e "\n2. Testing HTTP connection to hostname:"
+        curl -v -m 5 http://echo.buri-ray.ts.net || echo "HTTP connection to hostname failed"
+
+        echo -e "\n3. Testing HTTPS connection to hostname:"
+        curl -v -m 5 -k https://echo.buri-ray.ts.net || echo "HTTPS connection to hostname failed"
+
+        echo -e "\n4. Testing basic connectivity (ping-like):"
+        curl -v -m 10 --connect-timeout 5 http://100.86.111.29 -o /dev/null -w "Connect time: %{time_connect}s, Total time: %{time_total}s\n" || echo "Basic connectivity test failed"
+
+        echo -e "\n5. Network debugging info:"
+        echo "Container IP: $(hostname -i)"
+        echo "Host file entries:"
+        cat /etc/hosts | grep -E "(echo\.buri-ray\.ts\.net|100\.86\.111\.29)"
+        echo "DNS resolution test for hostname:"
+        nslookup echo.buri-ray.ts.net || echo "DNS lookup failed"
+
+        echo -e "\nTest completed. Check logs above for results."
+        sleep 30
+  tolerations:
+  - operator: Exists

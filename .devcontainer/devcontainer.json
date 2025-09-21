@@ -26,7 +26,8 @@
                 "ms-python.python",
                 "ms-python.vscode-pylance",
                 "ms-python.black-formatter",
-                "charliermarsh.ruff"
+                "charliermarsh.ruff",
+                "weaveworks.vscode-gitops-tools"
             ],
             "settings": {
                 "files.insertFinalNewline": true,

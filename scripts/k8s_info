@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#This script fetches basic information about a Kubernetes cluster.
+
+#Get the cluster information
+echo "Cluster Information:"
+kubectl cluster-info
+
+#Get the nodes in the cluster
+echo -e "\nNodes:"
+kubectl get nodes
+
+# This script fetches information from a Kubernetes cluster to aid in debugging,
+# using modern, recommended commands.
+
+echo "############################################################"
+echo "####### Checking Core Control Plane Pods (kube-system) #####"
+echo "############################################################"
+# This is the modern replacement for 'kubectl get componentstatuses'
+kubectl get pods -n kube-system
+
+echo -e "\n############################################################"
+echo "################# API Server Health Endpoints ################"
+echo "############################################################"
+# Use the /readyz endpoint for a detailed health check of the API server
+kubectl get --raw='/readyz?verbose'
+
+echo -e "\n############################################################"
+echo "#################### Recent Cluster Events ###################"
+echo "############################################################"
+# Get the last 20 events from all namespaces, sorted by most recent
+kubectl get events --sort-by='.lastTimestamp' -A | tail -n 20
+
+echo -e "\n############################################################"
+echo "################# Deployed Resource & CRD Types ################"
+echo "############################################################"
+# List all available API resources
+kubectl api-resources
+
+echo -e "\n############################################################"
+echo "################# Pods with Potential Issues #################"
+echo "############################################################"
+# List all pods that are not in a 'Running' or 'Succeeded' state across all namespaces
+kubectl get pods -A --field-selector=status.phase!=Running,status.phase!=Succeeded
+
+echo -e "\n############################################################"
+echo "################ Persistent Volume Claim Status ##############"
+echo "############################################################"
+# List all persistent volume claims across all namespaces
+kubectl get pvc -A
+
+echo -e "\nScript finished. Review the output for non-running pods, recent error events, or unhealthy API server checks."

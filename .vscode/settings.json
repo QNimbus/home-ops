@@ -14,5 +14,7 @@
     "yaml.schemaStore.enable": true,
     "yaml.schemas": {
         "kubernetes": "./kubernetes/**/*.yaml"
-    }
+    },
+    "chat.mcp.autostart": "newAndOutdated",
+    "sops.binPath": "/home/vscode/.local/share/mise/installs/aqua-getsops-sops/3.10.2/sops"
 }

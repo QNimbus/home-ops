@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: temp-backup-browser
+  namespace: database
+spec:
+  restartPolicy: Never
+  containers:
+  - name: browser
+    image: alpine:latest
+    command: ["/bin/sh"]
+    args: ["-c", "apk add --no-cache coreutils && ls -la /mnt/backups/ && echo '--- Recent backups (last 10) ---' && ls -lt /mnt/backups/Database/ | head -10 && sleep 3600"]
+    volumeMounts:
+    - name: backups
+      mountPath: /mnt/backups
+  volumes:
+  - name: backups
+    nfs:
+      server: "${NFS_SERVER}"
+      path: "${CLOUDNATIVE_PG_BACKUP_PATH}"

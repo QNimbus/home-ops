@@ -3,3 +3,6 @@ kubernetes-talos-k8s-node-2.yaml
 kubernetes-talos-k8s-node-3.yaml
 kubernetes-talos-k8s-node-4.yaml
 talosconfig
+homelab-kube-node-01.yaml
+homelab-kube-node-02.yaml
+homelab-kube-node-03.yaml
