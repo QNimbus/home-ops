@@ -31,9 +31,10 @@ global:
   # -- Annotations for all deployed Deployments
   # deploymentAnnotations: {}
   # -- Annotations for all deployed pods
-  podAnnotations: &podAnnotations
-    # -- Automatically reload pods when the specified secret changes.
-    reloader.stakater.com/reload: &secret authentik-secrets
+  podAnnotations: {}
+    # -- Automatically reload pods when ConfigMaps or Secrets change
+    # reloader.stakater.com/reload: &secret authentik-secrets
+    # reloader.stakater.com/auto: "true"
   # -- Annotations for all deployed secrets
   # secretAnnotations: {}
   # -- Labels for all deployed pods
@@ -76,37 +77,21 @@ global:
   # -- envFrom to pass to all deployed Deployments.
   envFrom:
     - secretRef:
-        name: *secret
+        name: &secret authentik-secrets
     - secretRef:
         name: secret-authentik-db-user
 
   # -- Additional volumes to all deployed Deployments.
-  volumes: &volumes
+  volumes:
     - name: config
       persistentVolumeClaim:
         claimName: authentik-config
-    - name: custom-assets
-      configMap:
-        name: authentik-custom-assets
-    - name: custom-templates
-      configMap:
-        name: authentik-custom-templates
-    - name: media-smb
-      persistentVolumeClaim:
-        claimName: authentik-media-smb
 
   # -- Additional volumeMounts to all deployed Deployments.
-  volumeMounts: &volumeMounts
+  volumeMounts:
     - name: config
       mountPath: /media
       subPath: media
-    - name: custom-assets
-      mountPath: /web/dist/custom.css
-      subPath: custom.css
-    - name: custom-templates
-      mountPath: /template
-    - name: media-smb
-      mountPath: /tmp
 
 # -- Authentik configuration
 authentik:
@@ -223,14 +208,34 @@ server:
   # extraContainers: []
   # -- Init containers to add to the authentik server pod
   # initContainers: []
-  # -- Additional volumeMounts to the authentik server main container
-  volumeMounts: []
   # -- Additional volumes to the authentik server pod
-  volumes: []
+  volumes:
+    - name: custom-assets
+      configMap:
+        name: authentik-custom-assets
+    - name: custom-templates
+      configMap:
+        name: authentik-custom-templates
+    - name: media-smb
+      persistentVolumeClaim:
+        claimName: authentik-media-smb
+  # -- Additional volumeMounts to the authentik server main container
+  volumeMounts:
+    - name: custom-assets
+      mountPath: /static/dist/custom.css     # <- new path used by current builds
+      subPath: custom.css
+    - name: custom-assets
+      mountPath: /web/dist/custom.css        # <- legacy path (harmless to keep)
+      subPath: custom.css
+    - name: custom-templates
+      mountPath: /template
+    - name: media-smb
+      mountPath: /tmp
   # -- Annotations to be added to the authentik server Deployment
   # deploymentAnnotations: {}
   # -- Annotations to be added to the authentik server pods
-  # podAnnotations: {}
+  podAnnotations:
+    reloader.stakater.com/auto: "true"
   # -- Labels to be added to the authentik server pods
   # podLabels: {}
   # -- Resource limits and requests for the authentik server
