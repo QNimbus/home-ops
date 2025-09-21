@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       cloudflare-tunnel:
+        replicas: 2
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -27,13 +28,15 @@ spec:
           app:
             image:
               repository: docker.io/cloudflare/cloudflared
-              tag: 2025.9.0
+              tag: 2025.9.0@sha256:f9af3635e01536d28ca54186d3b945ed6ae494246e9b7045dedfa5a3747d4ccc
             env:
-              NO_AUTOUPDATE: true
+              # See: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/cloudflared-parameters/run-parameters/
+              NO_AUTOUPDATE: "true"
               TUNNEL_METRICS: 0.0.0.0:8080
-              TUNNEL_ORIGIN_ENABLE_HTTP2: true
-              TUNNEL_POST_QUANTUM: true
-              TUNNEL_TRANSPORT_PROTOCOL: quic
+              TUNNEL_ORIGIN_ENABLE_HTTP2: "true"
+              TUNNEL_TRANSPORT_PROTOCOL: http2
+              # TUNNEL_POST_QUANTUM: true
+              # TUNNEL_TRANSPORT_PROTOCOL: quic
             envFrom:
               - secretRef:
                   name: cloudflare-tunnel-secret
@@ -51,17 +54,15 @@ spec:
                   timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 100M
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
-            resources:
-              requests:
-                cpu: 10m
-                memory: 37M
-              limits:
-                cpu: 11m
-                memory: 100M
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -76,6 +77,10 @@ spec:
       app:
         endpoints:
           - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 30s
     persistence:
       config-file:
         type: configMap
