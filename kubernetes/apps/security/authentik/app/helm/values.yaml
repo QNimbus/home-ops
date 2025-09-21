@@ -210,27 +210,18 @@ server:
   # initContainers: []
   # -- Additional volumes to the authentik server pod
   volumes:
-    - name: custom-assets
-      configMap:
-        name: authentik-custom-assets
     - name: custom-templates
       configMap:
         name: authentik-custom-templates
-    - name: media-smb
-      persistentVolumeClaim:
-        claimName: authentik-media-smb
+    # - name: media-smb
+    #   persistentVolumeClaim:
+    #     claimName: authentik-media-smb
   # -- Additional volumeMounts to the authentik server main container
   volumeMounts:
-    - name: custom-assets
-      mountPath: /static/dist/custom.css     # <- new path used by current builds
-      subPath: custom.css
-    - name: custom-assets
-      mountPath: /web/dist/custom.css        # <- legacy path (harmless to keep)
-      subPath: custom.css
     - name: custom-templates
       mountPath: /template
-    - name: media-smb
-      mountPath: /tmp
+    # - name: media-smb
+    #   mountPath: /tmp
   # -- Annotations to be added to the authentik server Deployment
   # deploymentAnnotations: {}
   # -- Annotations to be added to the authentik server pods
@@ -361,28 +352,16 @@ server:
     externalTrafficPolicy: ""
     sessionAffinity: ""
     sessionAffinityConfig: {}
-  # -- authentik server metrics service configuration
+  # -- deprecated: authentik server metrics service configuration
+  # (see: https://docs.goauthentik.io/releases/2025.8/#prometheus-metrics)
+  # Metrics configuration for the authentik server. The upstream chart
+  # templates expect an object with an `enabled` field (boolean). In this
+  # file this was a YAML list (`[]`) which makes Helm treat it as an
+  # interface{} and causes `.Values.server.metrics.enabled` to fail with
+  # "can't evaluate field enabled in type interface {}". Replace with an
+  # object that provides the expected structure.
   metrics:
-    enabled: true  # Enable metrics service
-    service:
-      type: ClusterIP
-      clusterIP: ""
-      annotations: {}
-      labels: {}
-      servicePort: 9300
-      portName: metrics
-    serviceMonitor:
-      enabled: true  # Enable ServiceMonitor resource
-      interval: 1m
-      scrapeTimeout: 3s
-      relabelings: []
-      metricRelabelings: []
-      selector: {}
-      scheme: ""
-      tlsConfig: {}
-      namespace: ""
-      labels: {}
-      annotations: {}
+    enabled: false
   # -- Ingress configuration
   # ingress:
   #   enabled: false
@@ -413,7 +392,27 @@ worker:
   #   targetCPUUtilizationPercentage: 50
   #   targetMemoryUtilizationPercentage: ~
   #   behavior: {}
-  #   metrics: []
+  metrics:
+    enabled: true  # Enable metrics service
+    service:
+      type: ClusterIP
+      clusterIP: ""
+      annotations: {}
+      labels: {}
+      servicePort: 9300
+      portName: metrics
+    serviceMonitor:
+      enabled: true  # Enable ServiceMonitor resource
+      interval: 1m
+      scrapeTimeout: 3s
+      relabelings: []
+      metricRelabelings: []
+      selector: {}
+      scheme: ""
+      tlsConfig: {}
+      namespace: ""
+      labels: {}
+      annotations: {}
   # -- Pod Disruption Budget configuration
   # pdb:
   #   enabled: false
