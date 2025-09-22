@@ -15,3 +15,4 @@ data:
     # Reserved IPs for LoadBalancer services
   LB_IP_POSTGRES: 10.60.0.11
   LB_IP_CODER: 10.60.0.12
+  LB_IP_SMTP: 10.60.0.13
