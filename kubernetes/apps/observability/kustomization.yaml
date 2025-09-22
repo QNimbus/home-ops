@@ -8,9 +8,9 @@ components:
 resources:
   - ./blackbox-exporter/ks.yaml
   - ./gatus/ks.yaml
-  - ./goldilocks/ks.yaml
+  # - ./goldilocks/ks.yaml
   - ./grafana/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./loki/ks.yaml
-  - ./robusta/ks.yaml
+  # - ./robusta/ks.yaml
   # - ./uptime-kuma-webhook-relay

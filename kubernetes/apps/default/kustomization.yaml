@@ -8,4 +8,4 @@ components:
 resources:
   - ./echo/ks.yaml
   - ./whoami/ks.yaml
-  - ./mealie/ks.yaml
+  # - ./mealie/ks.yaml

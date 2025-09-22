@@ -8,11 +8,11 @@ components:
 resources:
   - ./homepage/ks.yaml
   - ./immich/ks.yaml
-  - ./it-tools/ks.yaml
-  - ./n8n/ks.yaml
+  # - ./it-tools/ks.yaml
+  # - ./n8n/ks.yaml
   - ./pairdrop/ks.yaml
   - ./paperless/ks.yaml
   - ./pgadmin/ks.yaml
-  - ./privatebin/ks.yaml
+  # - ./privatebin/ks.yaml
   - ./searxng/ks.yaml
   - ./persistence/ks.yaml
