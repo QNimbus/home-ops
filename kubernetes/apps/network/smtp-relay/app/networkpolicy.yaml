@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.28.0-standalone-strict/networkpolicy-networking-v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smtp-relay-ingress
+  labels:
+    app.kubernetes.io/name: smtp-relay
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smtp-relay
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow SMTP traffic from your LAN
+    - from:
+        - ipBlock:
+            cidr: 10.30.0.0/24  # Your LAN subnet
+      ports:
+        - protocol: TCP
+          port: 25
+    # Allow SMTP from namespaces with specific labels
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              smtp-relay-access: "true"  # Any namespace labeled for SMTP access
+      ports:
+        - protocol: TCP
+          port: 25
+    # Allow metrics scraping from monitoring namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+      ports:
+        - protocol: TCP
+          port: 25
+        - protocol: TCP
+          port: 8080
+    # Allow health checks from kube-system (for load balancer health checks)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 25
+        - protocol: TCP
+          port: 8080
