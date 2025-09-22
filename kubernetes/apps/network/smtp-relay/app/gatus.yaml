@@ -2,19 +2,19 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: smtp-relay-gatus-ep
+  name: smtp-relay-gatus-endpoint
   labels:
     gatus.io/enabled: "true"
 data:
   config.yaml: |
     endpoints:
-      - name: smtp-relay
-        group: infrastructure
-        url: tcp://smtp-relay.networking.svc.cluster.local:2525
+      - name: SMTP Relay
+        group: Infrastructure Services
+        url: tcp://smtp-relay.network.svc.cluster.local:25
         interval: 1m
         ui:
-          hide-url: true
-          hide-hostname: true
+          hide-hostname: false
+          hide-url: false
         conditions:
           - "[CONNECTED] == true"
         alerts:
