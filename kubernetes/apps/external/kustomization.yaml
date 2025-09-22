@@ -10,4 +10,5 @@ resources:
   - ./kvm-pve2/ks.yaml
   - ./kvm-pve4/ks.yaml
   - ./nas/ks.yaml
+  - ./printer/ks.yaml
   - ./proxmox-ve/ks.yaml
