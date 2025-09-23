@@ -6,8 +6,8 @@ namespace: tools
 components:
   - ../../components/common
 resources:
-  - ./homepage/ks.yaml
-  - ./immich/ks.yaml
+  # - ./homepage/ks.yaml
+  # - ./immich/ks.yaml
   # - ./it-tools/ks.yaml
   # - ./n8n/ks.yaml
   - ./pairdrop/ks.yaml
