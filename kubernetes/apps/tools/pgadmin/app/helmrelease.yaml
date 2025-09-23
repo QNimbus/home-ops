@@ -149,14 +149,18 @@ spec:
               - path: /pgadmin4/servers.json
                 subPath: servers.json
       backups:
-        type: nfs
-        server: "${NFS_SERVER}"
-        path: /mnt/vault/cluster/backup
-        advancedMounts:
-          *app :
-            app:
-              - path: /mnt/backups
-                subPath: apps/pgadmin
+        existingClaim: smb-backups
+        globalMounts:
+          - path: /mnt/backups
+            subPath: apps/pgadmin
+        # type: nfs
+        # server: "${NFS_SERVER}"
+        # path: /mnt/vault/cluster/backup
+        # advancedMounts:
+        #   *app :
+        #     app:
+        #       - path: /mnt/backups
+        #         subPath: apps/pgadmin
       tmpfs:
         type: emptyDir
         advancedMounts:

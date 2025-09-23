@@ -38,3 +38,5 @@ spec:
       namespace: database
     - name: volsync
       namespace: volsync-system
+    - name: persistence-smb-volumes
+      namespace: tools
