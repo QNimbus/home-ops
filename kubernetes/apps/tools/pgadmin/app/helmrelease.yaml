@@ -39,6 +39,11 @@ spec:
                     echo "Creating user folder $user_folder"
                     mkdir -p "$user_folder"
 
+                    # Make a friendly link to the SMB backup share so it shows in pgAdmin's file browser
+                    if [ ! -e "$user_folder/backups" ]; then
+                      ln -s /mnt/backups "$user_folder/backups"
+                    fi
+
                     if [ -f /tmp/secrets/pgpass ]; then
                       echo "Copying /tmp/secrets/pgpass file to $user_folder/.pgpass"
                       cp /tmp/secrets/pgpass "$user_folder/.pgpass"
@@ -150,17 +155,14 @@ spec:
                 subPath: servers.json
       backups:
         existingClaim: smb-backups
-        globalMounts:
-          - path: /mnt/backups
-            subPath: apps/pgadmin
-        # type: nfs
-        # server: "${NFS_SERVER}"
-        # path: /mnt/vault/cluster/backup
-        # advancedMounts:
-        #   *app :
-        #     app:
-        #       - path: /mnt/backups
-        #         subPath: apps/pgadmin
+        advancedMounts:
+          *app :
+            init-config:
+              - path: /mnt/backups
+                subPath: apps/pgadmin
+            app:
+              - path: /mnt/backups
+                subPath: apps/pgadmin
       tmpfs:
         type: emptyDir
         advancedMounts:
