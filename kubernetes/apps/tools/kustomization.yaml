@@ -13,6 +13,5 @@ resources:
   - ./pairdrop/ks.yaml
   - ./paperless/ks.yaml
   - ./pgadmin/ks.yaml
-  # - ./privatebin/ks.yaml
   - ./searxng/ks.yaml
   - ./persistence/ks.yaml
