@@ -10,6 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/internal
   wait: false
   prune: true
   interval: 1h
@@ -19,6 +21,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_NAME: Coder
+      GATUS_SUBDOMAIN: coder
   sourceRef:
     kind: GitRepository
     name: flux-system
