@@ -47,8 +47,14 @@ spec:
           value: '{"Administrators":["owner"]}'
         - name: CODER_OIDC_SCOPES
           value: "openid,profile,email,groups,offline_access"
+        - name: CODER_OIDC_ALLOW_SIGNUPS
+          value: "false"
 
         # --- Other Settings from your config ---
+        - name: CODER_SECURE_AUTH_COOKIE
+          value: "true"
+        - name: CODER_DISABLE_SESSION_EXPIRY_REFRESH
+          value: "true"
         - name: CODER_BLOCK_DIRECT
           value: "true"
         - name: CODER_DERP_SERVER_STUN_ADDRESSES
