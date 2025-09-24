@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/db.movetokube.com/postgres_v1alpha1.json
+apiVersion: db.movetokube.com/v1alpha1
+kind: Postgres
+metadata:
+  name: coder
+  namespace: development
+spec:
+  database: coder
+  dropOnDelete: false
+  schemas: []
+  extensions: []

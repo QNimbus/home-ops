@@ -6,6 +6,8 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
+  - ./resources/postgres.yaml
+  - ./resources/postgresuser.yaml
   - ./rbac.yaml
   - ./servicemonitor.yaml
   - ./rules
