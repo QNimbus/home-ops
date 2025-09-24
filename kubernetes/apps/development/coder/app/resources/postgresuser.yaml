@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/db.movetokube.com/postgresuser_v1alpha1.json
+apiVersion: db.movetokube.com/v1alpha1
+kind: PostgresUser
+metadata:
+  name: coder-db-user
+  namespace: development
+spec:
+  role: coder-user
+  database: coder
+  secretName: secret
+  privileges: OWNER
+  annotations:
+    app.kubernetes.io/name: coder
+    app.kubernetes.io/component: database
+  labels:
+    app.kubernetes.io/name: coder
+    app.kubernetes.io/component: database
+  secretTemplate:
+    CODER_PG_CONNECTION_URL: "postgres://{{.Role}}:{{.Password}}@{{.Host}}:{{.Port}}/{{.Database}}?sslmode=disable"
+    PQ_URL: "host={{.Host}} user={{.Role}} password={{.Password}} dbname={{.Database}}"
+    POSTGRES_HOST: "{{.Host}}"
+    POSTGRES_PORT: "{{.Port}}"
+    POSTGRES_DB: "{{.Database}}"
+    POSTGRES_USER: "{{.Role}}"
+    POSTGRES_PASSWORD: "{{.Password}}"

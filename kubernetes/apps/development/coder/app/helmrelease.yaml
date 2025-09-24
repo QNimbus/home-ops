@@ -31,6 +31,12 @@ spec:
     coder:
       strategy: Recreate
       env:
+        # --- DATABASE SETTINGS ---
+        - name: CODER_PG_CONNECTION_URL
+          valueFrom:
+            secretKeyRef:
+              name: secret-coder-db-user
+              key: CODER_PG_CONNECTION_URL
         # --- GENERAL SETTINGS ---
         - name: CODER_ACCESS_URL
           value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
@@ -89,12 +95,6 @@ spec:
             name: coder-secret
       ingress:
         enable: false
-      initContainers:
-        - name: init-db
-          image: ghcr.io/home-operations/postgres-init:17.5.0@sha256:e0c87ce7df39d06b93f27cf2cc6a056611f13faaa88cc07ab4dc8bf7a85d0b11
-          envFrom:
-            - secretRef:
-                name: coder-secret
       podAnnotations:
         reloader.stakater.com/auto: "true"
         prometheus.io/scrape: "true"
