@@ -82,6 +82,10 @@ spec:
         fsGroup: 65534
         fsGroupChangePolicy: OnRootMismatch
     persistence:
+      config:
+        existingClaim: gatus-config
+        globalMounts:
+          - path: /config
       config-file:
         type: configMap
         name: gatus-config
