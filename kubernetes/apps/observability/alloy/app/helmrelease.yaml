@@ -1,0 +1,68 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: alloy
+    namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    alloy:
+      enableReporting: false
+      storagePath: /var/lib/alloy
+      configMap:
+        create: false
+        name: &config alloy-config
+        key: config.alloy
+      mounts:
+        varlog: true
+        extra:
+          - name: kubelet-pods
+            mountPath: /var/lib/kubelet/pods
+            readOnly: true
+          - name: journald
+            mountPath: /var/log/journal
+            readOnly: true
+          - name: run-journal
+            mountPath: /run/log/journal
+            readOnly: true
+          - name: data
+            mountPath: /var/lib/alloy
+    controller:
+      type: daemonset
+      podAnnotations:
+        configmap.reloader.stakater.com/reload: *config
+      volumes:
+        extra:
+          - name: kubelet-pods
+            hostPath:
+              path: /var/lib/kubelet/pods
+              type: Directory
+          - name: journald
+            hostPath:
+              path: /var/log/journal
+              type: DirectoryOrCreate
+          - name: run-journal
+            hostPath:
+              path: /run/log/journal
+              type: DirectoryOrCreate
+          - name: data
+            hostPath:
+              path: /var/lib/alloy
+              type: DirectoryOrCreate
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+      additionalLabels:
+        release: kube-prometheus-stack
