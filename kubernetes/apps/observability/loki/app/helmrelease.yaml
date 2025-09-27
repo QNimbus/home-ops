@@ -27,6 +27,10 @@ spec:
         reporting_enabled: false
       server:
         log_level: info
+        grpc_server_max_recv_msg_size: 10485760 # 10 MiB
+        grpc_server_max_send_msg_size: 10485760 # 10 MiB
+        http_server_read_timeout: 600s
+        http_server_write_timeout: 600s
       commonConfig:
         replication_factor: 1
       compactor:
@@ -37,6 +41,15 @@ spec:
         chunk_encoding: snappy
       limits_config:
         retention_period: 14d
+        # Ingestion rate limits to prevent overwhelming Loki
+        ingestion_rate_mb: 16 # Default is 4MB/s per user
+        ingestion_burst_size_mb: 32 # Default is 6MB
+        max_cache_freshness_per_query: 10m
+        query_timeout: 300s
+        reject_old_samples: true
+        reject_old_samples_max_age: 168h
+        split_queries_by_interval: 15m
+        volume_enabled: true
       storage:
         type: filesystem
       schemaConfig:
