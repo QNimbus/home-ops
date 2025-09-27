@@ -3,10 +3,13 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: k8s-gateway
+  name: alloy
   namespace: flux-system
 spec:
   interval: 1h
-  url: oci://ghcr.io/k8s-gateway/charts/k8s-gateway
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
   ref:
-    semver: ">=2.0.0"
+    tag: 1.2.1
+  url: oci://ghcr.io/home-operations/charts-mirror/alloy
