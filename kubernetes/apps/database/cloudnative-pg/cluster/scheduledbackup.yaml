@@ -5,8 +5,8 @@ metadata:
   name: postgres-v17
 spec:
   immediate: true
-  # Daily, 2:00 UTC
-  schedule: "0 0 2 * * *"
+  # Daily, 1:00 UTC
+  schedule: "0 0 1 * * *"
   method: plugin
   pluginConfiguration:
     name: barman-cloud.cloudnative-pg.io
