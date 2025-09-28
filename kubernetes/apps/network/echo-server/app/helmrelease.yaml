@@ -35,7 +35,7 @@ spec:
               liveness: &probes
                 enabled: true
                 custom: true
-                spec:
+                spec: &probesSpec
                   httpGet:
                     path: /healthz
                     port: *port
@@ -47,6 +47,7 @@ spec:
               startup:
                 <<: *probes
                 spec:
+                  <<: *probesSpec
                   # Allow up to ~10 minutes for first-time startup
                   failureThreshold: 60
             securityContext:
