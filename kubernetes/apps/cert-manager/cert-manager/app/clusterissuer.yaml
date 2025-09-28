@@ -17,7 +17,8 @@ spec:
               key: api-token
         selector:
           dnsZones:
-            - ${DOMAIN_APP}
             - ${DOMAIN_ID}
+            - ${DOMAIN_APP}
+            - ${DOMAIN_DEV}
             - ${DOMAIN_CASA}
             - ${DOMAIN_PROXII}
