@@ -83,6 +83,43 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
+
+          - name: flux
+            orgId: 1
+            folder: Flux
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/flux
+
+          - name: kubernetes
+            orgId: 1
+            folder: Kubernetes
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/kubernetes
+
+          - name: postgres
+            orgId: 1
+            folder: Postgres
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/postgres
+
+          - name: unpoller
+            disableDeletion: false
+            editable: true
+            folder: "UniFi Poller"
+            options:
+              path: /var/lib/grafana/dashboards/unpoller
+            orgId: 1
+            type: file
+
     dashboards:
       kubernetes:
         k8s-system-api-server:
@@ -158,6 +195,44 @@ spec:
             - name: "DS_PROMETHEUS"
               value: Prometheus
 
+      postgres:
+
+        postgres-overview:
+          # renovate: dashboardName="PostgreSQL Overview"
+          gnetId: 9628
+          revision: 6
+          datasource: Prometheus
+
+        postgres-by-db:
+          # renovate: dashboardName="PostgreSQL By Database"
+          gnetId: 9629
+          revision: 6
+          datasource: Prometheus
+
+        postgres-replication:
+          # renovate: dashboardName="PostgreSQL Replication"
+          gnetId: 9630
+          revision: 6
+          datasource: Prometheus
+
+        postgres-slow-queries:
+          # renovate: dashboardName="PostgreSQL Slow Queries"
+          gnetId: 9631
+          revision: 6
+          datasource: Prometheus
+
+        postgres-connections:
+          # renovate: dashboardName="PostgreSQL Connections"
+          gnetId: 9632
+          revision: 6
+          datasource: Prometheus
+
+        cloudnativepg:
+          # renovate: depName="CloudNativePG Overview"
+          gnetId: 20417
+          revision: 1
+          datasource: Prometheus
+
       default:
 
         cert-manager:
@@ -172,12 +247,6 @@ spec:
           revision: 6
           datasource:
             - { name: DS_PROMETHEUS, value: Prometheus }
-
-        cloudnativepg:
-          # renovate: depName="CloudNativePG Overview"
-          gnetId: 20417
-          revision: 1
-          datasource: Prometheus
 
         # envoy:
         #    # renovate: depName="Envoy Proxy Monitoring gRPC"
