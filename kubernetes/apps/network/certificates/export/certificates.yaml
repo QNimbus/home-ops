@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "${DOMAIN_APP/./-}"
+spec:
+  secretName: "${DOMAIN_APP/./-}-tls"
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "${DOMAIN_APP}"
+  dnsNames: ["${DOMAIN_APP}", "*.${DOMAIN_APP}"]
