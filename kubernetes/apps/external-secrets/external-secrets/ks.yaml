@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: &app external-secrets
   namespace: &namespace external-secrets
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -26,6 +28,8 @@ kind: Kustomization
 metadata:
   name: &app onepassword-store
   namespace: &namespace external-secrets
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -45,3 +49,29 @@ spec:
       namespace: external-secrets
     - name: onepassword-connect
       namespace: external-secrets
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app cluster-secrets
+  namespace: &namespace external-secrets
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  timeout: 5m
+  wait: true
+  prune: true
+  path: ./kubernetes/apps/external-secrets/external-secrets/cluster-secrets
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: onepassword-store
+      namespace: *namespace
