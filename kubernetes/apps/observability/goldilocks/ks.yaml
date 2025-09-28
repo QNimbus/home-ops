@@ -63,3 +63,5 @@ spec:
   dependsOn:
     - name: goldilocks-vpa
       namespace: *namespace
+    - name: cluster-secrets
+      namespace: external-secrets

@@ -21,6 +21,9 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  dependsOn:
+    - name: cluster-secrets
+      namespace: external-secrets
 ---
 # yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -46,3 +49,5 @@ spec:
   dependsOn:
     - name: cert-manager
       namespace: cert-manager
+    - name: cluster-secrets
+      namespace: external-secrets

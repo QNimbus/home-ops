@@ -30,5 +30,7 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
+    - name: cluster-secrets
+      namespace: external-secrets
     - name: longhorn
       namespace: longhorn-system

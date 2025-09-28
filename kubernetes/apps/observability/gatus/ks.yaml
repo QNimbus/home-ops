@@ -32,3 +32,5 @@ spec:
   dependsOn:
     - name: volsync
       namespace: volsync-system
+    - name: cluster-secrets
+      namespace: external-secrets

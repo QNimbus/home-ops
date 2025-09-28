@@ -18,6 +18,7 @@ spec:
     target:
       name: sops-age
       creationPolicy: Owner
+      deletionPolicy: Delete
       template:
         data:
           age.agekey: "{{ .SOPS_PRIVATE_KEY }}"
