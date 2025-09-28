@@ -50,3 +50,16 @@ spec:
     kind: ClusterIssuer
   commonName: "${DOMAIN_DEV}"
   dnsNames: ["${DOMAIN_DEV}", "*.${DOMAIN_DEV}"]
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "${DOMAIN_PROXII/./-}"
+spec:
+  secretName: "${DOMAIN_PROXII/./-}-tls"
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "${DOMAIN_PROXII}"
+  dnsNames: ["${DOMAIN_PROXII}", "*.${DOMAIN_PROXII}"]
