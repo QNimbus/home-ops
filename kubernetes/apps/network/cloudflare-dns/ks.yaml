@@ -24,3 +24,6 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
+  dependsOn:
+    - name: cluster-secrets
+      namespace: external-secrets
