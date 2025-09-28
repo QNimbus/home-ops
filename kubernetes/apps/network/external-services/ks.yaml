@@ -1,0 +1,171 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kvm-pve1
+  namespace: &namespace network
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/external-services/kvm-pve1
+  postBuild:
+    substitute:
+      APP: *app
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: k8s-gateway
+      namespace: network
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kvm-pve2
+  namespace: &namespace network
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/external-services/kvm-pve2
+  postBuild:
+    substitute:
+      APP: *app
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: k8s-gateway
+      namespace: network
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kvm-pve4
+  namespace: &namespace network
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/external-services/kvm-pve4
+  postBuild:
+    substitute:
+      APP: *app
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: k8s-gateway
+      namespace: network
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app nas
+  namespace: &namespace network
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/external-services/nas
+  postBuild:
+    substitute:
+      APP: *app
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: k8s-gateway
+      namespace: network
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app printer
+  namespace: &namespace network
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/external-services/printer
+  postBuild:
+    substitute:
+      APP: *app
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: k8s-gateway
+      namespace: network
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app proxmox-ve
+  namespace: &namespace network
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: []
+  wait: false
+  prune: true
+  interval: 1h
+  timeout: 5m
+  retryInterval: 2m
+  path: ./kubernetes/apps/network/external-services/proxmox-ve/resources
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  dependsOn:
+    - name: k8s-gateway
+      namespace: network
