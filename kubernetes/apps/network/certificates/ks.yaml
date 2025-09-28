@@ -13,7 +13,7 @@ spec:
   components: []
   wait: false
   prune: true
-  interval: 1h
+  interval: 5m
   timeout: 10m
   retryInterval: 2m
   path: ./kubernetes/apps/network/certificates/import
@@ -39,7 +39,7 @@ spec:
   components: []
   wait: false
   prune: true
-  interval: 1h
+  interval: 5m
   timeout: 10m
   retryInterval: 2m
   path: ./kubernetes/apps/network/certificates/export
