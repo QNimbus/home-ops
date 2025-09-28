@@ -161,7 +161,7 @@ spec:
   interval: 1h
   timeout: 5m
   retryInterval: 2m
-  path: ./kubernetes/apps/network/external-services/proxmox-ve/resources
+  path: ./kubernetes/apps/network/external-services/proxmox-ve
   sourceRef:
     kind: GitRepository
     name: flux-system
