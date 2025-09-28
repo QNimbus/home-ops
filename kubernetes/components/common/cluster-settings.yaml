@@ -7,7 +7,7 @@ data:
   TIMEZONE: Europe/Amsterdam
 
   # Network CIDRs
-  K8s_LAN_CIDR: "10.60.0.0/24"
+  LAN_CIDR: "10.60.0.0/24"
   POD_CIDR: "10.42.0.0/16"
   SERVICE_CIDR: "10.43.0.0/16"
   TAILSCALE_CIDR: "100.64.0.0/10"

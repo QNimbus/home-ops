@@ -5,6 +5,7 @@ metadata:
   name: not-used
   labels:
     goldilocks.fairwinds.com/enabled: "true"
+    external-secrets.io/cluster-secrets: "true"
     # TODO: Enable Pod Security Standards for enhanced security across all namespaces
     # Uncomment the following lines to enforce restricted pod security policies:
     # Benefits:
