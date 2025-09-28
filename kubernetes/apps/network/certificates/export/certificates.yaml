@@ -24,3 +24,16 @@ spec:
     kind: ClusterIssuer
   commonName: "${DOMAIN_CASA}"
   dnsNames: ["${DOMAIN_CASA}", "*.${DOMAIN_CASA}"]
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "${DOMAIN_ID/./-}"
+spec:
+  secretName: "${DOMAIN_ID/./-}-tls"
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "${DOMAIN_ID}"
+  dnsNames: ["${DOMAIN_ID}", "*.${DOMAIN_ID}"]
