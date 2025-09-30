@@ -120,16 +120,28 @@ securityContext:
 # -- [Environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) for the `external-dns` container.
 env: []
 
-# -- [Liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `external-dns` container.
+# -- [Startup probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `external-dns` container.
 # @default -- See _values.yaml_
-livenessProbe:
+startupProbe:
   httpGet:
     path: /healthz
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 2
+  failureThreshold: 30  # Allow up to 5 minutes for startup (30 * 10s)
+  successThreshold: 1
+
+# -- [Liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `external-dns` container.
+# @default -- See _values.yaml_
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  # No initialDelaySeconds needed - startup probe handles initial startup
+  periodSeconds: 30  # Check less frequently to reduce restart chances
+  timeoutSeconds: 10  # Longer timeout for liveness checks
+  failureThreshold: 3  # More tolerant of temporary failures
   successThreshold: 1
 
 # -- [Readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `external-dns` container.
@@ -138,10 +150,10 @@ readinessProbe:
   httpGet:
     path: /healthz
     port: http
-  initialDelaySeconds: 5
+  # No initialDelaySeconds needed - startup probe handles initial startup
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 6
+  failureThreshold: 3  # Reduced from 6 for faster traffic removal when unhealthy
   successThreshold: 1
 
 # -- Extra [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) for the `Pod`.
@@ -276,16 +288,27 @@ provider:  # @schema type: [object, string];
     # -- [Pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) for the `webhook` container.
     # @default -- See _values.yaml_
     securityContext: {}
-    # -- [Liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `external-dns` container.
+    # -- [Startup probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `webhook` container.
     # @default -- See _values.yaml_
-    livenessProbe:
+    startupProbe:
       httpGet:
         path: /healthz  # @schema type:[string, null]; default: null
         port: http-webhook  # @schema type:[integer,string]; default: string
       initialDelaySeconds: 10  # @schema type:[integer, null]; default: null
       periodSeconds: 10  # @schema type:[integer, null]; default: null
       timeoutSeconds: 5  # @schema type:[integer, null]; default: null
-      failureThreshold: 2  # @schema type:[integer, null]; default: null
+      failureThreshold: 30  # @schema type:[integer, null]; default: null - allows up to 5 minutes for startup (30 * 10s)
+      successThreshold: 1  # @schema type:[integer, null]; default: null
+    # -- [Liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `webhook` container.
+    # @default -- See _values.yaml_
+    livenessProbe:
+      httpGet:
+        path: /healthz  # @schema type:[string, null]; default: null
+        port: http-webhook  # @schema type:[integer,string]; default: string
+      # No initialDelaySeconds needed - startup probe takes over
+      periodSeconds: 30  # @schema type:[integer, null]; default: null - check less frequently than readiness
+      timeoutSeconds: 10  # @schema type:[integer, null]; default: null - longer timeout for liveness
+      failureThreshold: 3  # @schema type:[integer, null]; default: null - more tolerant of temporary failures
       successThreshold: 1  # @schema type:[integer, null]; default: null
     # -- [Readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `webhook` container.
     # @default -- See _values.yaml_
@@ -293,10 +316,10 @@ provider:  # @schema type: [object, string];
       httpGet:
         path: /healthz  # @schema type:[string, null]; default: null
         port: http-webhook  # @schema type:[integer,string]; default: string
-      initialDelaySeconds: 5  # @schema type:[integer, null]; default: null
+      # No initialDelaySeconds needed - startup probe takes over
       periodSeconds: 10  # @schema type:[integer, null]; default: null
       timeoutSeconds: 5  # @schema type:[integer, null]; default: null
-      failureThreshold: 6  # @schema type:[integer, null]; default: null
+      failureThreshold: 3  # @schema type:[integer, null]; default: null - reduced from 6 for faster failure detection
       successThreshold: 1  # @schema type:[integer, null]; default: null
     service:
       # -- Webhook exposed HTTP port for the service.
