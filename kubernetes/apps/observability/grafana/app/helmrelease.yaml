@@ -195,43 +195,43 @@ spec:
             - name: "DS_PROMETHEUS"
               value: Prometheus
 
-      postgres:
+      # postgres:
 
-        postgres-overview:
-          # renovate: dashboardName="PostgreSQL Overview"
-          gnetId: 9628
-          revision: 6
-          datasource: Prometheus
+        # postgres-overview:
+        #   # renovate: dashboardName="PostgreSQL Overview"
+        #   gnetId: 9628
+        #   revision: 6
+        #   datasource: Prometheus
 
-        postgres-by-db:
-          # renovate: dashboardName="PostgreSQL By Database"
-          gnetId: 9629
-          revision: 6
-          datasource: Prometheus
+        # postgres-by-db:
+        #   # renovate: dashboardName="PostgreSQL By Database"
+        #   gnetId: 9629
+        #   revision: 6
+        #   datasource: Prometheus
 
-        postgres-replication:
-          # renovate: dashboardName="PostgreSQL Replication"
-          gnetId: 9630
-          revision: 6
-          datasource: Prometheus
+        # postgres-replication:
+        #   # renovate: dashboardName="PostgreSQL Replication"
+        #   gnetId: 9630
+        #   revision: 6
+        #   datasource: Prometheus
 
-        postgres-slow-queries:
-          # renovate: dashboardName="PostgreSQL Slow Queries"
-          gnetId: 9631
-          revision: 6
-          datasource: Prometheus
+        # postgres-slow-queries:
+        #   # renovate: dashboardName="PostgreSQL Slow Queries"
+        #   gnetId: 9631
+        #   revision: 6
+        #   datasource: Prometheus
 
-        postgres-connections:
-          # renovate: dashboardName="PostgreSQL Connections"
-          gnetId: 9632
-          revision: 6
-          datasource: Prometheus
+        # postgres-connections:
+        #   # renovate: dashboardName="PostgreSQL Connections"
+        #   gnetId: 9632
+        #   revision: 6
+        #   datasource: Prometheus
 
-        cloudnativepg:
-          # renovate: depName="CloudNativePG Overview"
-          gnetId: 20417
-          revision: 1
-          datasource: Prometheus
+        # cloudnativepg:
+        #   # renovate: depName="CloudNativePG Overview"
+        #   gnetId: 20417
+        #   revision: 1
+        #   datasource: Prometheus
 
       default:
 
