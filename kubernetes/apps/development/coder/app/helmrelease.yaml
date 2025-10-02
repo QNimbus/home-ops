@@ -60,7 +60,9 @@ spec:
         - name: CODER_SECURE_AUTH_COOKIE
           value: "true"
         - name: CODER_DISABLE_SESSION_EXPIRY_REFRESH
-          value: "true"
+          value: "false"
+        - name: CODER_SESSION_DURATION
+          value: "24h"
         - name: CODER_BLOCK_DIRECT
           value: "true"
         - name: CODER_DERP_SERVER_STUN_ADDRESSES
