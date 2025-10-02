@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/tuppr.home-operations.com/talosupgrade_v1alpha1.json
+apiVersion: tuppr.home-operations.com/v1alpha1
+kind: TalosUpgrade
+metadata:
+  name: talos
+spec:
+  talos:
+    # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+    version: v1.10.6
+  policy:
+    rebootMode: default
+  healthChecks:
+    - apiVersion: volsync.backube/v1alpha1
+      kind: ReplicationSource
+      expr: |
+        status.conditions.filter(c, c.type == "Synchronizing").all(c, c.status == "False")
+      description: Ensure VolSync replication sources are not synchronizing
+    - apiVersion: longhorn.io/v1beta2
+      kind: Node
+      namespace: longhorn-system
+      expr: |
+        status.conditions != null &&
+        status.conditions.exists(c, c.type == "Ready" && c.status == "True")
+      description: Confirm all Longhorn storage nodes report Ready status
