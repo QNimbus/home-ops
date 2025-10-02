@@ -21,4 +21,5 @@ resources:
   - ./snapshot-controller.yaml
   - ./spegel.yaml
   - ./tailscale-operator.yaml
+  - ./tuppr.yaml
   - ./volsync.yaml

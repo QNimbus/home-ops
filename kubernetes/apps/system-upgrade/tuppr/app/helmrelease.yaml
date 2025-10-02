@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://schemas.clustrs.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tuppr
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: tuppr
+    namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/home-operations/tuppr
+      tag: 0.0.36
+      pullPolicy: IfNotPresent
+    controller:
+      monitoring:
+        serviceMonitor:
+          enabled: true
+          interval: 30s
+          scrapeTimeout: 10s
+          labels:
+            release: kube-prometheus-stack
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
