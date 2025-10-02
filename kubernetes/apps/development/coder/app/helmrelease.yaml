@@ -56,6 +56,27 @@ spec:
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "false"
 
+        # --- GITHUB AUTHENTICATION SETTINGS ---
+        - name: CODER_EXTERNAL_AUTH_0_ID
+          value: "github"
+        - name: CODER_EXTERNAL_AUTH_0_TYPE
+          value: "github"
+        - name: CODER_EXTERNAL_AUTH_0_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: coder-secret
+              key: CODER_EXTERNAL_AUTH_0_CLIENT_ID
+        - name: CODER_EXTERNAL_AUTH_0_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: coder-secret
+              key: CODER_EXTERNAL_AUTH_0_CLIENT_SECRET
+        - name: CODER_EXTERNAL_AUTH_0_REVOKE_URL
+          valueFrom:
+            secretKeyRef:
+              name: coder-secret
+              key: CODER_EXTERNAL_AUTH_0_REVOKE_URL
+
         # --- Other Settings from your config ---
         - name: CODER_SECURE_AUTH_COOKIE
           value: "true"
