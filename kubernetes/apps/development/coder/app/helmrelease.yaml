@@ -39,7 +39,8 @@ spec:
               key: CODER_PG_CONNECTION_URL
         # --- GENERAL SETTINGS ---
         - name: CODER_ACCESS_URL
-          value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+          # value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
+          value: "http://coder.development.svc.cluster.local"
         - name: CODER_WILDCARD_ACCESS_URL
           value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
         - name: CODER_DISABLE_PASSWORD_AUTH
@@ -61,6 +62,8 @@ spec:
           value: "github"
         - name: CODER_EXTERNAL_AUTH_0_TYPE
           value: "github"
+        - name: CODER_EXTERNAL_AUTH_0_VALIDATE_URL
+          value: "https://api.github.com/user"
         - name: CODER_EXTERNAL_AUTH_0_CLIENT_ID
           valueFrom:
             secretKeyRef:
@@ -85,7 +88,7 @@ spec:
         - name: CODER_SESSION_DURATION
           value: "24h"
         - name: CODER_BLOCK_DIRECT
-          value: "true"
+          value: "false"
         - name: CODER_DERP_SERVER_STUN_ADDRESSES
           value: "disable"
         - name: CODER_EMAIL_TLS_STARTTLS
@@ -106,7 +109,7 @@ spec:
         - name: CODER_TELEMETRY_ENABLE
           value: "false"
         - name: CODER_UPDATE_CHECK
-          value: "false"
+          value: "true"
         #  # For debugging if needed
         # - name: CODER_VERBOSE
         #   value: "true"
