@@ -2,7 +2,7 @@
     "name": "Python 3 Development Container",
     "image": "mcr.microsoft.com/devcontainers/python:latest",
 
-	"remoteUser": "1000",
+    "containerUser": "vscode",
 
     "features": {
         "ghcr.io/devcontainers/features/git:1": {

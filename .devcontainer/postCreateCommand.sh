@@ -1,11 +1,10 @@
 #!/bin/bash
-set -e
 
 # Update package lists
 sudo apt-get update
 
 # Install required packages
-sudo apt-get install -y gnupg ca-certificates iputils-ping dnsutils trash-cli tree libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb nmap
+# sudo apt-get install -y gnupg ca-certificates iputils-ping dnsutils trash-cli tree libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb nmap
 
 # Install 1Password-cli
 # curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
@@ -21,24 +20,27 @@ sudo apt-get install -y gnupg ca-certificates iputils-ping dnsutils trash-cli tr
 # sudo apt update && sudo apt install -y 1password-cli
 
 # Download and install mise
-curl -L https://mise.jdx.dev/install.sh | bash
+# curl -L https://mise.jdx.dev/install.sh | bash
 
 # Change ownership of the workspace folder
-sudo chown -R 1000:1000 /workspaces/${CODER_WORKSPACE_NAME}
+# sudo chown -R 1000:1000 /workspaces/${CODER_WORKSPACE_NAME}
 
 # Make the workspace folder the current directory
-cd /workspaces/${CODER_WORKSPACE_NAME}
+# cd /workspaces/${CODER_WORKSPACE_NAME}
 
-# Ensure .bashrc sources .bash_aliases
-if ! grep -q "bash_aliases" /home/vscode/.bashrc; then
-    echo -e "\n# Source user aliases\nif [ -f ~/.bash_aliases ]; then\n  . ~/.bash_aliases\nfi" >> /home/vscode/.bashrc
-fi
+sudo -u "$(getent passwd 1000 | cut -d: -f1)" bash -c '
+  cd ~
+  # Ensure .bashrc sources .bash_aliases
+  if ! grep -q "bash_aliases" ~/.bashrc; then
+      echo -e "\n# Source user aliases\nif [ -f ~/.bash_aliases ]; then\n  . ~/.bash_aliases\nfi" >> ~/.bashrc
+  fi
+'
 
-echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
+# echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 # Source bashrc to apply changes immediately
-source ~/.bashrc
+# source ~/.bashrc
 
-mise trust
-pip install pipx
-mise install
+# mise trust
+# pip install pipx
+# mise install
