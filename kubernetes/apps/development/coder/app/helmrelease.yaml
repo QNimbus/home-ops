@@ -47,12 +47,12 @@ spec:
           value: "true"
 
         # --- NETWORK SETTINGS ---
-        - name: CODER_WIREGUARD_MTU
-          value: "1280"
-        - name: CODER_DERP_SERVER_STUN_ADDRESSES
-          value: ""
-        - name: CODER_BLOCK_DIRECT
-          value: "false"
+        # - name: CODER_WIREGUARD_MTU
+        #   value: "1280"
+        # - name: CODER_DERP_SERVER_STUN_ADDRESSES
+        #   value: ""
+        # - name: CODER_BLOCK_DIRECT
+        #   value: "false"
 
         # --- OIDC AUTHENTICATION SETTINGS ---
         # This is not working as expected - maybe because IdP Sync is a premium feature (see: https://coder.com/docs/@v2.25.1/admin/users/idp-sync)
@@ -65,55 +65,25 @@ spec:
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "false"
 
-        # --- GITHUB AUTHENTICATION SETTINGS ---
-        - name: CODER_EXTERNAL_AUTH_0_ID
-          value: "github"
-        - name: CODER_EXTERNAL_AUTH_0_TYPE
-          value: "github"
-        - name: CODER_EXTERNAL_AUTH_0_VALIDATE_URL
-          value: "https://api.github.com/user"
-        - name: CODER_EXTERNAL_AUTH_0_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: coder-secret
-              key: CODER_EXTERNAL_AUTH_0_CLIENT_ID
-        - name: CODER_EXTERNAL_AUTH_0_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: coder-secret
-              key: CODER_EXTERNAL_AUTH_0_CLIENT_SECRET
-        - name: CODER_EXTERNAL_AUTH_0_REVOKE_URL
-          valueFrom:
-            secretKeyRef:
-              name: coder-secret
-              key: CODER_EXTERNAL_AUTH_0_REVOKE_URL
-
         # --- Other Settings from your config ---
-        - name: CODER_SECURE_AUTH_COOKIE
-          value: "true"
-        - name: CODER_DISABLE_SESSION_EXPIRY_REFRESH
-          value: "false"
-        - name: CODER_SESSION_DURATION
-          value: "24h"
-        - name: CODER_EMAIL_TLS_STARTTLS
-          value: "true"
-        - name: CODER_LOGGING_HUMAN
-          value: "/dev/stderr"
-        - name: CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE
-          value: "false"
-        - name: CODER_OIDC_GROUP_AUTO_CREATE
-          value: "false"
-        - name: CODER_OIDC_IGNORE_USERINFO
-          value: "true"
-
         - name: CODER_PROMETHEUS_ENABLE
           value: "true"
-        - name: CODER_PROMETHEUS_COLLECT_AGENT_STATS
-          value: "true"
-        - name: CODER_TELEMETRY_ENABLE
-          value: "false"
         - name: CODER_UPDATE_CHECK
           value: "true"
+        # - name: CODER_SECURE_AUTH_COOKIE
+        #   value: "true"
+        # - name: CODER_DISABLE_SESSION_EXPIRY_REFRESH
+        #   value: "false"
+        # - name: CODER_SESSION_DURATION
+        #   value: "24h"
+        # - name: CODER_EMAIL_TLS_STARTTLS
+        #   value: "true"
+        # - name: CODER_LOGGING_HUMAN
+        #   value: "/dev/stderr"
+        # - name: CODER_PROMETHEUS_COLLECT_AGENT_STATS
+        #   value: "true"
+        # - name: CODER_TELEMETRY_ENABLE
+        #   value: "false"
         #  # For debugging if needed
         # - name: CODER_VERBOSE
         #   value: "true"
@@ -123,6 +93,8 @@ spec:
       envFrom: &envFrom
         - secretRef:
             name: coder-secret
+
+      envUseClusterAccessURL: false
       ingress:
         enable: false
       podAnnotations:
@@ -152,19 +124,18 @@ spec:
         liveness: &probes
           enabled: true
           # custom: true
-          spec:
-            initialDelaySeconds: 10  # No delay needed with startup probe
+          spec: &probesSpec
+            initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
         readiness: *probes
         startup:
+          <<: *probes
           enabled: true
           # custom: true
           spec:
-            initialDelaySeconds: 10  # Small initial delay for container startup
-            periodSeconds: 10
-            timeoutSeconds: 5
+            <<: *probesSpec
             failureThreshold: 30     # Allow up to 5 minutes instead of 10
   postRenderers:
     - kustomize:
