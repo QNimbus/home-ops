@@ -1,33 +1,63 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/kubernetes-helm
 {
-    "name": "Python 3 Development Container",
-    "image": "mcr.microsoft.com/devcontainers/python:latest",
-    "features": {
+	"name": "Kubernetes - Local Configuration",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"enableNonRootDocker": "true",
+			"moby": "true"
+		},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+			"version": "latest",
+			"helm": "latest",
+			"minikube": "none"
+		},
         "ghcr.io/devcontainers/features/git:1": {
             "version": "latest"
         },
-        "ghcr.io/devcontainers-extra/features/poetry:2": {
-            "version": "latest"
-        }
-    },
-    "containerEnv": {
-        "WORKSPACE_FOLDER": "/workspaces/${localWorkspaceFolderBasename}"
-    },
+		"./local-features/copy-kube-config": {},
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/python:1": {
+			"version": "latest"
+		}
+	},
+
+	"remoteEnv": {
+		"SYNC_LOCALHOST_KUBECONFIG": "true"
+	},
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-    "mounts": [
-        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.bash_aliases,target=/home/vscode/.bash_aliases,type=bind,consistency=cached",
-        // "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
-        // "source=/mnt/c/Users/bas/AppData/Local/1Password/app/8,target=/mnt/c/Users/bas/AppData/Local/1Password/app/8,type=bind,consistency=cached,readonly",
-        "source=${localEnv:HOME}/.ssh/allowed_signers,target=/home/vscode/.ssh/allowed_signers,type=bind,consistency=cached"
-    ],
+	"mounts": [
+		{
+			"source": "${env:HOME}${env:USERPROFILE}/.kube",
+			"target": "/usr/local/share/kube-localhost",
+			"type": "bind"
+		},
+		// Optional mount to also sync certs in your .minikube folder
+		{
+			"source": "${env:HOME}${env:USERPROFILE}/.minikube",
+			"target": "/usr/local/share/minikube-localhost",
+			"type": "bind"
+		}
+		// "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
+        // "source=${localEnv:HOME}/.ssh/allowed_signers,target=/home/vscode/.ssh/allowed_signers,type=bind,consistency=cached"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "kubectl version",
+
+	// Configure tool-specific properties.
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-python.python",
-                "ms-python.vscode-pylance",
-                "ms-python.black-formatter",
-                "charliermarsh.ruff"
-            ],
+				"signageos.signageos-vscode-sops",
+				"GitHub.vscode-pull-request-github"
+			],
             "settings": {
                 "files.insertFinalNewline": true,
                 "chat.mcp.enabled": true,
@@ -37,51 +67,16 @@
                     "markdown": false,
                     "scminput": false
                 },
-                "json.schemas": [
-                    {
-                        "fileMatch": [
-                            "**/config.json",
-                            "**/config.json.backup",
-                            "**/config.json.example"
-                        ],
-                        "url": "/workspaces/k3s_deploy/src/k3s_deploy_cli/config_schema.json"
-                    }
-                ],
                 "chat.instructionsFilesLocations": {
                     ".github/instructions": true
                 },
                 "github.copilot.chat.codesearch.enabled": true,
                 "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-                "python.linting.enabled": false,
-                "python.formatting.provider": "none",
-                "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-                "python.terminal.activateEnvironment": true,
-                "python.testing.pytestEnabled": true,
-                "python.testing.unittestEnabled": false,
-                "python.testing.pytestArgs": [
-                    "tests"
-                ],
-                "python.testing.cwd": "${workspaceFolder}",
-                "python.testing.pytestPath": "pytest",
-                "python.envFile": "${workspaceFolder}/.env",
-                "python.analysis.extraPaths": [
-                    "${workspaceFolder}/src"
-                ],
-                "python.analysis.autoImportCompletions": true,
-                "[python]": {
-                    "editor.formatOnSave": false,
-                    "editor.formatOnType": false,
-                    "editor.formatOnPaste": false,
-                    "editor.formatOnSaveMode": "file",
-                    "editor.codeActionsOnSave": {
-                        "source.sort.json": "explicit",
-                        "source.organizeImports": "explicit"
-                    }
-                },
                 "files.eol": "\n"
             }
         }
-    },
-    "forwardPorts": [],
-    "remoteUser": "vscode"
+    }
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }

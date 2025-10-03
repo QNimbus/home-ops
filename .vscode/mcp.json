@@ -1,0 +1,47 @@
+{
+	"servers": {
+		"filesystem": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"${workspaceFolder}",
+				"/tmp"
+			]
+		},
+		"context7": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@upstash/context7-mcp@latest"
+			]
+		},
+		"playwright": {
+			"command": "npx",
+			"args": [
+				"@playwright/mcp@latest"
+			]
+		},
+		"memory": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-memory"
+			]
+		},
+		"kubernetes": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"kubernetes-mcp-server@latest",
+				"--kubeconfig",
+				"/workspaces/home-ops/kubeconfig"
+			],
+			"env": {
+				"KUBECONFIG": "/workspaces/home-ops/kubeconfig"
+			}
+		}
+	},
+	"inputs": []
+}
