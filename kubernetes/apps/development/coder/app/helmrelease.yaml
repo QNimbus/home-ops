@@ -39,8 +39,7 @@ spec:
               key: CODER_PG_CONNECTION_URL
         # --- GENERAL SETTINGS ---
         - name: CODER_ACCESS_URL
-          # value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
-          value: "http://coder.development.svc.cluster.local"
+          value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
         - name: CODER_WILDCARD_ACCESS_URL
           value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
         - name: CODER_DISABLE_PASSWORD_AUTH
