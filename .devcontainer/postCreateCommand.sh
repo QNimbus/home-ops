@@ -20,14 +20,11 @@ curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
 sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
 sudo apt update && sudo apt install -y 1password-cli
 
-# Download and extract jujutsu
-curl -L https://github.com/jj-vcs/jj/releases/download/v0.29.0/jj-v0.29.0-x86_64-unknown-linux-musl.tar.gz | sudo tar xz -C /usr/local/bin
-
-# Install AWS CLI v2
-curl -L https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && unzip awscliv2.zip && sudo ./aws/install
-
 # Download and install mise
 curl -L https://mise.jdx.dev/install.sh | bash
+
+# Change ownership of the workspace folder
+sudo chown -R 1000:1000 ${WORKSPACE_FOLDER}
 
 # Make the workspace folder the current directory
 cd ${WORKSPACE_FOLDER}
