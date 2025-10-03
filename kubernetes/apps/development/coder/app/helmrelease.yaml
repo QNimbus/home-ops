@@ -47,8 +47,8 @@ spec:
           value: "true"
 
         # --- NETWORK SETTINGS ---
-        # - name: CODER_WIREGUARD_MTU
-        #   value: "1280"
+        - name: CODER_WIREGUARD_MTU
+          value: "1280"
         # - name: CODER_DERP_SERVER_STUN_ADDRESSES
         #   value: ""
         # - name: CODER_BLOCK_DIRECT
