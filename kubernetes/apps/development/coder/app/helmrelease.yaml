@@ -37,6 +37,7 @@ spec:
             secretKeyRef:
               name: secret-coder-db-user
               key: CODER_PG_CONNECTION_URL
+
         # --- GENERAL SETTINGS ---
         - name: CODER_ACCESS_URL
           value: "https://${GATUS_DOMAIN:=${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_APP}}"
@@ -44,6 +45,14 @@ spec:
           value: "*.${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN_DEV}"
         - name: CODER_DISABLE_PASSWORD_AUTH
           value: "true"
+
+        # --- NETWORK SETTINGS ---
+        - name: CODER_WIREGUARD_MTU
+          value: "1280"
+        - name: CODER_DERP_SERVER_STUN_ADDRESSES
+          value: ""
+        - name: CODER_BLOCK_DIRECT
+          value: "false"
 
         # --- OIDC AUTHENTICATION SETTINGS ---
         # This is not working as expected - maybe because IdP Sync is a premium feature (see: https://coder.com/docs/@v2.25.1/admin/users/idp-sync)
@@ -86,10 +95,6 @@ spec:
           value: "false"
         - name: CODER_SESSION_DURATION
           value: "24h"
-        - name: CODER_BLOCK_DIRECT
-          value: "false"
-        - name: CODER_DERP_SERVER_STUN_ADDRESSES
-          value: "disable"
         - name: CODER_EMAIL_TLS_STARTTLS
           value: "true"
         - name: CODER_LOGGING_HUMAN
