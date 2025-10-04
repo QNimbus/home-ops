@@ -26,15 +26,12 @@ sudo apt-get update
 # sudo chown -R 1000:1000 /workspaces/${CODER_WORKSPACE_NAME}
 
 # Make the workspace folder the current directory
-# cd /workspaces/${CODER_WORKSPACE_NAME}
+cd /workspaces/${CODER_WORKSPACE_NAME}
 
-sudo -u "$(getent passwd 1000 | cut -d: -f1)" bash -c '
-  cd ~
-  # Ensure .bashrc sources .bash_aliases
-  if ! grep -q "bash_aliases" ~/.bashrc; then
-      echo -e "\n# Source user aliases\nif [ -f ~/.bash_aliases ]; then\n  . ~/.bash_aliases\nfi" >> ~/.bashrc
-  fi
-'
+# Ensure .bashrc sources .bash_aliases
+if ! grep -q "bash_aliases" ~/.bashrc; then
+    echo -e "\n# Source user aliases\nif [ -f ~/.bash_aliases ]; then\n  . ~/.bash_aliases\nfi" >> ~/.bashrc
+fi
 
 # echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
