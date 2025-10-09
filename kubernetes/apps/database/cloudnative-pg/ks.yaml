@@ -76,8 +76,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      CNPG_CURRENT_CLUSTER: "postgres-v17-20250918"
-      CNPG_PREVIOUS_CLUSTER: "postgres-v17-20250917"
+      CNPG_CURRENT_CLUSTER: "postgres-v17-20251009"
+      CNPG_PREVIOUS_CLUSTER: "postgres-v17-20250918"
   sourceRef:
     kind: GitRepository
     name: flux-system
