@@ -79,7 +79,7 @@ spec:
   ##   b. Commit the changes. This is CRITICAL to return the cluster to a normal, healthy operational state.
   ## ---
 
-  bootstrap:
+  # bootstrap:
     # --- Option 1: Create a brand new, empty cluster (use on first-ever deploy) ---
     # initdb:
     #   database: postgres
@@ -89,15 +89,14 @@ spec:
 
     # --- Option 2: Recover from an existing S3 backup (use for disaster recovery) ---
     # Recovers from the latest S3 backup (after changing `serverName` in `ks.yaml`)
-    recovery:
-      source: &previousCluster postgres-v17-backup # Internal reference, matches 'externalClusters.name'
+    # recovery:
+    #   source: &previousCluster postgres-v17-backup # Internal reference, matches 'externalClusters.name'
 
-
-  externalClusters:
-    - name: *previousCluster # Internal reference, matches 'bootstrap.recovery.source'
-      plugin:
-        name: barman-cloud.cloudnative-pg.io
-        parameters:
-          barmanObjectName: *barmanObjectName
-          # This MUST point to the S3 directory containing the backups.
-          serverName: "${CNPG_PREVIOUS_CLUSTER}"
+  # externalClusters:
+  #   - name: *previousCluster # Internal reference, matches 'bootstrap.recovery.source'
+  #     plugin:
+  #       name: barman-cloud.cloudnative-pg.io
+  #       parameters:
+  #         barmanObjectName: *barmanObjectName
+  #         # This MUST point to the S3 directory containing the backups.
+  #         serverName: "${CNPG_PREVIOUS_CLUSTER}"
