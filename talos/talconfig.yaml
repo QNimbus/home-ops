@@ -43,32 +43,34 @@ nodes:
           - network: "0.0.0.0/0"
             gateway: "10.60.0.1"
         mtu: 1500
-  # - hostname: "talos-k8s-node-2"
-  #   ipAddress: "10.60.0.202"
-  #   installDisk: "/dev/sda"
-  #   machineSpec:
-  #     secureboot: false
-  #   talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
-  #   controlPlane: true
-  #   userVolumes:
-  #     - name: longhorn-storage
-  #       provisioning:
-  #         diskSelector:
-  #           match: disk.dev_path == '/dev/sdb'
-  #         minSize: 10GB
-  #         grow: true
-  #   networkInterfaces:
-  #     - deviceSelector:
-  #         hardwareAddr: "bc:24:11:17:e5:8f"
-  #       dhcp: false
-  #       addresses:
-  #         - "10.60.0.202/24"
-  #       routes:
-  #         - network: "0.0.0.0/0"
-  #           gateway: "10.60.0.1"
-  #       mtu: 1500
-  #       vip:
-  #         ip: "10.60.0.2"
+        vip:
+          ip: "10.60.0.2"
+  - hostname: "talos-k8s-node-2"
+    ipAddress: "10.60.0.202"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
+    controlPlane: true
+    userVolumes:
+      - name: longhorn-storage
+        provisioning:
+          diskSelector:
+            match: disk.dev_path == '/dev/sdb'
+          minSize: 10GB
+          grow: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:17:e5:8f"
+        dhcp: false
+        addresses:
+          - "10.60.0.202/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.60.0.1"
+        mtu: 1500
+        vip:
+          ip: "10.60.0.2"
   - hostname: "talos-k8s-node-3"
     ipAddress: "10.60.0.203"
     installDisk: "/dev/sda"
@@ -95,32 +97,32 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.60.0.2"
-  - hostname: "talos-k8s-node-4"
-    ipAddress: "10.60.0.204"
-    installDisk: "/dev/sda"
-    machineSpec:
-      secureboot: false
-    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
-    controlPlane: true
-    userVolumes:
-      - name: longhorn-storage
-        provisioning:
-          diskSelector:
-            match: disk.dev_path == '/dev/sdb'
-          minSize: 10GB
-          grow: true
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:e6:54:fa"
-        dhcp: false
-        addresses:
-          - "10.60.0.204/24"
-        routes:
-          - network: "0.0.0.0/0"
-            gateway: "10.60.0.1"
-        mtu: 1500
-        vip:
-          ip: "10.60.0.2"
+  # - hostname: "talos-k8s-node-4"
+  #   ipAddress: "10.60.0.204"
+  #   installDisk: "/dev/sda"
+  #   machineSpec:
+  #     secureboot: false
+  #   talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
+  #   controlPlane: true
+  #   userVolumes:
+  #     - name: longhorn-storage
+  #       provisioning:
+  #         diskSelector:
+  #           match: disk.dev_path == '/dev/sdb'
+  #         minSize: 10GB
+  #         grow: true
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "bc:24:11:e6:54:fa"
+  #       dhcp: false
+  #       addresses:
+  #         - "10.60.0.204/24"
+  #       routes:
+  #         - network: "0.0.0.0/0"
+  #           gateway: "10.60.0.1"
+  #       mtu: 1500
+  #       vip:
+  #         ip: "10.60.0.2"
 
 # Global patches
 patches:
@@ -137,4 +139,3 @@ controlPlane:
     - "@./patches/controller/machine-features.yaml"
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
-
