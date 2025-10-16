@@ -15,6 +15,6 @@ resources:
   - ./node-configs/kube-node-01.yaml
   - ./node-configs/kube-node-02.yaml
   - ./node-configs/kube-node-03.yaml
-  # - ./node-configs/kube-node-04.yaml
+  - ./node-configs/kube-node-04.yaml
   # - ./additional-storageclasses.yaml
   # - ./recurring-jobs.yaml
